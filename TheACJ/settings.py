@@ -76,9 +76,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'acjweb',
-        'USER': 'root',
+        'USER': 'admin',
         'PASSWORD': '0953Amanda',
-        'HOST': 'localhost',
+        'HOST': 'acjsql.cncmkwkksgkr.us-east-2.rds.amazonaws.com',
         'PORT': '3306',
     }
 }
