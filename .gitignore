@@ -1,0 +1,11 @@
+*.sqlite3
+*.pyc
+__pycache__
+Home/templates/Home/test.html
+*.DS_S*
+*DS_S*
+*templates/*.DS_S*
+migrations
+*.csv
+*.tmp.*
+.idea

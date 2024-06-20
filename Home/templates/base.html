@@ -1,0 +1,322 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		{% block meta %}   
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<title>The ACJ</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="description" content="" />
+		<meta name="keywords" content="" />
+		<meta name="author" content="" />
+
+    	<!-- Facebook and Twitter integration -->
+		<meta property="og:title" content=""/>
+		<meta property="og:image" content=""/>
+		<meta property="og:url" content=""/>
+		<meta property="og:site_name" content=""/>
+		<meta property="og:description" content=""/>
+		<meta name="twitter:title" content="" />
+		<meta name="twitter:image" content="" />
+		<meta name="twitter:url" content="" />
+		<meta name="twitter:card" content="" />
+    	{% endblock %}
+
+    	{% block extra_meta %}
+
+    	{% endblock %}
+
+		{% block style %}
+    
+		<link rel="shortcut icon" href="{% static 'Home/images/favicon/favicon.ico' %}">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">    
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0" />    
+		{% endblock %}
+		{% block corecss %}
+		<!-- Animate.css -->
+		<link rel="stylesheet" href="{% static 'Home/css/animate.css' %}">
+		<!-- Icomoon Icon Fonts-->
+		<link rel="stylesheet" href="{% static 'Home/css/icomoon.css' %}">
+		<!-- Bootstrap -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">   
+{#        <link rel="stylesheet" href="{% static 'Home/css/bootstrap.css' %}">#}
+{#        <link rel="stylesheet" href="{% static 'Home/css/bootstrap/bootstrap.css' %}">#}
+{#        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">    #}
+		<!-- Flexslider  -->
+		<link rel="stylesheet" href="{% static 'Home/css/flexslider.css' %}">
+		<!-- Flaticons  -->
+{#	<link rel="stylesheet" href="{% static 'Home/fonts/flaticon/font/flaticon.css' %}">#}
+		<!-- Owl Carousel -->
+		<link rel="stylesheet" href="{% static 'Home/css/owl.carousel.min.css' %}">
+		<link rel="stylesheet" href="{% static 'Home/css/owl.theme.default.min.css' %}">
+		<!-- Theme style  -->
+		<link id="themeStylesheet" rel="stylesheet" href="{% static 'Home/css/style.css' %}">
+    	<!--Loader-->
+    	<link rel="stylesheet" href="{% static 'Home/css/ACJLoader.css' %}">
+            <!--Button-->
+    	<link rel="stylesheet" href="{% static 'Home/css/button.css' %}">
+		<!-- Modernizr JS -->
+		<script src="{% static 'Home/js/modernizr-2.6.2.min.js' %}"></script>
+		{% endblock %}
+		<!-- FOR IE9 below -->
+		<!--[if lt IE 9]>
+		<script src="{% static 'Home/js/respond.min.js' %}"></script>
+		<![endif]-->
+    </head>
+	<body>
+		<div id="loader-wrapper">
+			<div id="loader"></div>
+			<div class="loader-section section-left"></div>
+			<div class="loader-section section-right"></div>
+		</div>
+		<div id="ACJ-page">
+			<div class="container-wrap div_button">
+				<a href="#" class="js-ACJ-nav-toggle ACJ-nav-toggle" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar"><i></i></a>
+                {% include 'includes/Button.html' %}
+
+            
+				<aside id="ACJ-aside" role="complementary" class="border js-fullheight">
+				   <div class="text-center">
+					 <div class="author-img" style="background-image: url('{% static "Home/images/about.jpg" %}');background-position: left top;"></div>
+						 <img src="{% static 'Home/images/logo.png' %}" style="margin:auto;width:30px;height:30px;" alt="ACJ LOGO">
+						 <h1 id="ACJ-logo"><a href="/">THE ACJ</a></h1>
+						 <span class="position"><i class="icon-chart"></i>&nbsp;Data Analyst || <i class="icon-network"></i>&nbsp; Web Developer || <i class="icon-design_services"></i>&nbsp; Graphics Designer</span>
+				   </div>
+				   <nav id="ACJ-main-menu" role="navigation" class="navbar">
+						 <div id="navbar" class="collapse">
+							 <ul>
+									<li class="active"><a href="#" data-nav-section="home"> Home</a></li>
+									<li><a href="#" data-nav-section="about">About</a></li>
+									<li><a href="#" data-nav-section="services">Services</a></li>
+									<li><a href="#" data-nav-section="skills">Skills</a></li>
+									<!-- <li><a href="#" data-nav-section="education">Education</a></li>
+									<li><a href="#" data-nav-section="experience">Experience</a></li> -->
+									<li><a href="#" data-nav-section="work">Work</a></li>
+									<li><a href="#" data-nav-section="blog">Gallery</a></li>
+									<li><a href="#" data-nav-section="contact">Contact</a></li>
+							 </ul>
+						 </div>
+				   </nav>	
+					<div class="ACJ-footer">
+							<p><small>&copy; </small>
+							   Copyright <script>document.write(new Date().getFullYear());</script> All rights reserved. Made with <i class="icon-heart" aria-hidden="true" style="color:red"></i> by The ACJ
+							</p>
+							<ul>
+							   <li><a href="https://www.facebook.com/joshua.agbai.3"><i class="icon-facebook"></i></a></li>
+							   <li><a href="https://www.twitter.com/realACJoshua"><i class="icon-x"></i></a></li>
+							   <li><a href="https://www.github.com/TheACJ"><i class="icon-github"></i></a></li>
+							   <li><a href="#"><i class="icon-linkedin"></i></a></li>
+							</ul>
+					</div>
+				</aside>
+				<div id="ACJ-main">
+					<section id="ACJ-hero" class="js-fullheight" data-section="home">
+						<div class="flexslider js-fullheight">
+							<ul class="slides">
+								{% block slides %}
+								<li style="background-image: url('{% static "Home/images/img_bg_1.jpg" %}');">
+									<div class="overlay"></div>
+									<div class="container-fluid">
+								<div class="row">
+									<div class="col-md-6 col-md-offset-3 col-md-pull-3 col-sm-12 col-xs-12 js-fullheight slider-text">
+										<div class="slider-text-inner js-fullheight">
+											<div class="desc" >
+												<h1 style="font-family: 'Space Grotesk'">Hi! <br><span> <a href="/portfolio" target="_blank" style="text-decoration:none;color:black">The ACJ</a></span></h1>
+												<h2>With us Tech Emancipation is achievable</h2>
+												 <p><a class="btn btn-primary btn-learn" href="#" download>Download CV <i class="icon-download"></i></a></p>
+										 </div>
+										</div>
+									</div>
+								</div>
+									</div>
+							  	</li>
+							 	<li style="background-image: url('{% static "Home/images/img_bg_2.jpg" %}');background-position: 10px 10px;">
+									<div class="overlay"></div>
+									<div class="container-fluid">
+										<div class="row">
+											<div class="col-md-6 col-md-offset-3 col-md-pull-3 col-sm-12 col-xs-12 js-fullheight slider-text">
+												<div class="slider-text-inner">
+													<div class="desc">
+														<h1 style="color:white; font-family: 'Space Grotesk'">I am a<br> Data Analyst</h1>
+													 <h2 style="color:white" >Where there is Data, <span> <a href="/portfolio" target="_blank" style="text-decoration:none;color:white">The ACJ</a></span> will make sense of it</h2>
+													 <p><a class="btn btn-primary btn-learn" style="color:white;border: 1px solid #fff">View Portfolio <i class="icon-briefcase"></i></a></p>
+												 </div>
+													</div>
+											</div>
+										</div>
+									</div>
+							 	</li>
+							   	<li style="background-image: url('{% static "Home/images/img_bg_3.jpg" %}');">
+								 <div class="overlay"></div>
+								 <div class="container-fluid">
+									 <div class="row">
+										 <div class="col-md-6 col-md-offset-3 col-md-pull-3 col-sm-12 col-xs-12 js-fullheight slider-text">
+											 <div class="slider-text-inner">
+												 <div class="desc">
+													 <h1 style="font-family: 'Space Grotesk'">I am a<br> Web Developer</h1>
+													  <h2>Imagine it, <span> <a href="/portfolio" target="_blank" style="text-decoration:none;color:black">The ACJ</a></span> will make it real</h2>
+													  <p><a class="btn btn-primary btn-learn">View Portfolio <i class="icon-briefcase1"></i></a></p>
+												  </div>
+											 </div>
+										 </div>
+									 </div>
+								 </div>
+							   	</li>
+								{% endblock %}								
+					   		</ul>
+						</div>
+					</section> <!-- end:section(ACJ-hero) -->
+					<section class="ACJ-about" data-section="about">
+						<div class="ACJ-narrow-content">
+							<div class="row">
+								<div class="col-md-12">
+									<div class="row row-bottom-padded-sm animate-box" data-animate-effect="fadeInLeft">
+										<div class="col-md-12">
+											<div class="about-desc">
+												<span class="heading-meta">About Me</span>
+												<h2 class="ACJ-heading">Who am I? <i class="material-symbols-outlined"></i></h2>
+												<p><strong>Hi I am The ACJ</strong>, I am a Web Developer, Programmer, Data Analyst, Graphics Designer and  Tech Enthusiast. Let's build something beautiful together. If you dare to imagine it, The ACJ will make it real. Also bear in mind that by using existing and collected Data your organisation will be placed in the right position to succeed</p>
+												<p>I am assertive communication experts with a passion for communication and technology. I have a sound background in Web Development, Data Analysis and Computer Networking. I am a web builder/web designer, Data Analyst and Graphic Designer unafraid to push beyond the natural comfort zone. I possess excellent digital communication and problem-solving skills. I always dare to be the difference.</p>
+											</div>
+										</div>
+									</div>
+                                    <div class="row">
+										<div class="col-md-3 animate-box" data-animate-effect="fadeInLeft">
+											<div class="services color-3">
+												<span class="icon2"><i class="icon-design_services"></i></span>
+												<h3>Graphic Design</h3>
+											</div>
+										</div>
+										<div class="col-md-3 animate-box" data-animate-effect="fadeInRight">
+											<div class="services color-1">
+												<span class="icon2"><i class="icon-globe"></i></span>
+												<h3>Web Design</h3>
+											</div>
+										</div>
+										<div class="col-md-3 animate-box" data-animate-effect="fadeInTop">
+											<div class="services color-3">
+												<span class="icon2"><i class="icon-statistics1"></i></span>
+												<h3>Data Analytics</h3>
+											</div>
+										</div>
+										<div class="col-md-3 animate-box" data-animate-effect="fadeInBottom">
+											<div class="services color-1">
+												<span class="icon2"><i class="icon-app_settings_alt"></i></span>
+												<h3>Application</h3>
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-md-12 animate-box" data-animate-effect="fadeInLeft">
+											<div class="hire">
+												<h2>I am happy to inform you <br>that 15+ projects are done successfully!</h2>
+                                                <a href="https://wa.me/message/CR5WD4DPDZE7O1" class="btn-hire">Hire me <i class="icon-briefcase1"></i></a>
+											</div>
+										</div>
+									</div>
+							</div>
+						</div>
+                        
+					</section> <!-- end:section(ACJ-about) -->
+					{% block sections %}
+					{% endblock %}
+					{% block content %}
+					{% endblock %}
+				</div>  <!-- end:ACJ-main -->
+			</div>	 <!-- end:container-wrap -->
+		</div>  <!-- end:ACJ-page -->
+
+
+
+		<!-- jQuery -->
+		{% comment %} <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> {% endcomment %}
+    	<script src="{% static 'Home/js/jquery.min.js' %}"></script>
+		<!-- jQuery Easing -->
+		<script src="{% static 'Home/js/jquery.easing.1.3.js' %}"></script>
+		<!-- Bootstrap -->
+{#        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>#}
+{#		<script src="{% static 'Home/js/bootstrap.min.js' %}"></script>#}
+        <script src="{% static 'Home/js/bootstrap/bootstrap.min.js' %}"></script>
+{#        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct" crossorigin="anonymous"></script>#}
+		<!-- Waypoints -->
+		<script src="{% static 'Home/js/jquery.waypoints.min.js' %}"></script>
+		<!-- Flexslider -->
+		<script src="{% static 'Home/js/jquery.flexslider-min.js' %}"></script>
+		<!-- Owl carousel -->
+		<script src="{% static 'Home/js/owl.carousel.min.js' %}"></script>
+		<!-- Counters -->
+		<script src="{% static 'Home/js/jquery.countTo.js' %}"></script>
+	
+	
+		<!-- MAIN JS -->
+		<script src="{% static 'Home/js/main.js' %}"></script>
+		<script>
+			window.addEventListener('load', function() {
+				document.body.classList.add('loaded');
+			  });
+      		function showwork() {
+           		document.getElementById('portfolio').style.display = 'block';
+           		document.getElementById('X').style.display = 'block';
+           		document.getElementById('load').style.display = 'none';
+        	}
+        	function cancel() {
+           		document.getElementById('X').style.display = 'none';   
+				document.getElementById('portfolio').style.display = 'none';
+           		document.getElementById('load').style.display = 'block';
+        	}
+		</script>
+
+		<script>
+    		$(document).ready(function(){
+       			$('form').submit(function(event){
+            		event.preventDefault(); // Prevent the form from submitting normally
+
+            // Send form data via AJAX
+           			$.ajax({
+                	type: $(this).attr('method'),
+                	url: $(this).attr('action'),
+                	data: $(this).serialize(),
+                	success: function(response){
+                    	// Clear form fields
+                    	$('form')[0].reset();
+                    	// Display success message if exists
+                    	if (response && response.message) {
+                        	$('#success-message').text(response.message).show();
+                    	}	
+                    		$('#error-message').hide();
+                	},
+                		error: function(xhr, errmsg, err){
+                    	// Display error message
+                    		$('#error-message').text('Failed to send message.').show();
+                    		$('#success-message').hide();
+                		}
+            		});
+        		});
+    		});
+		</script>
+
+		<script>
+			document.addEventListener('DOMContentLoaded', function () {
+				const toggleButton = document.getElementById('button-1');
+				const themeStylesheet = document.getElementById('themeStylesheet');
+	
+				const lightModeUrl = "{% static 'Home/css/style.css' %}";
+				const darkModeUrl = "{% static 'Home/css/style_dark_mood.css' %}";
+	
+				toggleButton.addEventListener('click', function () {
+					if (themeStylesheet.getAttribute('href') === lightModeUrl) {
+						themeStylesheet.setAttribute('href', darkModeUrl);
+						
+					} else {
+						themeStylesheet.setAttribute('href', lightModeUrl);
+						
+					}
+				});
+			});
+		</script>
+	</body>
+	
+</html>

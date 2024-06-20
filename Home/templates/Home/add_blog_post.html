@@ -1,0 +1,64 @@
+<!-- add_blog_post.html -->
+
+{% extends "base.html" %}
+{% load static %}
+{% block style %}
+<link rel="stylesheet" href="{% static 'Home/css/form.css' %}">
+{% endblock %}
+{% block content %}
+                <section class="ACJ-contact" data-section="contact">
+                    <div class="ACJ-narrow-content">
+						<div class="row">
+							<div class="col-md-6 col-md-offset-3 col-md-pull-3 animate-box" data-animate-effect="fadeInLeft">
+								<span class="heading-meta">Show Your Work</span>
+								<h2 class="ACJ-heading">Publish</h2>
+							</div>
+						</div>
+                            <form method="post" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <div class="form-group">
+                                    <label for="id_title">Title:</label>
+                                    {{ form.title }}
+                                </div>
+                                <div class="form-group">
+                                    <label for="id_content">Content:</label>
+                                    {{ form.content }}
+                                </div>
+                                <div class="form-group">
+                                    <label for="id_category">Category:</label>
+                                    {{ form.category }}
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="id_content">Link to the Visual:</label>
+                                        {{ form.image_url }}
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="id_image">Image:</label>
+                                        <div class="image-upload">
+                                            <label for="file-input">
+                                                <i class="icon-cloud-upload2" style="margin:auto"></i> Choose File
+                                            </label>
+                                            <input id="file-input" type="file" name="image" accept="image/*" onchange="previewImage(event)">
+                                        </div>
+                                        <img id="preview" src="#" alt="Image Preview" style="display: none; max-width: 100%;">
+                                        <p class="drag-drop-text">Drag & drop an image here or click to upload.</p>
+                                    </div>
+                                <div class="form-group">
+                                    <input type="submit" class="btn btn-primary btn-send-message" value="Upload">
+                                </div>
+                            </form>
+                        </div>
+                    </div>               
+                </section>
+                    <script>
+                        function previewImage(event) {
+                            var reader = new FileReader();
+                            reader.onload = function() {
+                                var output = document.getElementById('preview');
+                                output.src = reader.result;
+                                output.style.display = 'block';
+                            };
+                            reader.readAsDataURL(event.target.files[0]);
+                        }
+                    </script>
+{% endblock %}
