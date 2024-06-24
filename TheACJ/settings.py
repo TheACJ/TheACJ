@@ -13,7 +13,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-)t@cd5c$g_d13x*oe#cl*ne9@w#ou(^_u6%hks#q39%1sj7p2='
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -64,13 +64,13 @@ WSGI_APPLICATION = 'TheACJ.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-if Debug:
-        DATABASES = {
-            'default': {
-                'ENGINE': 'django.db.backends.sqlite3',
-                'NAME': str(BASE_DIR / 'db.sqlite3'),
-            }
+if DEBUG:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': str(BASE_DIR / 'db.sqlite3'),
         }
+    }
 else:
     DATABASES = {
         'default': {
@@ -78,7 +78,7 @@ else:
             'NAME': 'acjweb',
             'USER': 'admin',
             'PASSWORD': '0953Amanda',
-            'HOST': 'acjsql.cncmkwkksgkr.us-east-2.rds.amazonaws.com',
+            'HOST': 'acjweb.cncmkwkksgkr.us-east-2.rds.amazonaws.com',
             'PORT': '3306',
         }
     }
@@ -119,7 +119,7 @@ USE_TZ = True
 
 
 STATIC_URL = '/static/'
-#STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 #STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

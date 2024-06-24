@@ -1,7 +1,7 @@
 @font-face {
   font-family: 'icomoon';
-  src: url("icomoon/icomoon.eot?srf3rx");
-  src: url("icomoon/icomoon.eot?srf3rx#iefix") format("embedded-opentype"), url("icomoon/icomoon.ttf?srf3rx") format("truetype"), url("icomoon/icomoon.woff?srf3rx") format("woff"), url("icomoon/icomoon.svg?srf3rx#icomoon") format("svg");
+  src: url("../fonts/icomoon/icomoon.eot?srf3rx");
+  src: url("../fonts/icomoon/icomoon.eot?srf3rx#iefix") format("embedded-opentype"), url("../fonts/icomoon/icomoon.ttf?srf3rx") format("truetype"), url("../fonts/icomoon/icomoon.woff?srf3rx") format("woff"), url("../fonts/icomoon/icomoon.svg?srf3rx#icomoon") format("svg");
   font-weight: normal;
   font-style: normal; }
 /*For the purpose of hiding content*/
@@ -20,12 +20,12 @@
 *
 * ======================================================= */
 body {
-  font-family: "Poppins",  sans-serif;
-  /*font-weight: 600;*/
+  font-family: "Poppins", sans-serif;
+  font-weight: 600;
   font-size: 15px;
   line-height: 1.8;
   background-color: #070707;
-  color: rgba(255, 255, 255, 0.84); }
+  color: rgba(228, 222, 222, 0.7); }
   @media screen and (max-width: 992px) {
     body {
       font-size: 16px; } }
@@ -45,7 +45,7 @@ p {
 
 h1, h2, h3, h4, h5, h6 {
   color: #eee8e8;
-  font-family: "Space Grotesk",  sans-serif;
+  font-family: "Space Grostek", serif;
   font-weight: 600;
   margin: 0 0 30px 0; }
 
@@ -150,7 +150,7 @@ figure {
         letter-spacing: 1px; }
         #ACJ-aside #ACJ-main-menu ul li a {
           color: rgba(238, 235, 235, 0.7);
-          text-decoration: none;
+          text-decoration: none;!important;
           position: relative;
           padding: 10px 0;
           font-family: "Poppins", sans-serif;
@@ -317,7 +317,7 @@ figure {
           line-height: 1.5;
           margin-bottom: 30px;
           font-weight: 500;
-          font-family: "Poppins", sans-serif; }
+          font-family: "Space Grotesk", sans-serif; }
           #ACJ-hero .flexslider .slider-text > .slider-text-inner h2 a {
             color: rgba(44, 152, 240, 0.8);
             border-bottom: 1px solid rgba(44, 152, 240, 0.7); }
@@ -608,7 +608,7 @@ body.offcanvas {
 
 .timeline-centered .timeline-entry .timeline-entry-inner .timeline-label h2 {
   font-size: 20px;
-  font-family: "Poppins", sans-serif;
+  font-family: "Space Grotesk", sans-serif;
   font-weight: 500; }
 
 .timeline-centered .timeline-entry .timeline-entry-inner .timeline-label h2 a {
@@ -903,7 +903,7 @@ body.offcanvas {
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 1px;
-    font-family: "Poppins", sans-serif;  }
+    font-family: "Poppins", sans-serif; }
     .blog-entry .desc h3 a {
       color: #e7e5e5;
       text-decoration: none; }
