@@ -1,11 +1,24 @@
 from django.conf import settings
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect,  get_object_or_404
 from django.core.mail import send_mail
 from django.contrib import messages
 import csv
+from django.http import HttpResponse, JsonResponse
+from django.core.serializers import serialize
 from .forms import ContactForm, BlogPostForm
-from .models import BlogPost, Contact    # Import your BlogPost model
+from .models import BlogPost, Contact, WorkItem, Category    # Import your BlogPost model
+from django.views.decorators.csrf import ensure_csrf_cookie,csrf_exempt
+from django.views.decorators.http import require_http_methods
+from django.http import JsonResponse
+from rest_framework import status
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from .serializers import WorkItemSerializer, BlogPostSerializer, CategorySerializer
+from rest_framework.parsers import JSONParser, MultiPartParser
 
+@ensure_csrf_cookie
+def csrf_token_view(request):
+    return JsonResponse({'detail': 'CSRF cookie set'})
 
 def index(request):
     # Retrieve recent blog posts from the database
@@ -45,11 +58,6 @@ def index(request):
 def success(request):
     return HttpResponse('Success!')
 
-
-def portfolio(request):
-    return render(request, 'Home/portfolio1.html')
-
-
 def add_blog_post(request):
     if request.method == 'POST':
         form = BlogPostForm(request.POST, request.FILES)  # Include request.FILES
@@ -62,3 +70,62 @@ def add_blog_post(request):
     else:
         form = BlogPostForm()
     return render(request, 'Home/add_blog_post.html', {'form': form})
+    
+@require_http_methods(["GET"])  
+def blog_posts_api(request):
+    posts = BlogPost.objects.all().order_by('-date_published')
+    data = [
+        {
+            'id': post.id,
+            'title': post.title,
+            'content': post.content,
+            'date_published': post.date_published,
+            'image': request.build_absolute_uri(post.image.url) if post.image else None,
+            'category': {
+                'name': post.category.name,
+                'friendly_name': post.category.friendly_name,
+            } if post.category else None,
+            }
+            for post in posts
+        ]
+    return JsonResponse(data, safe=False)
+
+@api_view(['POST'])
+def add_blog_post(request):
+        serializer =  BlogPostSerializer(data=request.data)
+        print(request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
+        return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+ 
+@api_view(['GET'])
+def get_categories(request):
+    categories = Category.objects.all()
+    serializer = CategorySerializer(categories, many=True)
+    return JsonResponse(serializer.data, safe=False)
+
+@require_http_methods(["GET"])  # Only allow GET and POST requests
+def work_items_api(request):
+        posts = WorkItem.objects.all().order_by('id')
+        data = []
+        for post in posts:
+            data.append({
+                'id': post.id,
+                'title': post.title,
+                'category': post.category,
+                'description': post.description,
+                'image': request.build_absolute_uri(post.image.url) if post.image else None,
+                'link': post.link
+            })
+        return JsonResponse(data, safe=False)
+
+@api_view(['POST'])
+def create_work_item(request):
+        serializer = WorkItemSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
+        return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+ 
+ 

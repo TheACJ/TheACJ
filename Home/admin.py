@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import BlogPost, Category
+from .models import BlogPost, Category, WorkItem
 
 # Register your models here.
 
@@ -21,6 +21,18 @@ class CategoryAdmin(admin.ModelAdmin):
         'name',
     )
 
+class WorkItemAdmin(admin.ModelAdmin):
+    list_display = (
+        'title',
+        'category',
+        'image',
+        'description',
+        'link',
+    )
+
+    ordering = ('category',)
+
 admin.site.register(BlogPost, BlogPostAdmin)
 admin.site.register(Category, CategoryAdmin)
+admin.site.register(WorkItem, WorkItemAdmin)
 # Register your models here.

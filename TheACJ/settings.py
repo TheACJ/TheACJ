@@ -27,7 +27,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'Home'
+    'Home',
+    'corsheaders',
+    'rest_framework',
 
 ]
 
@@ -35,6 +37,7 @@ MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -63,26 +66,33 @@ TEMPLATES = [
 WSGI_APPLICATION = 'TheACJ.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-# if DEBUG:
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': str(BASE_DIR / 'db.sqlite3'),
-    }
-}
-# else:
-#     DATABASES = {
-#         'default': {
-#             'ENGINE': 'django.db.backends.mysql',
-#             'NAME': '****',
-#             'USER': '****',
-#             'PASSWORD': '******',
-#             'HOST': 'acjweb.cncmkwkksgkr.us-east-2.rds.amazonaws.com',
-#             'PORT': '3306',
-#         }
-#     }
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:5173",
+]
+
+
+if not DEBUG:
+	DATABASES = {
+	   'default': {
+        	'ENGINE': 'django.db.backends.mysql',  # Use 'mysql.connector.django' if using PyMySQL
+      	  	'NAME': 'royalintschogoli_main',
+        	'USER': '387994',
+        	'PASSWORD': '0953Amanda',
+        	'HOST': 'mysql-royalintschogoli.alwaysdata.net', 
+        	'PORT': '3306', 
+	    }
+	}
+else:
+	DATABASES = {
+   	   'default': {
+        	'ENGINE': 'django.db.backends.sqlite3',
+	        'NAME': BASE_DIR / 'db.sqlite3',
+    	    }
+	}
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -119,13 +129,12 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-#STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'frontend/dist')]
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
@@ -147,4 +156,5 @@ EMAIL_HOST_USER = '********'
 EMAIL_HOST_PASSWORD = '******'
 FILE_LOCKING = False
 
-X_FRAME_OPTIONS = 'ALLOWALL'
+# X_FRAME_OPTIONS = 'ALLOWALL'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'

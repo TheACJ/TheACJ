@@ -33,7 +33,17 @@ class BlogPost(models.Model):
     date_published = models.DateTimeField(auto_now_add=True)
     image_url = models.URLField(max_length=1024, null=True, blank=True)
     image = models.ImageField(null=True, blank=True)
-    comment = models.TextField(null=True, blank=True)
+    link = models.URLField(max_length=1024, null=True, blank=True)
+
+    def __str__(self):
+        return self.title
+
+class WorkItem(models.Model):
+    title = models.CharField(max_length=20)
+    category = models.CharField(max_length=20, null=True, blank=True)
+    image = models.ImageField(upload_to='work_images/', blank=True, null=True)
+    description = models.TextField(max_length=1024)
+    link = models.URLField(max_length=1024, null=True, blank=True)
 
     def __str__(self):
         return self.title
