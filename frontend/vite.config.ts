@@ -1,17 +1,19 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
-export default defineConfig(({ command }) => ({
+export default defineConfig(({ mode }) => ({
   plugins: [react()],
-  base: command === 'serve' ? '' : '/static/', // Only use /static/ for production builds
+  base: '/', // Ensure the app is served from the root
   build: {
-    assetsDir: '',
+    assetsDir: 'static',
+    outDir: 'build',
   },
   server: {
     proxy: {
       '/api': {
-        target: 'http://127.0.0.1:8000',
+        target: mode === 'production' ? 'https://theacj.com.ng' : 'http://127.0.0.1:8000',
         changeOrigin: true,
+        secure: false,
       }
     }
   },
