@@ -1,4 +1,5 @@
 import { Lightbulb, Globe, BarChart3, AppWindow } from 'lucide-react';
+import '../assets/style.css'
 
 const About = () => {
   const services = [
@@ -10,8 +11,8 @@ const About = () => {
     },
     {
       icon: <Globe className="w-8 h-8" />,
-      title: "Web Development",
-      description: "Having a rooted background in HTML, CSS and Javascript, I even went further to get a hold of backend skills such as SQL, Django, Nodejs. I am the ACJ, I Prioritize beauty and scalability."
+      title: " Fullstack Web Development",
+      description: "Having a rooted background in HTML, CSS, Javascript, I even went further to get a hold of backend skills such as SQL, Django, Nodejs. I am the ACJ, I Prioritize beauty and scalability."
     },
     {
       icon: <BarChart3 className="w-8 h-8" />,
@@ -21,8 +22,8 @@ const About = () => {
     },
     {
       icon: <AppWindow className="w-8 h-8" />,
-      title: "Application",
-      description: "Building robust and scalable applications that solve real-world problems is my passion. I create applications that are not just functional but also user-friendly and maintainable."
+      title: "Web 3 Development",
+      description: "Building robust and scalable Web3 applications that solve real-world problems is my passion. I write smart contracts that are scalable using Solidity & Rust."
     }
   ];
 
@@ -36,10 +37,13 @@ const About = () => {
 
         <div className="mb-16">
           <p className="text-lg text-gray-700 mb-6 dark:text-[#b9b8b8]">
-            <strong>Hi I am The ACJ</strong>, I am a Web Developer, Programmer, Data Analyst, Graphics Designer and Tech Enthusiast. Let's build something beautiful together. If you dare to imagine it, The ACJ will make it real. Also bear in mind that by using existing and collected Data your organisation will be placed in the right position to succeed
+            <strong> Hello! I’m The ACJ</strong>, a passionate and multifaceted tech professional with a proven track record in web development, data analytics, and blockchain innovation. My journey has been marked by an unwavering dedication to solving problems and creating innovative solutions that bridge the gap between technology and human potential.
           </p>
+          <h2 className="text-3xl font-bold mt-2  text-center">What I do</h2>
           <p className="text-lg text-gray-700 dark:text-[#b9b8b8]">
-            I am assertive communication experts with a passion for communication and technology. I have a sound background in Web Development, Data Analysis and Computer Networking. I am a web builder/web designer, Data Analyst and Graphic Designer unafraid to push beyond the natural comfort zone. I possess excellent digital communication and problem-solving skills. I always dare to be the difference.
+          I'm a web developer at heart, and I love building websites and apps that are both powerful and easy to use. I work with modern tools like Django and React, and I make sure everything looks great with Tailwind CSS. Think of it like building a house – I handle everything from the beautiful exterior (the frontend that users see) to the solid foundation (the backend that makes everything work).<br/>
+          I'm also really into making sense of data. Using Python and Excel, I help turn numbers and information into useful insights – kind of like being a detective who helps businesses make smarter choices based on what the data tells us.<br />
+          I am also a blockchain and Web3 developer – it's like the next frontier of the internet! I've worked on projects and is building a platform to help people connect in the Web3 world. My goal is to make this new technology as user-friendly as possible, so everyone can benefit from it, not just tech experts.
           </p>
         </div>
 
@@ -64,7 +68,7 @@ const About = () => {
               href="https://wa.me/message/CR5WD4DPDZE7O1"
               className="inline-block px-8 py-3 bg-black text-white rounded dark:text-[#b9b8b8] hover:bg-gray-800 transition-colors"
             >
-              Hire me
+              Hire me &nbsp; <i className='icon-briefcase'></i>
             </a>
           </div>
         </div>
