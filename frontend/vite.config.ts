@@ -5,7 +5,7 @@ export default defineConfig(({ mode }) => ({
   plugins: [react()],
   base: '/', // Ensure the app is served from the root
   build: {
-    assetsDir: 'static',
+    assetsDir: '',
     outDir: 'build',
   },
   server: {
