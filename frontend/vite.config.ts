@@ -6,7 +6,7 @@ export default defineConfig(({ mode }) => ({
   base: '/', // Ensure the app is served from the root
   build: {
     assetsDir: '',
-    outDir: 'build',
+    outDir: 'dist',
   },
   server: {
     proxy: {
