@@ -11,7 +11,7 @@ export default defineConfig(({ mode }) => ({
   server: {
     proxy: {
       '/api': {
-        target: mode === 'production' ? 'https://theacj.com.ng' : 'http://127.0.0.1:8000',
+        target: mode === 'production' ? 'https://theacj.alwaysdata.net/' : 'http://127.0.0.1:8000',
         changeOrigin: true,
         secure: false,
       }
