@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import slider1 from '../assets/img/img_bg_1.jpg';
 import slider2 from '../assets/img/img_bg_22.jpg';
 import slider3 from '../assets/img/img_bg_3.jpg';
-import slider4 from '../assets/img/img_bg_4.jpg';
+import slider4 from '../assets/img/Web3.webp';
 import "../assets/style.css"
 
 const Hero = () => {
@@ -15,7 +15,7 @@ const Hero = () => {
       subtitle: "The ACJ",
       description: "With us Tech Emancipation is achievable",
       bgImage: slider1,
-      buttonText: "Download CV",
+      buttonText:  <a href=''>View CV</a>,
       buttonIcon: "icon-download"
     },
     {
@@ -23,7 +23,7 @@ const Hero = () => {
       subtitle: "Data Analyst",
       description: "Where there is Data, The ACJ will make sense of it",
       bgImage: slider2,
-      buttonText: "View Portfolio",
+      buttonText:  <a href=''>View Portfolio</a>,
       buttonIcon: "icon-briefcase"
     },
     {
@@ -31,7 +31,7 @@ const Hero = () => {
       subtitle: "Web2 Developer",
       description: "Imagine it, The ACJ will make it real",
       bgImage: slider3,
-      buttonText: "View Portfolio",
+      buttonText: <a href=''>View Portfolio</a>,
       buttonIcon: "icon-briefcase"
     },
     {
@@ -39,7 +39,7 @@ const Hero = () => {
       subtitle: "Web3 Developer",
       description: "Building worldclass solution using Blockchain Technology",
       bgImage: slider4,
-      buttonText: "View Portfolio",
+      buttonText: <a href=''>View Portfolio</a>,
       buttonIcon: "icon-briefcase"
     }
   ];
@@ -87,11 +87,15 @@ const Hero = () => {
                     {slide.description}
                   </h2>
                   <motion.button 
-                    className="px-6 py-3 border-2 border-white text-white hover:bg-white hover:text-black transition-colors"
+                    className="px-6 py-3 border-2 border-transparent text-white bg-gradient-to-r from-blue-500 to-yellow-400 bg-[length:200%_100%] hover:scale-105 relative overflow-hidden"
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
+                    style={{
+                      backgroundSize: '200% 100%',
+                      animation: 'gradientMove 3s linear infinite'
+                    }}
                   >
-                    <button>{slide.buttonText}&nbsp;<span className={slide.buttonIcon}></span></button>
+                    {slide.buttonText}&nbsp;<span className={slide.buttonIcon}></span>
                   </motion.button>
                 </motion.div>
               </div>

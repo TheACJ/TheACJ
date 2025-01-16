@@ -12,7 +12,7 @@
 
 [class^="icon-"], [class*=" icon-"] {
   font-family: 'icomoon' !important;
-  speak: never;
+  /* speak: never; */
   font-style: normal;
   font-weight: normal;
   font-variant: normal;
@@ -453,4 +453,10 @@ background-color: #0b7070!important;
 #button-1 .knobs:before,
 #button-1 .layer {
 transition: 0.3s ease all;
+}
+
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
