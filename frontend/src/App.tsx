@@ -32,8 +32,8 @@ function App() {
       <Sidebar />
       <DarkModeToggle />
       <Routes>
-        {/* <Route path="/" element={<Home />} /> */}
-        <Route path="/" element={<div>Home is working!</div>} />
+        <Route path="/" element={<Home />} />
+        
 
         <Route path="/works/add" element={<WorkForm />} />
         <Route path="/blogs/add" element={<BlogForm />} />
