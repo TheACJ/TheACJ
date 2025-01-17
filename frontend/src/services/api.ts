@@ -1,4 +1,5 @@
 import axios from 'axios';
+export const API_URL = import.meta.env.VITE_API_URL || 'https://theacj.alwaysdata.net/api/';
 
 const getCsrfToken = () => {
     const name = 'csrftoken';
@@ -19,7 +20,7 @@ const getCsrfToken = () => {
 axios.defaults.headers.common['X-CSRFToken'] = getCsrfToken();
 
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: API_URL,
   headers: {
     'Content-Type': 'application/json',
   },
