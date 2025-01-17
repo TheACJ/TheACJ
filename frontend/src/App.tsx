@@ -25,9 +25,9 @@ function App() {
   return (
 
     <div className="min-h-screen bg-gray-50  dark:bg-gray-900 dark:text-[#b9b8b8]">
-      <AnimatePresence>
+      {/* <AnimatePresence>
         {loading && <Loader />}
-      </AnimatePresence>
+      </AnimatePresence> */}
       
       <Sidebar />
       <DarkModeToggle />
