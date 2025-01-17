@@ -29,8 +29,8 @@ function App() {
         {loading && <Loader />}
       </AnimatePresence>
       
-      {/* <Sidebar />
-      <DarkModeToggle /> */}
+      <Sidebar />
+      <DarkModeToggle />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/works/add" element={<WorkForm />} />
