@@ -25,16 +25,14 @@ function App() {
   return (
 
     <div className="min-h-screen bg-gray-50  dark:bg-gray-900 dark:text-[#b9b8b8]">
-      {/* <AnimatePresence>
+      <AnimatePresence>
         {loading && <Loader />}
-      </AnimatePresence> */}
+      </AnimatePresence>
       
-      <Sidebar />
-      <DarkModeToggle />
+      {/* <Sidebar />
+      <DarkModeToggle /> */}
       <Routes>
         <Route path="/" element={<Home />} />
-        
-
         <Route path="/works/add" element={<WorkForm />} />
         <Route path="/blogs/add" element={<BlogForm />} />
         <Route path="/works/:id/edit" element={<WorkForm />} />
