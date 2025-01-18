@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { contactService, ContactForm } from '../services/api';
 import { useScrollAnimation } from '../hooks/useAnimations';
 import '../assets/style.css'
+import {Map} from 'lucide-react'
 
 const Contact = () => {
   const [formData, setFormData] = useState<ContactForm>({
@@ -76,8 +77,8 @@ const Contact = () => {
             <div className="">
 
               <div className="text-left w-full  mb-[33%] relative ">
-                <div className='absolute top-0 left-0 w-full h-full table text-center rounded-[2px]  shadow-md'>
-                  <i className='icon-map table-cell align-middle text-[#2c98f0] text-[60px] h-full text-left'></i>
+                <div className='absolute top-0 left-0 w-full h-full table text-cMapnter rounded-[2px]  shadow-md'>
+                  <i className='icon-map table-cell alig/ndle text-[#2c98f0] text-[60px] h-full text-left'></i>
                 </div>
                 <div className='pl-[25%] w-full align-middle'>
                   <p className='text-blue-800 z-[300] align-middle'>Lagos, Nigeria</p> 

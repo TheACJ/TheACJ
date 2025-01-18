@@ -115,7 +115,7 @@ const Sidebar = () => {
               <Facebook size={20} />
             </a>
             <a href="https://twitter.com/realACJoshua" className="text-yellow-600 hover:text-blue-600">
-              <Twitter size={20} />
+              {/* <Twitter size={20} /> */} <i className='icon-x'></i>
             </a>
             <a href="https://github.com/TheACJ" className="text-yellow-600 hover:text-blue-600">
               <Github size={20} />
