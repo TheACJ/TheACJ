@@ -1,78 +1,77 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
-import '../assets/style.css';
 
 const skills = [
   { 
     name: "Graphic Tools", 
     value: 75, 
-    icon: "https://cdn-icons-png.flaticon.com/512/5968/5968705.png"
+    iconClass: "icon-design_services"
   },
   { 
     name: "JavaScript", 
     value: 60, 
-    icon: "https://cdn-icons-png.flaticon.com/512/5968/5968292.png"
+    iconClass: "icon-javascript"
   },
   { 
     name: "HTML5", 
     value: 85, 
-    icon: "https://cdn-icons-png.flaticon.com/512/1532/1532556.png"
+    iconClass: "icon-html5"
   },
   { 
     name: "CSS3", 
     value: 90, 
-    icon: "https://cdn-icons-png.flaticon.com/512/732/732190.png"
+    iconClass: "icon-css3"
   },
   { 
     name: "React", 
     value: 70, 
-    icon: "https://cdn-icons-png.flaticon.com/512/1126/1126012.png"
+    iconClass: "icon-app_settings_alt"
   },
   { 
     name: "TypeScript", 
     value: 65, 
-    icon: "https://cdn-icons-png.flaticon.com/512/5968/5968381.png"
+    iconClass: "icon-embed2"
   },
   { 
     name: "Django", 
     value: 85, 
-    icon: "https://cdn-icons-png.flaticon.com/512/9516/9516768.png"
+    iconClass: "icon-django"
   },
   { 
     name: "Python", 
     value: 60, 
-    icon: "https://cdn-icons-png.flaticon.com/512/5968/5968350.png"
+    iconClass: "icon-python"
   },
   { 
     name: "SQL", 
     value: 80, 
-    icon: "https://cdn-icons-png.flaticon.com/512/4492/4492311.png"
+    iconClass: "icon-file-sql"
   },
   { 
     name: "Tableau", 
     value: 70, 
-    icon: "https://cdn-icons-png.flaticon.com/512/8637/8637099.png"
+    iconClass: "icon-tableau"
   },
   { 
     name: "PowerBI", 
     value: 70, 
-    icon: "https://cdn-icons-png.flaticon.com/512/732/732204.png"
+    iconClass: "icon-piechart"
   },
   { 
     name: "R", 
     value: 80, 
-    icon: "https://cdn-icons-png.flaticon.com/512/2103/2103665.png"
+    iconClass: "icon-r"
   },
   { 
     name: "Rust", 
     value: 55, 
-    icon: "https://cdn-icons-png.flaticon.com/512/5968/5968324.png"
+    iconClass: "icon-waterfall_chart"
   },
   { 
     name: "Solidity", 
     value: 50, 
-    icon: "https://cdn-icons-png.flaticon.com/512/4125/4125334.png"
+    iconClass: "icon-network"
   }
 ];
 
@@ -101,29 +100,33 @@ const Skills = () => {
           {skills.map((skill, index) => (
             <div key={index} className="mb-6">
               <div className="flex items-center mb-2">
-                <img 
-                  src={skill.icon} 
-                  alt={skill.name} 
-                  className={`w-6 h-6 ${index % 2 === 0 ? 'text-blue-500' : 'text-yellow-500'}`}
+                <i 
+                  className={`${skill.iconClass} text-xl ${
+                    index % 2 === 0 ? 'text-blue-500' : 'text-yellow-500'
+                  }`}
                 />
                 <h3 className="text-lg font-semibold ml-2">{skill.name}</h3>
               </div>
-              <div className="bg-gray-200 rounded-full h-2.5 relative dark:bg-gray-900 dark:text-[#b9b8b8]">
+              <div className="bg-gray-200 rounded-full h-2.5 relative dark:bg-gray-900">
                 <motion.div 
-                  className={`h-2.5 rounded-full ${index % 2 === 0 ? 'bg-blue-500' : 'bg-yellow-500'}`}
+                  className={`h-2.5 rounded-full ${
+                    index % 2 === 0 ? 'bg-blue-500' : 'bg-yellow-500'
+                  }`}
                   initial={{ width: 0 }}
                   animate={{ width: isVisible ? `${skill.value}%` : 0 }}
                   transition={{ duration: 1, delay: index * 0.1 }}
                 />
                 <motion.div
-                  className={`absolute top-1/2 transform -translate-y-1/2 w-4 h-4 rounded-full border-2 ${index % 2 === 0 ? 'border-blue-500 bg-blue-500' : 'border-yellow-500 bg-yellow-500'}`}
+                  className={`absolute top-1/2 transform -translate-y-1/2 w-4 h-4 rounded-full border-2 ${
+                    index % 2 === 0 ? 'border-blue-500 bg-blue-500' : 'border-yellow-500 bg-yellow-500'
+                  }`}
                   initial={{ left: 0 }}
                   animate={{ left: isVisible ? `${skill.value}%` : 0 }}
                   transition={{ duration: 1, delay: index * 0.1 }}
                 />
               </div>
               <motion.span 
-                className="text-sm text-gray-600 mt-1 dark:text-[#b9b8b8]"
+                className="text-sm text-gray-600 mt-1 block dark:text-[#b9b8b8]"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: isVisible ? 1 : 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}

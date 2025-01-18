@@ -3,9 +3,9 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig(({ command }) => ({
   plugins: [react()],
-  base: command === 'serve' ? '' : '/static/', // Only use /static/ for production builds
+  // base: command === 'serve' ? '' : '/static/', // Only use /static/ for production builds
   build: {
-    assetsDir: '',
+    assetsDir: 'static',
   },
   server: {
     proxy: {

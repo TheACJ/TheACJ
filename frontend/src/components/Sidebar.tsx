@@ -1,4 +1,4 @@
-import { Menu, Github, Twitter, Linkedin, Facebook } from 'lucide-react';
+import { Menu, Github, Twitter, Linkedin, Facebook} from 'lucide-react';
 import { useState, useEffect } from 'react';
 import about from '../assets/img/about.jpg';
 import logo from '../assets/img/logo.png';

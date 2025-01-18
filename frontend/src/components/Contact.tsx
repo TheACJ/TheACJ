@@ -49,7 +49,7 @@ const Contact = () => {
           <h2 className="text-3xl font-bold mt-2">Contact</h2>
         </motion.div>
 
-        {/* Rest of the component remains the same but with enhanced animations */}
+
       </div>
       <div className="grid md:grid-cols-2 gap-8">
           <div className="bg-white p-8 rounded-lg shadow-lg  dark:bg-gray-900 dark:text-[#b9b8b8]">
@@ -75,27 +75,27 @@ const Contact = () => {
             <h3 className="text-2xl font-semibold mb-6 font-space">Contact Information</h3>
             <div className="">
 
-              <div className="text-left w-full  mb-[33%] relative ">
-                <div className='absolute top-0 left-0 w-full h-full table text-center rounded-[2px]  shadow-md'>
-                  <i className='icon-map table-cell align-middle text-[#2c98f0] text-[60px] h-full text-left'></i>
+              <div className="text-left  mb-[33%] relative ">
+                <div className='absolute top-0 left-0 h-full table text-center rounded-[2px]'>
+                  <i className='icon-map table-cell align-middle text-[#2c98f0] text-[60px] h-full text-left bg-slate-900 p-3 dark:bg-slate-300'></i>
                 </div>
-                <div className='pl-[25%] w-full align-middle'>
+                <div className='pl-[25%] w-full align-middle ml-4'>
                   <p className='text-blue-800 z-[300] align-middle'>Lagos, Nigeria</p> 
                 </div> 
               </div>
               
-              <div className="text-left w-full  mb-[33%] relative">
-                <div className='absolute top-0 left-0 w-full h-full table text-center  rounded-[2px] shadow-md'>
-                  <a href="tel:+2349121490555" className='left-0 mr-[100%]'><i className='icon-phone table-cell align-middle text-[#2c98f0] text-[60px] h-full text-left'></i></a>
+              <div className="text-left  mb-[33%] relative">
+                <div className='absolute top-0 left-0 h-full table text-center  rounded-[2px] '>
+                  <a href="tel:+2349121490555" className='left-0 mr-[100%]'><i className='icon-phone table-cell align-middle text-[#2c98f0] text-[60px] h-full text-left  bg-slate-900 p-3 dark:bg-slate-300'></i></a>
                 </div>
-                <div className='pl-[25%] w-full align-middle'>
+                <div className='pl-[25%] w-full align-middle ml-3'>
                   <p className='text-blue-800 z-[300] align-middle'><a href="tel:+2349121490555">+2348119137762</a></p> 
                 </div> 
               </div>
 
               <div className=" text-left w-full  relative">
-                <div className='absolute top-0 left-0 w-full h-full table text-center rounded-[2px] shadow-md '>
-                  <a href="mailto:inquire@theacj.com.ng" className='left-0 mr-[100%]'><i className='icon-email table-cell align-middle text-[#2c98f0] text-[60px] h-full text-left'></i></a>
+                <div className='absolute top-0 left-0 w-full h-full table text-center rounded-[2px] '>
+                  <a href="mailto:inquire@theacj.com.ng" className='left-0 mr-[100%]'><i className='icon-email table-cell align-middle text-[#2c98f0] text-[60px] h-full text-left  bg-slate-900 p-3 dark:bg-slate-300'></i></a>
                 </div><br/>
                 <div className='pl-[25%] w-full m-0 align-middle'>
                   <p className='text-blue-800 z-[300] align-middle'><a  href="mailto:inquire@theacj.com.ng">inquire@theacj.com.ng</a></p> 
