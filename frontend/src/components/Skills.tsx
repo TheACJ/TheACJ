@@ -10,6 +10,10 @@ import tailwind from '../assets/img/Tailwind.svg';
 import typescript from '../assets/img/TypeScript.svg';
 import expressjs from '../assets/img/Express.svg';
 import excel from '../assets/img/icons8-excel.svg'
+import pandas from '../assets/img/Pandas.svg'
+import numpy from '../assets/img/Numpy.svg'
+import matplotlib from '../assets/img/Matplotlib.svg'
+import jupyter from '../assets/img/Jupyter.svg'
 
 const skillsData = {
   "Programming Languages": [
@@ -27,13 +31,14 @@ const skillsData = {
     { name: "Tailwind CSS", value: 75, icon: tailwind, type: "svg" }
   ],
   "Data Analytics & Data Science": [
-    { name: "SQL", value: 80, icon: "icon-mysql", type: "icomoon" },
-    { name: "Tableau", value: 70, icon: "icon-tableau", type: "icomoon" },
+    { name: "SQL", value: 70, icon: "icon-mysql", type: "icomoon" },
+    { name: "Tableau", value: 60, icon: "icon-tableau", type: "icomoon" },
     { name: "PowerBI", value: 70, icon: "icon-googleanalytics", type: "icomoon" },
-    { name: "Excel", value: 85, icon: excel, type: "svg" },
-    { name: "Matplotlib", value: 75, icon: "icon-chart2", type: "icomoon" },
-    { name: "NumPy", value: 80, icon: "icon-stats1", type: "icomoon" },
-    { name: "Pandas", value: 85, icon: "icon-statistics2", type: "icomoon" }
+    { name: "Excel", value: 75, icon: excel, type: "svg" },
+    { name: "Matplotlib", value: 65, icon: matplotlib, type: "svg" },
+    { name: "NumPy", value: 60, icon: numpy, type: "svg" },
+    { name: "Pandas", value: 65, icon: pandas, type: "svg" },
+    { name: "Jupyter", value: 70, icon: jupyter, type: "svg" }
   ],
   "Frameworks & Backend": [
     { name: "Django Rest", value: 85, icon: djangorest, type: "svg" },
