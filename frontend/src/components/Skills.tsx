@@ -11,7 +11,7 @@ import typescript from '../assets/img/TypeScript.svg';
 import expressjs from '../assets/img/Express.svg';
 import excel from '../assets/img/icons8-excel.svg'
 import pandas from '../assets/img/Pandas.svg'
-import numpy from '../assets/img/Numpy.svg'
+// import numpy from '../assets/img/Numpy.svg' ??
 import matplotlib from '../assets/img/Matplotlib.svg'
 import jupyter from '../assets/img/Jupyter.svg'
 
@@ -36,7 +36,7 @@ const skillsData = {
     { name: "PowerBI", value: 70, icon: "icon-googleanalytics", type: "icomoon" },
     { name: "Excel", value: 75, icon: excel, type: "svg" },
     { name: "Matplotlib", value: 65, icon: matplotlib, type: "svg" },
-    { name: "NumPy", value: 60, icon: numpy, type: "svg" },
+    // { name: "NumPy", value: 60, icon: numpy, type: "svg" },
     { name: "Pandas", value: 65, icon: pandas, type: "svg" },
     { name: "Jupyter", value: 70, icon: jupyter, type: "svg" }
   ],
