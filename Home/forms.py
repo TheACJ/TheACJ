@@ -9,14 +9,7 @@ from django.forms.widgets import TextInput, Textarea
 class ContactForm(forms.ModelForm):
     class Meta:
         model = Contact
-        fields = ('name', 'email', 'subject', 'message')
-        widget = {
-            'name': TextInput(attrs={"placeholder": "Your Name"}),
-            'email': TextInput(attrs={"placeholder": "Your Email"}),
-            'subject': TextInput(attrs={"placeholder": "Subject"}),
-            'message': Textarea(attrs={"placeholder": "Your message"}),
-        }
-    
+        fields = ['name', 'email', 'subject', 'message']
 
 class BlogPostForm(forms.ModelForm):
     class Meta:

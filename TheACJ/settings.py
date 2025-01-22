@@ -13,7 +13,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-)t@cd5c$g_d13x*oe#cl*ne9@w#ou(^_u6%hks#q39%1sj7p2='
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -79,10 +79,10 @@ if not DEBUG:
 	DATABASES = {
 	   'default': {
         	'ENGINE': 'django.db.backends.mysql',  # Use 'mysql.connector.django' if using PyMySQL
-      	  	'NAME': 'royalintschogoli_main',
-        	'USER': '387994',
+      	  	'NAME': 'theacj_sql',
+        	'USER': 'theacj',
         	'PASSWORD': '0953Amanda',
-        	'HOST': 'mysql-royalintschogoli.alwaysdata.net', 
+        	'HOST': 'mysql-theacj.alwaysdata.net', 
         	'PORT': '3306', 
 	    }
 	}

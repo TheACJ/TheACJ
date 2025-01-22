@@ -15,6 +15,6 @@ urlpatterns = [
     path('api/blogsadd/', views.add_blog_post, name='add_blog_post'),
     path('api/csrf/', csrf_token_view, name='csrf_token'),
     path('api/categories/', views.get_categories, name='get_categories'),
-
+    path('api/contact/', views.contact_view, name='contact_view'),
     
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

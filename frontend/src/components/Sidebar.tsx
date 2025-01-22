@@ -79,8 +79,8 @@ const Sidebar = () => {
           <h1 className="text-2xl font-bold mt-4 mb-2">THE ACJ</h1>
           <p className="text-sm text-gray-600 italic dark:text-[#b9b8b8]">
             Data Analyst &nbsp; <span className="icon-chart text-blue-800"> </span> <br /> Web Developer &nbsp;{" "}
-            <span className="icon-global text-blue-800"></span> <br /> Graphics Designer &nbsp;{" "}
-            <span className="icon-design_services text-blue-800"></span>
+            <span className="icon-global text-blue-800"></span> <br /> Blockchain Developer &nbsp;{" "}
+            <span className="icon-globe1 text-blue-800"></span>
           </p>
         </div>
 

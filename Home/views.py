@@ -15,6 +15,9 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .serializers import WorkItemSerializer, BlogPostSerializer, CategorySerializer
 from rest_framework.parsers import JSONParser, MultiPartParser
+import json
+import os
+from datetime import datetime
 
 @ensure_csrf_cookie
 def csrf_token_view(request):
@@ -128,4 +131,73 @@ def create_work_item(request):
             return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
         return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
  
- 
+@csrf_exempt
+def contact_view(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            form = ContactForm(data)
+            
+            if form.is_valid():
+                # Save to database
+                contact = form.save()
+                
+                # Save to CSV
+                csv_file = os.path.join(settings.BASE_DIR, 'responses.csv')
+                file_exists = os.path.exists(csv_file)
+                
+                with open(csv_file, 'a', newline='') as csvfile:
+                    fieldnames = ['Date', 'Name', 'Email', 'Subject', 'Message']
+                    writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+                    
+                    if not file_exists:
+                        writer.writeheader()
+                    
+                    writer.writerow({
+                        'Date': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                        'Name': data['name'],
+                        'Email': data['email'],
+                        'Subject': data['subject'],
+                        'Message': data['message']
+                    })
+                
+                # Send email
+                email_body = f"""
+                New Contact Form Submission:
+                
+                Name: {data['name']}
+                Email: {data['email']}
+                Subject: {data['subject']}
+                Message:
+                {data['message']}
+                """
+                
+                send_mail(
+                    subject=f"New Contact Form: {data['subject']}",
+                    message=email_body,
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    recipient_list=['agbaijoshua@theacj.com.ng'],
+                    fail_silently=False,
+                )
+                
+                return JsonResponse({
+                    'status': 'success',
+                    'message': 'Your message has been sent successfully!'
+                })
+            
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Invalid form data',
+                'errors': form.errors
+            }, status=400)
+            
+        except Exception as e:
+            return JsonResponse({
+                'status': 'error',
+                'message': str(e)
+            }, status=500)
+    
+    return JsonResponse({
+        'status': 'error',
+        'message': 'Method not allowed'
+    }, status=405)
