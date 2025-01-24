@@ -1,6 +1,7 @@
 {
   "name": "Theacj",
-  "symbol": "ACJ",
+  "symbol": "$ACJ",
+  "description": "The ACJ's Token"
   "image": "https://raw.githubusercontent.com/TheACJ/TheACJ/refs/heads/master/frontend/src/assets/img/logo.png"
 }
   
