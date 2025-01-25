@@ -1,7 +1,7 @@
 {
-  "name": "TheACJsea",
-  "symbol": "$dACJ",
-  "description": "The ACJ's Token"
+  "name": "TheACJq",
+  "symbol": "$qACJ",
+  "description": "The ACJ's Free Token"
   "image": "https://raw.githubusercontent.com/TheACJ/TheACJ/refs/heads/master/frontend/src/assets/img/logo.png"
 }
   
