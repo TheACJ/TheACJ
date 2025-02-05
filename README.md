@@ -1,7 +1,9 @@
-#**About Me**
+**About Me**
+
 Hello! I’m Agbai Chisom Joshua, a passionate and multifaceted tech professional with a proven track record in web development, data analytics, and blockchain innovation. My journey has been marked by an unwavering dedication to solving problems and creating innovative solutions that bridge the gap between technology and human potential.
 
 **What I Do**
+
 I specialize in web development, creating scalable, user-friendly applications using Django, React, Tailwind CSS, and other cutting-edge technologies. From crafting elegant frontends to building robust backends, I ensure that every project I work on is both functional and visually appealing.
 
 In the realm of data analytics, I leverage tools like Python and Excel to derive actionable insights that inform strategic decisions. My analytical approach enables me to connect data points and deliver meaningful solutions for business challenges.
