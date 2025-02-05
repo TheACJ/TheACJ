@@ -57,7 +57,7 @@ A **multi-chain cryptocurrency swap platform** with eNaira-USDT conversion.
 
 - **Frontend:** React, TypeScript, Tailwind CSS, Vite.  
 - **Backend:** Django, PostgreSQL, MySQL.  
-- **Web3 & Blockchain:** Web3.js, Ethers.js, Solidity (exploring Solana smart contracts).  
+- **Web3 & Blockchain:** Web3.js, Ethers.js, Solidity, Rust (exploring Solana smart contracts).  
 - **Data Science & Analytics:** Python, R (tidyverse), Excel.  
 - **DevOps:** Docker, AWS, Gunicorn.  
 
