@@ -1,28 +1,27 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { WorkItem, workService } from '../services/api';
+import { WorkItem, workService } from '../services/apiService'; // Ensure correct import path
 import { ExternalLink } from 'lucide-react';
 
 const Work = () => {
-  // const categories = ["Graphics Design", "Web Design", "Software", "Web App"];
   const categories = ['Web App', 'Data Science / Analytics', 'Web3 Dev'];
-  // let categories
-  
-  // Initialize selectedCategory with the first category
-  
-  
   const [works, setWorks] = useState<WorkItem[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>(categories[0]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentSlide, setCurrentSlide] = useState(0);
-  
+
+  // Fetch works from the API
   useEffect(() => {
     const fetchWorks = async () => {
       try {
         const response = await workService.getAllWorks();
-        setWorks(Array.isArray(response.data) ? response.data : []);
-        setError(null);
+        if (Array.isArray(response.data)) {
+          setWorks(response.data);
+        } else {
+          setError('Invalid data format received from the server.');
+          setWorks([]);
+        }
       } catch (err) {
         console.error('Error fetching works:', err);
         setError('Failed to load works. Please try again later.');
@@ -35,11 +34,10 @@ const Work = () => {
     fetchWorks();
   }, []);
 
-  // Updated filteredWorks to always filter based on selectedCategory
-  const filteredWorks = Array.isArray(works)
-    ? works.filter(work => work.category === selectedCategory)
-    : [];
+  // Filter works based on the selected category
+  const filteredWorks = works.filter((work) => work.category === selectedCategory);
 
+  // Auto-rotate slides every 3 seconds
   useEffect(() => {
     if (filteredWorks.length > 0) {
       const timer = setInterval(() => {
@@ -50,10 +48,12 @@ const Work = () => {
     }
   }, [selectedCategory, filteredWorks.length]);
 
+  // Reset slide index when category changes
   useEffect(() => {
     setCurrentSlide(0);
   }, [selectedCategory]);
 
+  // Loading state
   if (loading) {
     return (
       <section id="work" className="py-20 bg-white dark:bg-gray-900 dark:text-[#b9b8b8]">
@@ -67,6 +67,7 @@ const Work = () => {
     );
   }
 
+  // Error state
   if (error) {
     return (
       <section id="work" className="py-20 bg-white dark:bg-gray-900 dark:text-[#b9b8b8]">
@@ -85,6 +86,7 @@ const Work = () => {
           <h2 className="text-3xl font-bold mt-2">Recent Work</h2>
         </div>
 
+        {/* Category Buttons */}
         <div className="mb-8">
           <div className="flex justify-center space-x-4">
             {categories.map((category) => (
@@ -103,6 +105,7 @@ const Work = () => {
           </div>
         </div>
 
+        {/* Work Items */}
         <div className="relative min-h-[400px]">
           <AnimatePresence mode="wait">
             {filteredWorks.length > 0 && (
@@ -116,13 +119,13 @@ const Work = () => {
               >
                 {[filteredWorks[currentSlide]].map((work) => (
                   work && (
-                    <div 
+                    <div
                       key={work.id}
                       className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 mx-auto max-w-2xl"
                     >
                       <div className="relative h-64">
                         {work.image && (
-                          <img 
+                          <img
                             src={work.image}
                             alt={work.title}
                             className="w-full h-full object-cover"
@@ -133,7 +136,7 @@ const Work = () => {
                         <h3 className="text-xl font-semibold mb-2">{work.title}</h3>
                         <p className="text-gray-600 mb-4">{work.description}</p>
                         {work.link && (
-                          <a 
+                          <a
                             href={work.link}
                             target="_blank"
                             rel="noopener noreferrer"
@@ -150,6 +153,7 @@ const Work = () => {
             )}
           </AnimatePresence>
 
+          {/* Slide Indicators */}
           {filteredWorks.length > 0 && (
             <div className="flex justify-center mt-8 space-x-2">
               {Array.from({ length: Math.min(4, filteredWorks.length) }).map((_, index) => (
@@ -165,6 +169,7 @@ const Work = () => {
           )}
         </div>
 
+        {/* No Works Found */}
         {filteredWorks.length === 0 && (
           <div className="text-center text-gray-500">
             No works found in this category
