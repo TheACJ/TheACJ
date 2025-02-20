@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { blogService, BlogPost } from '../services/api';
 import { useScrollAnimation } from '../hooks/useAnimations';
-import { MdChevronLeft, MdChevronRight } from 'react-icons/md'; // Modern arrow icons
+import {  MdChevronRight } from 'react-icons/md'; // Modern arrow icons
 import { ExternalLink } from 'lucide-react';
 
 const Gallery = () => {
@@ -50,7 +50,7 @@ const Gallery = () => {
           variants={variants}
           className="text-center mb-16"
         >
-          <span className="text-sm text-gray-500 uppercase tracking-wider">Gallery</span>
+          <span className="text-sm text-gray-500 dark:text-gray-200 uppercase tracking-wider">Gallery</span>
           <h2 className="text-3xl font-bold mt-2">Top Blog Posts</h2>
           {error && <p className="text-red-500 mt-2">{error}</p>}
         </motion.div>
@@ -79,21 +79,22 @@ const Gallery = () => {
               )}
               <div className="p-6">
                 <h3 className="text-xl font-semibold mb-2">
-                  <a href="#" className="hover:text-blue-500 transition-colors">{post.title}</a>
+                  <p className="hover:text-blue-500 transition-colors">{post.title}</p>
                 </h3>
-                <div className="text-sm text-gray-500 mb-4">
+                <div className="text-sm text-gray-500 dark:text-gray-200 mb-4">
                   <span>{new Date(post.date_published).toLocaleDateString()}</span>
                   {post.category && <span> | {post.category.name}</span>}
                 </div>
-                <p className="text-gray-600">{post.content}</p>
+                <p className="text-gray-600 dark:text-gray-100">{post.content}</p>
               </div>
               <a 
                href={post.link}
                target="_blank"
                rel="noopener noreferrer"
-               className="inline-flex items-center text-blue-500 hover:text-blue-600 transition-colors ml-1">
+               className="inline-flex items-center p-6 text-blue-500 hover:text-blue-600 transition-colors ml-1 pb-5">
                View Post &nbsp; <ExternalLink className="w-4 h-4 ml-1" />
               </a>
+              
             </motion.div>
           ))}
         </div>

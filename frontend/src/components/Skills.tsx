@@ -17,11 +17,11 @@ import jupyter from '../assets/img/Jupyter.svg'
 
 const skillsData = {
   "Programming Languages": [
-    { name: "JavaScript", value: 60, icon: "icon-javascript", type: "icomoon" },
-    { name: "Python", value: 60, icon: "icon-python", type: "icomoon" },
+    { name: "JavaScript", value: 75, icon: "icon-javascript", type: "icomoon" },
+    { name: "Python", value: 75, icon: "icon-python", type: "icomoon" },
     { name: "TypeScript", value: 65, icon: typescript, type: "svg" },
     { name: "R", value: 80, icon: "icon-r", type: "icomoon" },
-    { name: "Rust", value: 55, icon: rustlogo, type: "svg" },
+    { name: "Rust", value: 60, icon: rustlogo, type: "svg" },
     { name: "Solidity", value: 50, icon: solidity, type: "svg" }
   ],
   "Frontend & Markup": [

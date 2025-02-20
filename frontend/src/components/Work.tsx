@@ -103,7 +103,7 @@ const Work = () => {
           </div>
         </div>
 
-        <div className="relative min-h-[400px]">
+        <div className="relative min-h-[400px] dark:bg-gray-900 dark:text-gray-200">
           <AnimatePresence mode="wait">
             {filteredWorks.length > 0 && (
               <motion.div
@@ -129,9 +129,9 @@ const Work = () => {
                           />
                         )}
                       </div>
-                      <div className="p-6">
+                      <div className="p-6  dark:bg-gray-900 dark:text-gray-200">
                         <h3 className="text-xl font-semibold mb-2">{work.title}</h3>
-                        <p className="text-gray-600 mb-4">{work.description}</p>
+                        <p className="text-gray-600  dark:text-gray-200 mb-4">{work.description}</p>
                         {work.link && (
                           <a 
                             href={work.link}
