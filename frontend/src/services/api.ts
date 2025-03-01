@@ -5,8 +5,10 @@ export const API_URL = import.meta.env.VITE_API_URL || 'https://theacj.alwaysdat
 // Ensure cookies are sent with every request.
 axios.defaults.withCredentials = true;
 
-// Utility function to retrieve a cookie by name.
-function getCookie(name: string) {
+
+
+// Utility function to get a cookie by name
+function getCookie(name: string): string | null {
   let cookieValue = null;
   if (document.cookie && document.cookie !== '') {
     const cookies = document.cookie.split(';');
@@ -21,33 +23,35 @@ function getCookie(name: string) {
   return cookieValue;
 }
 
-// Add an interceptor to check for a CSRF token before any modifying request.
-axios.interceptors.request.use(
+// Create Axios instance
+const api = axios.create({
+  baseURL: API_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  withCredentials: true, // Ensure cookies are sent
+});
+
+// Add CSRF token interceptor
+api.interceptors.request.use(
   async (config) => {
-    // Only apply for methods that modify data.
-    if (['post', 'put', 'patch', 'delete'].includes((config.method || '').toLowerCase())) {
-      // Check for CSRF token in cookies.
+    if (['post', 'put', 'patch', 'delete'].includes(config.method?.toLowerCase() || '')) {
       let csrfToken = getCookie('csrftoken');
       if (!csrfToken) {
-        // If token is missing, call the endpoint to set the CSRF cookie.
-        await axios.get(`${API_URL}/get-csrf-token/`);
+        await api.get('/csrf/'); // Fetch CSRF cookie if missing
         csrfToken = getCookie('csrftoken');
       }
-      // Attach the CSRF token to the request headers.
-      config.headers['X-CSRFToken'] = csrfToken;
+      if (csrfToken) {
+        config.headers['X-CSRFToken'] = csrfToken;
+      } else {
+        console.error('CSRF token could not be retrieved');
+      }
     }
     return config;
   },
   (error) => Promise.reject(error)
 );
 
-// Create an Axios instance with your API base URL.
-const api = axios.create({
-  baseURL: API_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
 
 // Define your TypeScript interfaces.
 export interface WorkItem {
@@ -92,7 +96,10 @@ export const workService = {
   getWorkItem: (id: string) => api.get<WorkItem>(`/works/${id}/`),
   createWorkItem: (data: FormData) =>
     api.post('/works/', data, {
-      headers: { 'Content-Type': 'multipart/form-data' },     
+      headers: { 
+        'Content-Type': 'multipart/form-data'
+
+       },     
     }),
     updateWorkItem: (id: string, data: FormData) =>
       api.put(`/works/${id}/`, data, {
