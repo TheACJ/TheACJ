@@ -10,7 +10,10 @@ import DarkModeToggle from './components/DarkMoodToggle';
 import AllPosts from './components/AllPosts';
 import BlogForm from './components/AddBlog';
 
+
 function App() {
+  // Ensure cookies are included with every request.
+
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

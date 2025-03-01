@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { workService } from '../services/api';
 
 interface WorkItemFormProps {
   workItemId?: string; // For editing a WorkItem
@@ -26,7 +27,7 @@ const WorkItemForm = ({ workItemId, onSuccess }: WorkItemFormProps) => {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
-  const categories = ['Graphics Design', 'Web Design', 'Software', 'Web App'];
+  const categories = ['Web App', 'Data Science / Analytics', 'Web3 Dev'];
 
   useEffect(() => {
     const fetchWorkItem = async () => {
@@ -92,15 +93,11 @@ const WorkItemForm = ({ workItemId, onSuccess }: WorkItemFormProps) => {
       }
 
       if (workItemId) {
-        // Update existing WorkItem
-        await axios.put(`/api/works/${workItemId}/`, dataToSend, {
-          headers: { 'X-CSRFToken': getCsrfToken() },
-        });
+        // Update existing WorkItem using the service
+        await workService.updateWorkItem(workItemId, dataToSend);
       } else {
         // Create new WorkItem
-        await axios.post('/api/worksadd/', dataToSend, {
-          headers: { 'X-CSRFToken': getCsrfToken() },
-        });
+        await workService.createWorkItem(dataToSend);
       }
 
       setSuccess(true);
@@ -118,21 +115,6 @@ const WorkItemForm = ({ workItemId, onSuccess }: WorkItemFormProps) => {
     }
   };
 
-  const getCsrfToken = () => {
-    const name = 'csrftoken';
-    let cookieValue = '';
-    if (document.cookie && document.cookie !== '') {
-      const cookies = document.cookie.split(';');
-      for (let cookie of cookies) {
-        const trimmedCookie = cookie.trim();
-        if (trimmedCookie.startsWith(`${name}=`)) {
-          cookieValue = decodeURIComponent(trimmedCookie.slice(name.length + 1));
-          break;
-        }
-      }
-    }
-    return cookieValue;
-  };
 
   return (
     <div className="lg:ml-[300px]  dark:bg-gray-900 dark:text-[#b9b8b8]  mx-auto">
