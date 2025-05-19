@@ -2,20 +2,17 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { WorkItem, workService } from '../services/api';
 import { ExternalLink } from 'lucide-react';
+import WorkModal from './WorkModal'; 
 
 const Work = () => {
-  // const categories = ["Graphics Design", "Web Design", "Software", "Web App"];
   const categories = ['Web App', 'Data Science / Analytics', 'Web3 Dev'];
-  // let categories
-  
-  // Initialize selectedCategory with the first category
-  
   
   const [works, setWorks] = useState<WorkItem[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>(categories[0]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [selectedWorkId, setSelectedWorkId] = useState<number | null>(null);
   
   useEffect(() => {
     const fetchWorks = async () => {
@@ -53,6 +50,16 @@ const Work = () => {
   useEffect(() => {
     setCurrentSlide(0);
   }, [selectedCategory]);
+
+  // Function to open the modal with the selected work
+  const openWorkModal = (workId: number) => {
+    setSelectedWorkId(workId);
+  };
+
+  // Function to close the modal
+  const closeWorkModal = () => {
+    setSelectedWorkId(null);
+  };
 
   if (loading) {
     return (
@@ -118,7 +125,8 @@ const Work = () => {
                   work && (
                     <div 
                       key={work.id}
-                      className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 mx-auto max-w-2xl"
+                      className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 mx-auto max-w-2xl cursor-pointer"
+                      onClick={() => openWorkModal(work.id)}
                     >
                       <div className="relative h-64">
                         {work.image && (
@@ -128,16 +136,24 @@ const Work = () => {
                             className="w-full h-full object-cover"
                           />
                         )}
+                        <div className="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-20 transition-all flex items-center justify-center">
+                          <div className="opacity-0 hover:opacity-100 transition-all transform translate-y-4 hover:translate-y-0">
+                            <span className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow-lg">
+                              View Gallery
+                            </span>
+                          </div>
+                        </div>
                       </div>
-                      <div className="p-6  dark:bg-gray-900 dark:text-gray-200">
+                      <div className="p-6 dark:bg-gray-900 dark:text-gray-200">
                         <h3 className="text-xl font-semibold mb-2">{work.title}</h3>
-                        <p className="text-gray-600  dark:text-gray-200 mb-4">{work.description}</p>
+                        <p className="text-gray-600 dark:text-gray-200 mb-4">{work.description}</p>
                         {work.link && (
                           <a 
                             href={work.link}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="inline-flex items-center text-blue-500 hover:text-blue-600 transition-colors"
+                            onClick={(e) => e.stopPropagation()} // Prevent modal from opening when clicking the link
                           >
                             View Project <ExternalLink className="w-4 h-4 ml-1" />
                           </a>
@@ -171,6 +187,13 @@ const Work = () => {
           </div>
         )}
       </div>
+
+      {/* Work Modal - Render only when a work is selected */}
+      <AnimatePresence>
+        {selectedWorkId !== null && (
+          <WorkModal workId={selectedWorkId} onClose={closeWorkModal} />
+        )}
+      </AnimatePresence>
     </section>
   );
 };
