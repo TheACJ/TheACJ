@@ -21,6 +21,8 @@ const WorkModal = ({ workId, onClose }: WorkModalProps) => {
   const [error, setError] = useState<string | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   
+  console.log("WorkModal rendered with workId:", workId); // Debug log
+  
   // Get all images from the work item, filtering out null/undefined values
   const getImages = (work: ExtendedWorkItem | null): string[] => {
     if (!work) return [];
@@ -36,9 +38,12 @@ const WorkModal = ({ workId, onClose }: WorkModalProps) => {
     const fetchWorkDetails = async () => {
       if (!workId) return;
       
+      console.log("Fetching work details for ID:", workId); // Debug log
+      
       try {
         setLoading(true);
         const response = await workService.getWorkItem(workId.toString());
+        console.log("API response:", response); // Debug log
         setWork(response.data as ExtendedWorkItem);
         setError(null);
       } catch (err) {
@@ -92,6 +97,7 @@ const WorkModal = ({ workId, onClose }: WorkModalProps) => {
       exit={{ opacity: 0 }}
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-80"
       onClick={onClose}
+      style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}
     >
       <motion.div
         initial={{ scale: 0.9, opacity: 0 }}

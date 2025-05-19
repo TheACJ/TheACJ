@@ -14,10 +14,14 @@ const Work = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [selectedWorkId, setSelectedWorkId] = useState<number | null>(null);
   
+  // Debug state
+  const [debug, setDebug] = useState<string>('No clicks detected yet');
+  
   useEffect(() => {
     const fetchWorks = async () => {
       try {
         const response = await workService.getAllWorks();
+        console.log("Fetched works:", response.data); // Debug log
         setWorks(Array.isArray(response.data) ? response.data : []);
         setError(null);
       } catch (err) {
@@ -53,12 +57,24 @@ const Work = () => {
 
   // Function to open the modal with the selected work
   const openWorkModal = (workId: number) => {
+    console.log('openWorkModal called with ID:', workId); // Debug log
+    setDebug(`Opening modal for work ID: ${workId}`);
     setSelectedWorkId(workId);
   };
 
   // Function to close the modal
   const closeWorkModal = () => {
+    console.log('closeWorkModal called'); // Debug log
+    setDebug('Modal closed');
     setSelectedWorkId(null);
+  };
+
+  // Handler function for card click
+  const handleCardClick = (workId: number, event: React.MouseEvent) => {
+    console.log('Card clicked for work ID:', workId); // Debug log
+    event.preventDefault(); // Prevent any default behavior
+    setDebug(`Card clicked for work ID: ${workId}`);
+    openWorkModal(workId);
   };
 
   if (loading) {
@@ -90,6 +106,8 @@ const Work = () => {
         <div className="text-center mb-16">
           <span className="text-sm text-gray-500 uppercase tracking-wider dark:text-[#b9b8b8]">My Work</span>
           <h2 className="text-3xl font-bold mt-2">Recent Work</h2>
+          {/* Debug text - normally you'd remove this in production */}
+          <div className="mt-2 text-sm text-gray-500">{debug}</div>
         </div>
 
         <div className="mb-8">
@@ -125,10 +143,13 @@ const Work = () => {
                   work && (
                     <div 
                       key={work.id}
-                      className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 mx-auto max-w-2xl cursor-pointer"
-                      onClick={() => openWorkModal(work.id)}
+                      className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 mx-auto max-w-2xl"
                     >
-                      <div className="relative h-64">
+                      {/* Make only the image area clickable with a dedicated onClick handler */}
+                      <div 
+                        className="relative h-64 cursor-pointer"
+                        onClick={(e) => handleCardClick(work.id, e)}
+                      >
                         {work.image && (
                           <img 
                             src={work.image}
@@ -153,11 +174,17 @@ const Work = () => {
                             target="_blank"
                             rel="noopener noreferrer"
                             className="inline-flex items-center text-blue-500 hover:text-blue-600 transition-colors"
-                            onClick={(e) => e.stopPropagation()} // Prevent modal from opening when clicking the link
                           >
                             View Project <ExternalLink className="w-4 h-4 ml-1" />
                           </a>
                         )}
+                        {/* Add a dedicated "View Gallery" button */}
+                        <button
+                          onClick={(e) => handleCardClick(work.id, e)}
+                          className="ml-4 inline-flex items-center px-3 py-1 bg-purple-500 text-white rounded hover:bg-purple-600 transition-colors text-sm"
+                        >
+                          View Gallery
+                        </button>
                       </div>
                     </div>
                   )
@@ -189,11 +216,9 @@ const Work = () => {
       </div>
 
       {/* Work Modal - Render only when a work is selected */}
-      <AnimatePresence>
-        {selectedWorkId !== null && (
-          <WorkModal workId={selectedWorkId} onClose={closeWorkModal} />
-        )}
-      </AnimatePresence>
+      {selectedWorkId !== null && (
+        <WorkModal workId={selectedWorkId} onClose={closeWorkModal} />
+      )}
     </section>
   );
 };
