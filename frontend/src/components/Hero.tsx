@@ -126,7 +126,7 @@ const Hero = () => {
               initial={{ rotateX: 45, opacity: 0 }}
               animate={{ rotateX: 0, opacity: 1 }}
               transition={{ delay: 0.5, duration: 0.5 }}
-              className="px-6 py-3 border-2 border-transparent text-white bg-gradient-to-r from-blue-500 to-yellow-400 hover:scale-105 relative overflow-hidden"
+              className="px-6 py-3 border-2 border-transparent text-white bg-gradient-to-r from-primary to-secondary hover:scale-105 relative overflow-hidden"
               whileHover={{ 
                 scale: 1.05,
                 transition: { duration: 0.2 }

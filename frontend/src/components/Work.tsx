@@ -118,8 +118,8 @@ const Work = () => {
                 onClick={() => setSelectedCategory(category)}
                 className={`px-4 py-2 rounded-lg transition-colors ${
                   selectedCategory === category
-                    ? 'bg-blue-500 text-white'
-                    : 'text-gray-600 hover:text-blue-500'
+                    ? 'bg-primary text-white'
+                    : 'text-gray-600 hover:text-primary'
                 }`}
               >
                 {category}
@@ -159,7 +159,7 @@ const Work = () => {
                         )}
                         <div className="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-20 transition-all flex items-center justify-center">
                           <div className="opacity-0 hover:opacity-100 transition-all transform translate-y-4 hover:translate-y-0">
-                            <span className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow-lg">
+                            <span className="bg-primary text-white px-4 py-2 rounded-lg shadow-lg">
                               View Gallery
                             </span>
                           </div>
@@ -173,7 +173,7 @@ const Work = () => {
                             href={work.link}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center text-blue-500 hover:text-blue-600 transition-colors"
+                            className="inline-flex items-center text-primary hover:text-blue-600 transition-colors"
                           >
                             View Project <ExternalLink className="w-4 h-4 ml-1" />
                           </a>
@@ -181,7 +181,7 @@ const Work = () => {
                         {/* Add a dedicated "View Gallery" button */}
                         <button
                           onClick={(e) => handleCardClick(work.id, e)}
-                          className="ml-4 inline-flex items-center px-3 py-1 bg-purple-500 text-white rounded hover:bg-purple-600 transition-colors text-sm"
+                          className="ml-4 inline-flex items-center px-3 py-1 bg-primary text-white rounded hover:bg-purple-600 transition-colors text-sm"
                         >
                           View Gallery
                         </button>
@@ -200,7 +200,7 @@ const Work = () => {
                   key={index}
                   onClick={() => setCurrentSlide(index)}
                   className={`w-3 h-3 rounded-full transition-colors ${
-                    currentSlide === index ? 'bg-blue-500' : 'bg-gray-300'
+                    currentSlide === index ? 'bg-primary' : 'bg-gray-300'
                   }`}
                 />
               ))}

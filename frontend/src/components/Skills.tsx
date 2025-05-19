@@ -66,7 +66,7 @@ const Skills = () => {
       return (
         <i
           className={`${skill.icon} text-xl ${
-            isEven ? 'text-blue-500' : 'text-yellow-500'
+            isEven ? 'text-primary' : 'text-secondary'
           }`}
         />
       );
@@ -76,7 +76,7 @@ const Skills = () => {
           src={skill.icon} 
           alt={skill.name}
           className={`w-6 h-6 ${
-            isEven ? 'filter-blue-500' : 'filter-yellow-500'
+            isEven ? 'filter-primary' : 'filter-secondary'
           }`}
         />
       );
@@ -100,7 +100,7 @@ const Skills = () => {
               onClick={() => setSelectedCategory(category)}
               className={`px-4 py-2 rounded-full transition-all duration-300 ${
                 selectedCategory === category
-                  ? 'bg-blue-500 text-white'
+                  ? 'bg-primary text-white'
                   : 'bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-800 dark:text-gray-300'
               }`}
             >
@@ -124,7 +124,7 @@ const Skills = () => {
               <div className="bg-gray-200 rounded-full h-2.5 relative dark:bg-gray-900">
                 <motion.div 
                   className={`h-2.5 rounded-full ${
-                    index % 2 === 0 ? 'bg-blue-500' : 'bg-yellow-500'
+                    index % 2 === 0 ? 'bg-primary' : 'bg-secondary'
                   }`}
                   initial={{ width: 0 }}
                   animate={{ width: isVisible ? `${skill.value}%` : 0 }}
@@ -133,8 +133,8 @@ const Skills = () => {
                 <motion.div
                   className={`absolute top-1/2 transform -translate-y-1/2 w-4 h-4 rounded-full border-2 ${
                     index % 2 === 0
-                      ? 'border-blue-500 bg-blue-500'
-                      : 'border-yellow-500 bg-yellow-500'
+                      ? 'border-primary bg-primary'
+                      : 'border-secondary bg-secondary'
                   }`}
                   initial={{ left: 0 }}
                   animate={{ left: isVisible ? `${skill.value}%` : 0 }}

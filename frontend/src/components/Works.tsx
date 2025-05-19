@@ -95,8 +95,8 @@ const Work = () => {
                 onClick={() => setSelectedCategory(category)}
                 className={`px-4 py-2 rounded-lg transition-colors ${
                   selectedCategory === category
-                    ? 'bg-blue-500 text-white'
-                    : 'text-gray-600 hover:text-blue-500'
+                    ? 'bg-primary text-white'
+                    : 'text-gray-600 hover:text-primary'
                 }`}
               >
                 {category}
@@ -140,7 +140,7 @@ const Work = () => {
                             href={work.link}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center text-blue-500 hover:text-blue-600 transition-colors"
+                            className="inline-flex items-center text-primary hover:text-blue-600 transition-colors"
                           >
                             View Project <ExternalLink className="w-4 h-4 ml-1" />
                           </a>
@@ -161,7 +161,7 @@ const Work = () => {
                   key={index}
                   onClick={() => setCurrentSlide(index)}
                   className={`w-3 h-3 rounded-full transition-colors ${
-                    currentSlide === index ? 'bg-blue-500' : 'bg-gray-300'
+                    currentSlide === index ? 'bg-primary' : 'bg-gray-300'
                   }`}
                 />
               ))}

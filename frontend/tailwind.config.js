@@ -4,6 +4,10 @@ export default {
   darkMode: 'class',
   theme: {
     extend: {
+      colors: {
+        'primary': '#1A88FF',
+        'secondary': '#E1AD37'
+      },
       fontFamily: {
         'space': ['Space Grotesk', 'sans-serif'],
         'poppins': ['Poppins', 'sans-serif'],

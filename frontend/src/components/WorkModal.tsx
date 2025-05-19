@@ -117,7 +117,7 @@ const WorkModal = ({ workId, onClose }: WorkModalProps) => {
         
         {loading ? (
           <div className="h-96 flex items-center justify-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
           </div>
         ) : error ? (
           <div className="h-96 flex items-center justify-center text-red-500">
@@ -175,7 +175,7 @@ const WorkModal = ({ workId, onClose }: WorkModalProps) => {
                           onClick={() => setCurrentImageIndex(index)}
                           className={`w-3 h-3 rounded-full transition-all ${
                             currentImageIndex === index
-                              ? 'bg-blue-500 scale-125'
+                              ? 'bg-primary scale-125'
                               : 'bg-white bg-opacity-50 hover:bg-opacity-75'
                           }`}
                         />
@@ -189,7 +189,7 @@ const WorkModal = ({ workId, onClose }: WorkModalProps) => {
             {/* Details Section */}
             <div className="w-full md:w-1/3 p-6 overflow-y-auto max-h-96 dark:bg-gray-800 dark:text-gray-200">
               <h2 className="text-2xl font-bold mb-4">{work?.title}</h2>
-              <p className="text-sm text-blue-500 dark:text-blue-400 mb-4">{work?.category}</p>
+              <p className="text-sm text-primary dark:text-blue-400 mb-4">{work?.category}</p>
               <p className="text-gray-700 dark:text-gray-300 mb-6">{work?.description}</p>
               
               {work?.link && (
@@ -197,7 +197,7 @@ const WorkModal = ({ workId, onClose }: WorkModalProps) => {
                   href={work.link}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                  className="inline-flex items-center px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-600 transition-colors"
                 >
                   View Project
                 </a>

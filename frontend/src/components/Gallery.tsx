@@ -79,7 +79,7 @@ const Gallery = () => {
               )}
               <div className="p-6">
                 <h3 className="text-xl font-semibold mb-2">
-                  <p className="hover:text-blue-500 transition-colors">{post.title}</p>
+                  <p className="hover:text-primary transition-colors">{post.title}</p>
                 </h3>
                 <div className="text-sm text-gray-500 dark:text-gray-200 mb-4">
                   <span>{new Date(post.date_published).toLocaleDateString()}</span>
@@ -91,7 +91,7 @@ const Gallery = () => {
                href={post.link}
                target="_blank"
                rel="noopener noreferrer"
-               className="inline-flex items-center p-6 text-blue-500 hover:text-blue-600 transition-colors ml-1 pb-5">
+               className="inline-flex items-center p-6 text-primary hover:text-blue-600 transition-colors ml-1 pb-5">
                View Post &nbsp; <ExternalLink className="w-4 h-4 ml-1" />
               </a>
               
@@ -102,7 +102,7 @@ const Gallery = () => {
         <div className="flex justify-center mt-8">
           <a 
             href="/all-posts" 
-            className="inline-flex items-center text-blue-500 font-semibold hover:text-blue-700"
+            className="inline-flex items-center text-primary font-semibold hover:text-blue-700"
           >
             View All Posts
             <MdChevronRight className="ml-2" />

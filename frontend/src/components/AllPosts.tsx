@@ -76,7 +76,7 @@ const AllPosts = () => {
               )}
               <div className="p-6">
                 <h3 className="text-xl font-semibold mb-2">
-                  <a href={post.link} className="hover:text-blue-500 transition-colors">{post.title}</a>
+                  <a href={post.link} className="hover:text-primary transition-colors">{post.title}</a>
                 </h3>
                 <div className="text-sm text-gray-500 mb-4">
                   <span>{new Date(post.date_published).toLocaleDateString()}</span>

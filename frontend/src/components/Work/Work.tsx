@@ -43,8 +43,8 @@ const Work = ({ id, title, category, image, description, link }: WorkItemProps) 
                 onClick={() => setSelectedCategory(category)}
                 className={`px-4 py-2 rounded-lg transition-colors ${
                   selectedCategory === category
-                    ? 'bg-blue-500 text-white'
-                    : 'text-gray-600 hover:text-blue-500'
+                    ? 'bg-primary text-white'
+                    : 'text-gray-600 hover:text-primary'
                 }`}
               >
                 {category}
@@ -83,7 +83,7 @@ const Work = ({ id, title, category, image, description, link }: WorkItemProps) 
                         {link && (
                           <a 
                             href={link}
-                            className="text-blue-500 hover:text-blue-600 transition-colors"
+                            className="text-primary hover:text-blue-600 transition-colors"
                             target="_blank"
                             rel="noopener noreferrer"
                           >
@@ -105,7 +105,7 @@ const Work = ({ id, title, category, image, description, link }: WorkItemProps) 
                   key={index}
                   onClick={() => setCurrentSlide(index)}
                   className={`w-3 h-3 rounded-full transition-colors ${
-                    currentSlide === index ? 'bg-blue-500' : 'bg-gray-300'
+                    currentSlide === index ? 'bg-primary' : 'bg-gray-300'
                   }`}
                 />
               ))}

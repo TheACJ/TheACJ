@@ -81,7 +81,7 @@ const BlogPostForm = () => {
             name="title"
             maxLength={20}
             required
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
+            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-colors"
             placeholder="Enter post title"
           />
         </div>
@@ -104,7 +104,7 @@ const BlogPostForm = () => {
               name="category"
               required
               disabled={isCategoriesLoading}
-              className={`w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors
+              className={`w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-colors
                 ${isCategoriesLoading ? 'bg-gray-100' : ''}`}
             >
               <option value="">
@@ -133,7 +133,7 @@ const BlogPostForm = () => {
             required
             maxLength={1024}
             rows={6}
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
+            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-colors"
             placeholder="Write your blog post content..."
           />
         </div>
@@ -150,7 +150,7 @@ const BlogPostForm = () => {
             type="url"
             id="link"
             name="link"
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
+            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-colors"
             placeholder="https://..."
           />
         </div>
@@ -169,7 +169,7 @@ const BlogPostForm = () => {
             name="image"
             accept="image/*"
             onChange={handleImageChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-colors file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
           />
           {preview && (
             <div className="mt-2">

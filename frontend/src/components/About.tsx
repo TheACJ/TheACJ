@@ -5,7 +5,7 @@ import React from 'react';
 
 const AnimatedDivider = () => (
   <div className="flex justify-center my-4">
-    <div className="w-24 h-1 bg-gradient-to-r from-blue-500 to-yellow-400 rounded animate-pulse"></div>
+    <div className="w-24 h-1 bg-gradient-to-r from-primary to-secondary rounded animate-pulse"></div>
   </div>
 );
 
@@ -18,7 +18,7 @@ const About = () => {
           <span className="text-sm text-gray-500 uppercase tracking-wider dark:text-[#b9b8b8]">
             About Me
           </span>
-          <h2 className="text-3xl font-bold mt-2 bg-gradient-to-r from-blue-600 to-yellow-400 bg-clip-text text-transparent">
+          <h2 className="text-3xl font-bold mt-2 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
             Meet The ACJ!
           </h2>
         </div>
@@ -32,21 +32,21 @@ const About = () => {
           <AnimatedDivider />
 
           <div className="transform transition-all hover:scale-102 duration-300">
-            <span className="font-semibold text-blue-600 dark:text-blue-400">Web Development:</span>{" "}
+            <span className="font-semibold text-primary dark:text-blue-400">Web Development:</span>{" "}
             I build websites and apps using Django, React, and Tailwind CSS, creating intuitive digital experiences from frontend design to backend functionality.
           </div>
 
           <AnimatedDivider />
 
           <div className="transform transition-all hover:scale-102 duration-300">
-            <span className="font-semibold text-blue-600 dark:text-blue-400">Data Analytics:</span>{" "}
+            <span className="font-semibold text-primary dark:text-blue-400">Data Analytics:</span>{" "}
             Using Python and Excel, I transform raw data into strategic insights, helping businesses make smarter decisions by uncovering hidden patterns.
           </div>
 
           <AnimatedDivider />
 
           <div className="transform transition-all hover:scale-102 duration-300">
-            <span className="font-semibold text-blue-600 dark:text-blue-400">Blockchain & Web3:</span>{" "}
+            <span className="font-semibold text-primary dark:text-blue-400">Blockchain & Web3:</span>{" "}
             I'm exploring the next digital frontier, developing projects that simplify blockchain technology and create meaningful connections in the Web3 ecosystem.
           </div>
 
@@ -58,7 +58,7 @@ const About = () => {
         </div>
 
         {/* Call to Action Section */}
-        <div className="mt-16 bg-gradient-to-r from-yellow-400 to-yellow-300 p-8 rounded-lg shadow-lg transform transition-all hover:scale-102 duration-300">
+        <div className="mt-16 bg-gradient-to-r from-secondary to-yellow-300 p-8 rounded-lg shadow-lg transform transition-all hover:scale-102 duration-300">
           <div className="text-center">
             <h2 className="text-2xl font-bold mb-6 dark:text-[#0f0f0f]">
               I am happy to inform you that 15+ projects are done successfully!
