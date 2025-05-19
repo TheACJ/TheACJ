@@ -157,7 +157,7 @@ const Work = () => {
                             className="w-full h-full object-cover"
                           />
                         )}
-                        <div className="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-20 transition-all flex items-center justify-center">
+                        <div className="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-20 transition-all flex items-center justify-center pointer-events-none">
                           <div className="opacity-0 hover:opacity-100 transition-all transform translate-y-4 hover:translate-y-0">
                             <span className="bg-primary text-white px-4 py-2 rounded-lg shadow-lg">
                               View Gallery
@@ -165,6 +165,7 @@ const Work = () => {
                           </div>
                         </div>
                       </div>
+                      
                       <div className="p-6 dark:bg-gray-900 dark:text-gray-200">
                         <h3 className="text-xl font-semibold mb-2">{work.title}</h3>
                         <p className="text-gray-600 dark:text-gray-200 mb-4">{work.description}</p>
