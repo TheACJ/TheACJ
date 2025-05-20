@@ -120,11 +120,7 @@ export const blogService = {
 
 export const contactService = {
   sendMessage: async (message: ContactForm) => {
-    try {
-      const response = await api.post('contact/', message);
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
+    const response = await api.post('contact/', message);
+    return response.data;
   },
 };

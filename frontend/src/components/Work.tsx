@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { WorkItem, workService } from '../services/api';
-import { ExternalLink } from 'lucide-react';
-import WorkModal from './WorkModal'; 
+import WorkModal from './WorkModal';
 
 const Work = () => {
   const categories = ['Web App', 'Data Science / Analytics', 'Web3 Dev'];
@@ -13,15 +12,13 @@ const Work = () => {
   const [error, setError] = useState<string | null>(null);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [selectedWorkId, setSelectedWorkId] = useState<number | null>(null);
-  
-  // Debug state
   const [debug, setDebug] = useState<string>('No clicks detected yet');
-  
+
   useEffect(() => {
     const fetchWorks = async () => {
       try {
         const response = await workService.getAllWorks();
-        console.log("Fetched works:", response.data); // Debug log
+        console.log("Fetched works:", response.data);
         setWorks(Array.isArray(response.data) ? response.data : []);
         setError(null);
       } catch (err) {
@@ -32,11 +29,9 @@ const Work = () => {
         setLoading(false);
       }
     };
-
     fetchWorks();
   }, []);
 
-  // Updated filteredWorks to always filter based on selectedCategory
   const filteredWorks = Array.isArray(works)
     ? works.filter(work => work.category === selectedCategory)
     : [];
@@ -46,7 +41,6 @@ const Work = () => {
       const timer = setInterval(() => {
         setCurrentSlide((prev) => (prev + 1) % Math.min(4, filteredWorks.length));
       }, 3000);
-
       return () => clearInterval(timer);
     }
   }, [selectedCategory, filteredWorks.length]);
@@ -55,24 +49,21 @@ const Work = () => {
     setCurrentSlide(0);
   }, [selectedCategory]);
 
-  // Function to open the modal with the selected work
   const openWorkModal = (workId: number) => {
-    console.log('openWorkModal called with ID:', workId); // Debug log
+    console.log('openWorkModal called with ID:', workId);
     setDebug(`Opening modal for work ID: ${workId}`);
     setSelectedWorkId(workId);
   };
 
-  // Function to close the modal
   const closeWorkModal = () => {
-    console.log('closeWorkModal called'); // Debug log
+    console.log('closeWorkModal called');
     setDebug('Modal closed');
     setSelectedWorkId(null);
   };
 
-  // Handler function for card click
   const handleCardClick = (workId: number, event: React.MouseEvent) => {
-    console.log('Card clicked for work ID:', workId); // Debug log
-    event.preventDefault(); // Prevent any default behavior
+    console.log('Card clicked for work ID:', workId);
+    event.preventDefault();
     setDebug(`Card clicked for work ID: ${workId}`);
     openWorkModal(workId);
   };
@@ -106,7 +97,6 @@ const Work = () => {
         <div className="text-center mb-16">
           <span className="text-sm text-gray-500 uppercase tracking-wider dark:text-[#b9b8b8]">My Work</span>
           <h2 className="text-3xl font-bold mt-2">Recent Work</h2>
-          {/* Debug text - normally you'd remove this in production */}
           <div className="mt-2 text-sm text-gray-500">{debug}</div>
         </div>
 
@@ -145,7 +135,6 @@ const Work = () => {
                       key={work.id}
                       className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 mx-auto max-w-2xl"
                     >
-                      {/* Make only the image area clickable with a dedicated onClick handler */}
                       <div 
                         className="relative h-64 cursor-pointer"
                         onClick={(e) => handleCardClick(work.id, e)}
@@ -170,17 +159,12 @@ const Work = () => {
                         <h3 className="text-xl font-semibold mb-2">{work.title}</h3>
                         <p className="text-gray-600 dark:text-gray-200 mb-4">{work.description}</p>
                         <div className="flex gap-4">
-                          {/* Updated View Project button to open modal */}
                           <button
-                            onClick={(e) => {
-                              e.preventDefault();
-                              handleCardClick(work.id, e);
-                            }}
+                            onClick={(e) => handleCardClick(work.id, e)}
                             className="inline-flex items-center px-3 py-1 bg-primary text-white rounded hover:bg-purple-600 transition-colors text-sm"
                           >
                             View Project
                           </button>
-                          {/* Optional: Keep gallery button if needed */}
                           <button
                             onClick={(e) => handleCardClick(work.id, e)}
                             className="inline-flex items-center px-3 py-1 bg-gray-200 dark:bg-gray-700 rounded hover:bg-gray-300 transition-colors text-sm"
@@ -188,24 +172,6 @@ const Work = () => {
                             View Gallery
                           </button>
                         </div>
-                      </div>
-
-                      <div className="w-full md:w-1/3 p-6 overflow-y-auto max-h-96 dark:bg-gray-800 dark:text-gray-200">
-                        <h2 className="text-2xl font-bold mb-4">{work?.title}</h2>
-                        <p className="text-sm text-primary dark:text-blue-400 mb-4">{work?.category}</p>
-                        <p className="text-gray-700 dark:text-gray-300 mb-6">{work?.description}</p>
-                        
-                        {/* Add external link in modal */}
-                        {work?.link && (
-                          <a
-                            href={work.link}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-600 transition-colors"
-                          >
-                            Visit External Site <ExternalLink className="w-4 h-4 ml-2" />
-                          </a>
-                        )}
                       </div>
                     </div>
                   )
@@ -236,7 +202,6 @@ const Work = () => {
         )}
       </div>
 
-      {/* Work Modal - Render only when a work is selected */}
       {selectedWorkId !== null && (
         <WorkModal workId={selectedWorkId} onClose={closeWorkModal} />
       )}
