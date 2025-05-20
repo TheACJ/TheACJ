@@ -6,6 +6,7 @@ import slider1 from '../assets/img/theacj.jpg';
 import slider2 from '../assets/img/data_analytics.jpg';
 import slider3 from '../assets/img/web2.jpg';
 import slider4 from '../assets/img/Web3.webp';
+import mycv from '../assets/JoshuaAgbai.pdf'
 import "../assets/style.css"
 
 const Hero = () => {
@@ -17,7 +18,7 @@ const Hero = () => {
       subtitle: "The ACJ",
       description: "With us Tech Emancipation is achievable",
       bgImage: slider1,
-      buttonText: <a href=''>View CV</a>,
+      buttonText: <a href={mycv} download="TheACJ.pdf">View CV</a>,
       buttonIcon: "icon-download"
     },
     {
@@ -25,7 +26,7 @@ const Hero = () => {
       subtitle: "Data Analyst",
       description: "Where there is Data, The ACJ will make sense of it",
       bgImage: slider2,
-      buttonText: <a href=''>View Portfolio</a>,
+      buttonText: <a href='#work'>View Portfolio</a>,
       buttonIcon: "icon-briefcase"
     },
     {
@@ -33,7 +34,7 @@ const Hero = () => {
       subtitle: "Web2 Developer",
       description: "Imagine it, The ACJ will make it real",
       bgImage: slider3,
-      buttonText: <a href=''>View Portfolio</a>,
+      buttonText: <a href='#work'>View Portfolio</a>,
       buttonIcon: "icon-briefcase"
     },
     {
@@ -41,7 +42,7 @@ const Hero = () => {
       subtitle: "Web3 Developer",
       description: "Building worldclass solution using Blockchain Technology",
       bgImage: slider4,
-      buttonText: <a href=''>View Portfolio</a>,
+      buttonText: <a href='#work'>View Portfolio</a>,
       buttonIcon: "icon-briefcase"
     }
   ];

@@ -159,12 +159,12 @@ const Work = () => {
                         <h3 className="text-xl font-semibold mb-2">{work.title}</h3>
                         <p className="text-gray-600 dark:text-gray-200 mb-4">{work.description}</p>
                         <div className="flex gap-4">
-                          <button
+                          {/* <button
                             onClick={(e) => handleCardClick(work.id, e)}
                             className="inline-flex items-center px-3 py-1 bg-primary text-white rounded hover:bg-purple-600 transition-colors text-sm"
                           >
                             View Project
-                          </button>
+                          </button> */}
                           <button
                             onClick={(e) => handleCardClick(work.id, e)}
                             className="inline-flex items-center px-3 py-1 bg-gray-200 dark:bg-gray-700 rounded hover:bg-gray-300 transition-colors text-sm"
