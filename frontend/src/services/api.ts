@@ -93,7 +93,7 @@ export interface Category {
 // Define your services. Notice that we do not need to set the CSRF header manually here.
 export const workService = {
   getAllWorks: () => api.get<WorkItem[]>('/works'),
-  getWorkItem: (id: string) => api.get<WorkItem>(`/works/${id}/`),
+  getWorkItem: (id: string) => api.get(`/work-items/${id}/`),
   createWorkItem: (data: FormData) =>
     api.post('/works/', data, {
       headers: { 
