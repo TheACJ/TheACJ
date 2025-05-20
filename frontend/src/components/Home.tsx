@@ -1,39 +1,43 @@
-
-import Hero from './Hero';
-import About from './About';
-import Services from './Services';
-import Skills from './Skills';
-import Work from './Work';
-import Gallery from './Gallery';
-import Contact from './Contact';
-import Counter from './Counter';
-// import Loader from './components/Loader';
+import { Suspense, lazy } from 'react';
 import AnimatedSection from './AnimatedSection';
+
+// Lazy load heavy components to improve initial load time
+const Hero = lazy(() => import('./Hero'));
+const About = lazy(() => import('./About'));
+const Services = lazy(() => import('./Services'));
+const Skills = lazy(() => import('./Skills'));
+const Work = lazy(() => import('./Work'));
+const Gallery = lazy(() => import('./Gallery'));
+const Contact = lazy(() => import('./Contact'));
+const Counter = lazy(() => import('./Counter'));
+
 function Home() {
-    return (
-    <main className="lg:ml-[300px]  dark:bg-gray-900 dark:text-[#b9b8b8]  ">
+  return (
+    <main className="lg:ml-[300px] dark:bg-gray-900 dark:text-[#b9b8b8]">
+      <Suspense fallback={<div>Loading section...</div>}>
         <Hero />
         <AnimatedSection>
-        <About />
+          <About />
         </AnimatedSection>
         <AnimatedSection>
-        <Services />
+          <Services />
         </AnimatedSection>
         <AnimatedSection>
-        <Counter />
+          <Counter />
         </AnimatedSection>
         <AnimatedSection>
-        <Skills />
+          <Skills />
         </AnimatedSection>
         <AnimatedSection>
-        <Work />
+          <Work />
         </AnimatedSection>
         <AnimatedSection>
-        <Gallery />
+          <Gallery />
         </AnimatedSection>
         <AnimatedSection>
-        <Contact />
+          <Contact />
         </AnimatedSection>
+      </Suspense>
     </main>
   );
 }

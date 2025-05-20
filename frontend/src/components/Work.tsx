@@ -2,38 +2,22 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { WorkItem, workService } from '../services/api';
 import WorkModal from './WorkModal';
+import useSWR from 'swr';
 
 const Work = () => {
   const categories = ['Web App', 'Data Science / Analytics', 'Web3 Dev'];
-  
-  const [works, setWorks] = useState<WorkItem[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>(categories[0]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [selectedWorkId, setSelectedWorkId] = useState<number | null>(null);
   const [debug, setDebug] = useState<string>('No clicks detected yet');
 
-  useEffect(() => {
-    const fetchWorks = async () => {
-      try {
-        const response = await workService.getAllWorks();
-        console.log("Fetched works:", response.data);
-        setWorks(Array.isArray(response.data) ? response.data : []);
-        setError(null);
-      } catch (err) {
-        console.error('Error fetching works:', err);
-        setError('Failed to load works. Please try again later.');
-        setWorks([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchWorks();
-  }, []);
+  // Use SWR for fetching works
+  const fetcher = () => workService.getAllWorks().then((res) => res.data);
+  const { data: works = [], error, isLoading } = useSWR<WorkItem[]>('/works', fetcher);
+
 
   const filteredWorks = Array.isArray(works)
-    ? works.filter(work => work.category === selectedCategory)
+    ? works.filter((work) => work.category === selectedCategory)
     : [];
 
   useEffect(() => {
@@ -68,7 +52,7 @@ const Work = () => {
     openWorkModal(workId);
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <section id="work" className="py-20 bg-white dark:bg-gray-900 dark:text-[#b9b8b8]">
         <div className="max-w-6xl mx-auto px-4 text-center">
@@ -85,7 +69,7 @@ const Work = () => {
     return (
       <section id="work" className="py-20 bg-white dark:bg-gray-900 dark:text-[#b9b8b8]">
         <div className="max-w-6xl mx-auto px-4 text-center">
-          <div className="text-red-500">{error}</div>
+          <div className="text-red-500">Failed to load works. Please try again later.</div>
         </div>
       </section>
     );
@@ -131,19 +115,20 @@ const Work = () => {
               >
                 {[filteredWorks[currentSlide]].map((work) => (
                   work && (
-                    <div 
+                    <div
                       key={work.id}
                       className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 mx-auto max-w-2xl"
                     >
-                      <div 
+                      <div
                         className="relative h-64 cursor-pointer"
                         onClick={(e) => handleCardClick(work.id, e)}
                       >
                         {work.image && (
-                          <img 
+                          <img
                             src={work.image}
                             alt={work.title}
                             className="w-full h-full object-cover"
+                            loading="lazy" // Native lazy loading
                           />
                         )}
                         <div className="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-20 transition-all flex items-center justify-center">
@@ -154,7 +139,7 @@ const Work = () => {
                           </div>
                         </div>
                       </div>
-                      
+
                       <div className="p-6 dark:bg-gray-900 dark:text-gray-200">
                         <h3 className="text-xl font-semibold mb-2">{work.title}</h3>
                         <p className="text-gray-600 dark:text-gray-200 mb-4">{work.description}</p>
