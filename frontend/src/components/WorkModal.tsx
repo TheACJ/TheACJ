@@ -2,10 +2,8 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { WorkItem, workService } from '../services/api';
-import useSWR from 'swr';
-import LazyLoad from 'react-lazyload';
 
-// Extend WorkItem interface
+// Define a more comprehensive WorkItem interface that includes the additional image fields
 interface ExtendedWorkItem extends WorkItem {
   image1?: string | null;
   image2?: string | null;
@@ -18,34 +16,57 @@ interface WorkModalProps {
 }
 
 const WorkModal = ({ workId, onClose }: WorkModalProps) => {
+  const [work, setWork] = useState<ExtendedWorkItem | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-
-  // Use SWR for fetching work details
-  const fetcher = (id: string) => workService.getWorkItem(id).then((res) => res.data);
-  const { data: work, error, isLoading } = useSWR<ExtendedWorkItem>(
-    workId ? `/work-items/${workId}` : null,
-    fetcher
-  );
-
-  // Get all images from the work item
+  
+  console.log("WorkModal rendered with workId:", workId); // Debug log
+  
+  // Get all images from the work item, filtering out null/undefined values
   const getImages = (work: ExtendedWorkItem | null): string[] => {
     if (!work) return [];
-    return [work.image, work.image1, work.image2, work.image3].filter(
-      (img): img is string => !!img
-    );
+    
+    return [work.image, work.image1, work.image2, work.image3]
+      .filter((img): img is string => !!img);
   };
-
-  const images = getImages(work ?? null);
-
-  // Navigate images
+  
+  const images = getImages(work);
+  
+  // Fetch the work item details when the modal opens
+  useEffect(() => {
+    const fetchWorkDetails = async () => {
+      if (!workId) return;
+      
+      console.log("Fetching work details for ID:", workId); // Debug log
+      
+      try {
+        setLoading(true);
+        const response = await workService.getWorkItem(workId.toString());
+        console.log("API response:", response); // Debug log
+        setWork(response.data as ExtendedWorkItem);
+        setError(null);
+      } catch (err) {
+        console.error('Error fetching work details:', err);
+        setError('Failed to load work details');
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchWorkDetails();
+  }, [workId]);
+  
+  // Navigate to the next image
   const nextImage = () => {
     setCurrentImageIndex((prev) => (prev + 1) % images.length);
   };
-
+  
+  // Navigate to the previous image
   const prevImage = () => {
     setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
   };
-
+  
   // Handle keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -53,20 +74,21 @@ const WorkModal = ({ workId, onClose }: WorkModalProps) => {
       if (e.key === 'ArrowRight') nextImage();
       if (e.key === 'ArrowLeft') prevImage();
     };
-
+    
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [onClose, images.length]);
-
-  // Prevent body scrolling
+  
+  // Prevent body scrolling when modal is open
   useEffect(() => {
     document.body.style.overflow = 'hidden';
     return () => {
       document.body.style.overflow = 'auto';
     };
   }, []);
-
-  const noImages = images.length === 0 && !isLoading;
+  
+  // If no images are available, show a message
+  const noImages = images.length === 0 && !loading;
 
   return (
     <motion.div
@@ -85,23 +107,25 @@ const WorkModal = ({ workId, onClose }: WorkModalProps) => {
         className="bg-white dark:bg-gray-800 rounded-xl overflow-hidden max-w-6xl w-full max-h-[90vh] relative"
         onClick={(e) => e.stopPropagation()}
       >
+        {/* Close button */}
         <button
           onClick={onClose}
           className="absolute top-4 right-4 z-10 p-2 rounded-full bg-black bg-opacity-50 text-white hover:bg-opacity-70 transition-all"
         >
           <X size={20} />
         </button>
-
-        {isLoading ? (
+        
+        {loading ? (
           <div className="h-96 flex items-center justify-center">
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
           </div>
         ) : error ? (
           <div className="h-96 flex items-center justify-center text-red-500">
-            Failed to load work details
+            {error}
           </div>
         ) : (
           <div className="flex flex-col md:flex-row h-full">
+            {/* Image Gallery Section */}
             <div className="w-full md:w-2/3 relative bg-gray-900">
               {noImages ? (
                 <div className="h-96 flex items-center justify-center text-white">
@@ -111,22 +135,20 @@ const WorkModal = ({ workId, onClose }: WorkModalProps) => {
                 <>
                   <div className="h-96 relative overflow-hidden">
                     <AnimatePresence mode="wait">
-                      <LazyLoad height={384} offset={100} once>
-                        <motion.img
-                          key={currentImageIndex}
-                          src={images[currentImageIndex]}
-                          alt={`${work?.title} - image ${currentImageIndex + 1}`}
-                          className="w-full h-full object-contain"
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          exit={{ opacity: 0 }}
-                          transition={{ duration: 0.3 }}
-                          loading="lazy" // Native lazy loading
-                        />
-                      </LazyLoad>
+                      <motion.img
+                        key={currentImageIndex}
+                        src={images[currentImageIndex]}
+                        alt={`${work?.title} - image ${currentImageIndex + 1}`}
+                        className="w-full h-full object-contain"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.3 }}
+                      />
                     </AnimatePresence>
                   </div>
-
+                  
+                  {/* Navigation arrows */}
                   {images.length > 1 && (
                     <>
                       <button
@@ -143,7 +165,8 @@ const WorkModal = ({ workId, onClose }: WorkModalProps) => {
                       </button>
                     </>
                   )}
-
+                  
+                  {/* Image thumbnails */}
                   {images.length > 1 && (
                     <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2 px-4">
                       {images.map((_, index) => (
@@ -162,12 +185,13 @@ const WorkModal = ({ workId, onClose }: WorkModalProps) => {
                 </>
               )}
             </div>
-
+            
+            {/* Details Section */}
             <div className="w-full md:w-1/3 p-6 overflow-y-auto max-h-96 dark:bg-gray-800 dark:text-gray-200">
               <h2 className="text-2xl font-bold mb-4">{work?.title}</h2>
               <p className="text-sm text-primary dark:text-blue-400 mb-4">{work?.category}</p>
               <p className="text-gray-700 dark:text-gray-300 mb-6">{work?.description}</p>
-
+              
               {work?.link && (
                 <a
                   href={work.link}

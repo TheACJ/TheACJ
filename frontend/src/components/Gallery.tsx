@@ -1,28 +1,36 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { blogService, BlogPost } from '../services/api';
 import { useScrollAnimation } from '../hooks/useAnimations';
-import { MdChevronRight } from 'react-icons/md';
+import {  MdChevronRight } from 'react-icons/md'; // Modern arrow icons
 import { ExternalLink } from 'lucide-react';
-import useSWR from 'swr';
-import LazyLoad from 'react-lazyload';
 
 const Gallery = () => {
+  const [posts, setPosts] = useState<BlogPost[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const { ref, controls, variants } = useScrollAnimation();
-  const [error, setError] = useState<string | null>(null); // Retain error state for manual handling
 
-  
-  // Use SWR for fetching posts
-  const fetcher = () => blogService.getRecentPosts().then((res) => res.data.slice(0, 4));
-  const { data: posts = [], isLoading } = useSWR<BlogPost[]>('/blog-posts', fetcher, {
-    onError: (err) => {
-      console.error('Error fetching posts:', err);
-      setError('Failed to load posts.');
-    },
-  });
+  useEffect(() => {
+    const fetchPosts = async () => {
+      setLoading(true);
+      try {
+        const response = await blogService.getRecentPosts();
+        // Get the top 4 posts sorted by date_published
+        setPosts(response.data.slice(0, 4));
+        setError(null);
+      } catch (error) {
+        console.error('Error fetching posts:', error);
+        setError('Failed to load posts.');
+      } finally {
+        setLoading(false);
+      }
+    };
 
+    fetchPosts();
+  }, []);
 
-  if (isLoading) {
+  if (loading) {
     return (
       <section className="py-20 bg-gray-50">
         <div className="max-w-6xl mx-auto px-4 text-center">
@@ -35,7 +43,7 @@ const Gallery = () => {
   return (
     <section id="gallery" className="py-20 bg-gray-50 dark:bg-gray-900 dark:text-[#b9b8b8]">
       <div className="max-w-6xl mx-auto px-4">
-        <motion.div
+        <motion.div 
           ref={ref}
           initial="hidden"
           animate={controls}
@@ -57,20 +65,17 @@ const Gallery = () => {
                 visible: {
                   opacity: 1,
                   y: 0,
-                  transition: { delay: index * 0.2 },
-                },
+                  transition: { delay: index * 0.2 }
+                }
               }}
               className="bg-white dark:bg-gray-900 dark:text-[#b9b8b8] rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
             >
               {(post.image || post.image_url) && (
-                <LazyLoad height={192} offset={100} once>
-                  <img
-                    src={post.image || post.image_url}
-                    alt={post.title}
-                    className="w-full h-48 object-cover transform hover:scale-105 transition-transform duration-300"
-                    loading="lazy" // Native lazy loading
-                  />
-                </LazyLoad>
+                <img 
+                  src={post.image || post.image_url}
+                  alt={post.title}
+                  className="w-full h-48 object-cover transform hover:scale-105 transition-transform duration-300"
+                />
               )}
               <div className="p-6">
                 <h3 className="text-xl font-semibold mb-2">
@@ -82,21 +87,21 @@ const Gallery = () => {
                 </div>
                 <p className="text-gray-600 dark:text-gray-100">{post.content}</p>
               </div>
-              <a
-                href={post.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center p-6 text-primary hover:text-blue-600 transition-colors ml-1 pb-5"
-              >
-                View Post <ExternalLink className="w-4 h-4 ml-1" />
+              <a 
+               href={post.link}
+               target="_blank"
+               rel="noopener noreferrer"
+               className="inline-flex items-center p-6 text-primary hover:text-blue-600 transition-colors ml-1 pb-5">
+               View Post &nbsp; <ExternalLink className="w-4 h-4 ml-1" />
               </a>
+              
             </motion.div>
           ))}
         </div>
 
         <div className="flex justify-center mt-8">
-          <a
-            href="/all-posts"
+          <a 
+            href="/all-posts" 
             className="inline-flex items-center text-primary font-semibold hover:text-blue-700"
           >
             View All Posts
