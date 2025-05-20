@@ -157,7 +157,7 @@ const Work = () => {
                             className="w-full h-full object-cover"
                           />
                         )}
-                        <div className="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-20 transition-all flex items-center justify-center pointer-events-none">
+                        <div className="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-20 transition-all flex items-center justify-center">
                           <div className="opacity-0 hover:opacity-100 transition-all transform translate-y-4 hover:translate-y-0">
                             <span className="bg-primary text-white px-4 py-2 rounded-lg shadow-lg">
                               View Gallery
@@ -169,23 +169,43 @@ const Work = () => {
                       <div className="p-6 dark:bg-gray-900 dark:text-gray-200">
                         <h3 className="text-xl font-semibold mb-2">{work.title}</h3>
                         <p className="text-gray-600 dark:text-gray-200 mb-4">{work.description}</p>
-                        {work.link && (
-                          <a 
+                        <div className="flex gap-4">
+                          {/* Updated View Project button to open modal */}
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault();
+                              handleCardClick(work.id, e);
+                            }}
+                            className="inline-flex items-center px-3 py-1 bg-primary text-white rounded hover:bg-purple-600 transition-colors text-sm"
+                          >
+                            View Project
+                          </button>
+                          {/* Optional: Keep gallery button if needed */}
+                          <button
+                            onClick={(e) => handleCardClick(work.id, e)}
+                            className="inline-flex items-center px-3 py-1 bg-gray-200 dark:bg-gray-700 rounded hover:bg-gray-300 transition-colors text-sm"
+                          >
+                            View Gallery
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="w-full md:w-1/3 p-6 overflow-y-auto max-h-96 dark:bg-gray-800 dark:text-gray-200">
+                        <h2 className="text-2xl font-bold mb-4">{work?.title}</h2>
+                        <p className="text-sm text-primary dark:text-blue-400 mb-4">{work?.category}</p>
+                        <p className="text-gray-700 dark:text-gray-300 mb-6">{work?.description}</p>
+                        
+                        {/* Add external link in modal */}
+                        {work?.link && (
+                          <a
                             href={work.link}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center text-primary hover:text-blue-600 transition-colors"
+                            className="inline-flex items-center px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-600 transition-colors"
                           >
-                            View Project <ExternalLink className="w-4 h-4 ml-1" />
+                            Visit External Site <ExternalLink className="w-4 h-4 ml-2" />
                           </a>
                         )}
-                        {/* Add a dedicated "View Gallery" button */}
-                        <button
-                          onClick={(e) => handleCardClick(work.id, e)}
-                          className="ml-4 inline-flex items-center px-3 py-1 bg-primary text-white rounded hover:bg-purple-600 transition-colors text-sm"
-                        >
-                          View Gallery
-                        </button>
                       </div>
                     </div>
                   )
