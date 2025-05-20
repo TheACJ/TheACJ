@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { WorkItem, workService } from '../services/api';
 import WorkModal from './WorkModal';
+import toast from 'react-hot-toast';
 
 const Work = () => {
   const categories = ['Web App', 'Data Science / Analytics', 'Web3 Dev'];
@@ -12,7 +13,7 @@ const Work = () => {
   const [error, setError] = useState<string | null>(null);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [selectedWorkId, setSelectedWorkId] = useState<number | null>(null);
-  const [debug, setDebug] = useState<string>('No clicks detected yet');
+/*   const [debug, setDebug] = useState<string>('No clicks detected yet'); */
 
   useEffect(() => {
     const fetchWorks = async () => {
@@ -51,20 +52,19 @@ const Work = () => {
 
   const openWorkModal = (workId: number) => {
     console.log('openWorkModal called with ID:', workId);
-    setDebug(`Opening modal for work ID: ${workId}`);
+    toast.success(`Opening modal for: ${workId}`);
     setSelectedWorkId(workId);
   };
 
   const closeWorkModal = () => {
     console.log('closeWorkModal called');
-    setDebug('Modal closed');
+    toast('Modal closed');
     setSelectedWorkId(null);
   };
 
   const handleCardClick = (workId: number, event: React.MouseEvent) => {
     console.log('Card clicked for work ID:', workId);
     event.preventDefault();
-    setDebug(`Card clicked for work ID: ${workId}`);
     openWorkModal(workId);
   };
 
@@ -97,7 +97,6 @@ const Work = () => {
         <div className="text-center mb-16">
           <span className="text-sm text-gray-500 uppercase tracking-wider dark:text-[#b9b8b8]">My Work</span>
           <h2 className="text-3xl font-bold mt-2">Recent Work</h2>
-          <div className="mt-2 text-sm text-gray-500">{debug}</div>
         </div>
 
         <div className="mb-8">
