@@ -9,9 +9,12 @@ import Loader from './components/Loader';
 import DarkModeToggle from './components/DarkMoodToggle';
 import AllPosts from './components/AllPosts';
 import BlogForm from './components/AddBlog';
+import TextParticlesBackground from './components/TextParticlesBackground';
 
 
 function App() {
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  
   // Ensure cookies are included with every request.
 
   const [loading, setLoading] = useState(true);
@@ -24,10 +27,54 @@ function App() {
 
     return () => clearTimeout(timer);
   }, []);
+  
+  useEffect(() => {
+    // Assuming dark mode is controlled by adding 'dark' class on <html>
+    const observer = new MutationObserver(() => {
+      const isDark = document.documentElement.classList.contains('dark');
+      setIsDarkMode(isDark);
+    });
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class'],
+    });
+
+    // Initial check
+    setIsDarkMode(document.documentElement.classList.contains('dark'));
+
+    return () => observer.disconnect();
+  }, []);
+
+  const particleColor = isDarkMode
+    ? 'rgba(255, 255, 255, 0.8)'   // white particles for dark mode
+    : 'rgba(0, 0, 0, 0.3)';        // blackish particles for light mode
+
+  const connectionColor = isDarkMode
+    ? 'rgba(255, 255, 255, 0.1)'
+    : 'rgba(0, 0, 0, 0.05)';
+
+  const rippleColor = isDarkMode
+    ? 'rgba(255, 255, 255, 0.8)'
+    : 'rgba(0, 0, 0, 0.4)';
+    
+  const colorsword = isDarkMode
+    ? 'white'
+    : 'black'
 
   return (
 
     <div className="min-h-screen bg-gray-50  dark:bg-gray-900 dark:text-[#b9b8b8]">
+      
+      <TextParticlesBackground
+        particleColor={particleColor}
+        connectionColor={connectionColor}
+        rippleColor={rippleColor}
+        color={particleColor}
+        constfill={colorsword}
+        // lineWidth ={10}
+        text="THE ACJ"
+      />
       <AnimatePresence>
         {loading && <Loader />}
       </AnimatePresence>
