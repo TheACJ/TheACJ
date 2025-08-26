@@ -9,7 +9,9 @@ import Loader from './components/Loader';
 import DarkModeToggle from './components/DarkMoodToggle';
 import AllPosts from './components/AllPosts';
 import BlogForm from './components/AddBlog';
-import TextParticlesBackground from './components/TextParticlesBackground';
+// import ParticlesBackground from 'interactive-backgrounds';
+import { ConstellationFieldBackground  } from 'interactive-backgrounds';
+
 
 
 function App() {
@@ -66,7 +68,7 @@ function App() {
 
     <div className="min-h-screen bg-gray-50  dark:bg-gray-900 dark:text-[#b9b8b8]">
       
-      <TextParticlesBackground
+      <ConstellationFieldBackground
         particleColor={particleColor}
         connectionColor={connectionColor}
         rippleColor={rippleColor}
