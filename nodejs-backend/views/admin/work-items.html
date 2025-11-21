@@ -1,0 +1,1306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Work Items Management - The ACJ Portfolio Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.18/summernote-bs4.min.css" rel="stylesheet">
+    <link href="/assets/admin.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/admin/dashboard">
+                <i class="fas fa-tachometer-alt me-2"></i>Admin Panel
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/dashboard">
+                            <i class="fas fa-chart-bar me-1"></i>Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/blog-posts">
+                            <i class="fas fa-blog me-1"></i>Blog Posts
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/admin/work-items">
+                            <i class="fas fa-briefcase me-1"></i>Work Items
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/contacts">
+                            <i class="fas fa-envelope me-1"></i>Contacts
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/categories">
+                            <i class="fas fa-tags me-1"></i>Categories
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/content">
+                            <i class="fas fa-edit me-1"></i>Content
+                        </a>
+                    </li>
+                    <li class="nav-item" id="usersNav" style="display: none;">
+                        <a class="nav-link" href="/admin/users">
+                            <i class="fas fa-users me-1"></i>Users
+                        </a>
+                    </li>
+                    <li class="nav-item" id="settingsNav" style="display: none;">
+                        <a class="nav-link" href="/admin/settings">
+                            <i class="fas fa-cog me-1"></i>Settings
+                        </a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-shield me-1"></i><span id="adminName">Admin</span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#profileModal">
+                                <i class="fas fa-user me-2"></i>Profile
+                            </a></li>
+                            <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
+                                <i class="fas fa-key me-2"></i>Change Password
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#" id="logoutBtn">
+                                <i class="fas fa-sign-out-alt me-2"></i>Logout
+                            </a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid mt-4">
+        <!-- Page Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h2><i class="fas fa-briefcase me-2"></i>Work Items Management</h2>
+                        <p class="text-muted">Manage your portfolio projects and work items</p>
+                    </div>
+                    <div>
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createWorkModal">
+                            <i class="fas fa-plus me-2"></i>New Work Item
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters and Search -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <select class="form-select" id="statusFilter">
+                                    <option value="">All Status</option>
+                                    <option value="completed">Completed</option>
+                                    <option value="in-progress">In Progress</option>
+                                    <option value="planning">Planning</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <select class="form-select" id="categoryFilter">
+                                    <option value="">All Categories</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" class="form-control" id="searchInput" placeholder="Search work items...">
+                            </div>
+                            <div class="col-md-2">
+                                <button class="btn btn-outline-secondary w-100" onclick="workManager.refreshWorkItems()">
+                                    <i class="fas fa-refresh me-1"></i>Refresh
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bulk Actions -->
+        <div class="row mb-3" id="bulkActions" style="display: none;">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <span class="me-3" id="selectedCount">0 items selected</span>
+                            <select class="form-select w-auto me-2" id="bulkActionSelect">
+                                <option value="">Select Action</option>
+                                <option value="completed">Mark as Completed</option>
+                                <option value="in-progress">Mark as In Progress</option>
+                                <option value="delete">Delete</option>
+                            </select>
+                            <button class="btn btn-primary" onclick="workManager.executeBulkAction()">Execute</button>
+                            <button class="btn btn-outline-secondary ms-2" onclick="workManager.clearSelection()">Clear Selection</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Work Items Table -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">Work Items</h5>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="selectAll">
+                                <label class="form-check-label" for="selectAll">
+                                    Select All
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover" id="workItemsTable">
+                                <thead>
+                                    <tr>
+                                        <th width="40">Select</th>
+                                        <th>Title</th>
+                                        <th>Client</th>
+                                        <th>Category</th>
+                                        <th>Status</th>
+                                        <th>Technologies</th>
+                                        <th>Completion Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="workItemsTableBody">
+                                    <tr>
+                                        <td colspan="8" class="text-center">
+                                            <div class="spinner-border text-primary" role="status">
+                                                <span class="visually-hidden">Loading...</span>
+                                            </div>
+                                            <p class="mt-2 text-muted">Loading work items...</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <!-- Pagination -->
+                        <nav aria-label="Work items pagination">
+                            <ul class="pagination justify-content-center" id="workItemsPagination">
+                                <!-- Pagination will be generated by JavaScript -->
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create/Edit Work Item Modal -->
+    <div class="modal fade" id="createWorkModal" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="workModalTitle">Create New Work Item</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="workForm">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="mb-3">
+                                    <label class="form-label">Project Title *</label>
+                                    <input type="text" class="form-control" id="workTitle" required placeholder="Enter project title">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Description *</label>
+                                    <div id="workDescription" style="height: 300px;"></div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Technologies Used</label>
+                                    <input type="text" class="form-control" id="workTechnologies" placeholder="React, Node.js, MongoDB">
+                                    <small class="form-text text-muted">Separate technologies with commas</small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">Main Image</label>
+                                    <div class="border rounded p-3 text-center" id="imageUploadArea">
+                                        <img id="workImagePreview" src="" alt="Preview" style="max-width: 100%; display: none; margin-bottom: 10px;">
+                                        <input type="file" id="workImage" accept="image/*" style="display: none;">
+                                        <button type="button" class="btn btn-outline-primary" onclick="document.getElementById('workImage').click()">
+                                            <i class="fas fa-image me-1"></i>Upload Image
+                                        </button>
+                                        <p class="small text-muted mt-2">Recommended: 800x600px</p>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Gallery Images</label>
+                                    <div class="border rounded p-2" id="galleryUploadArea">
+                                        <input type="file" id="workGallery" accept="image/*" multiple style="display: none;">
+                                        <button type="button" class="btn btn-outline-info w-100" onclick="document.getElementById('workGallery').click()">
+                                            <i class="fas fa-images me-1"></i>Upload Gallery
+                                        </button>
+                                        <div id="galleryPreview" class="mt-2 row"></div>
+                                        <small class="form-text text-muted">Multiple images allowed</small>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Category *</label>
+                                    <select class="form-select" id="workCategory" required>
+                                        <option value="">Select Category</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Status *</label>
+                                    <select class="form-select" id="workStatus" required>
+                                        <option value="planning">Planning</option>
+                                        <option value="in-progress">In Progress</option>
+                                        <option value="completed">Completed</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Client</label>
+                                    <input type="text" class="form-control" id="workClient" placeholder="Client name or company">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Project URL</label>
+                                    <input type="url" class="form-control" id="workUrl" placeholder="https://example.com">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">GitHub URL</label>
+                                    <input type="url" class="form-control" id="workGithub" placeholder="https://github.com/username/repo">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Completion Date</label>
+                                    <input type="date" class="form-control" id="workCompletionDate">
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-info" onclick="workManager.saveDraft()">Save Draft</button>
+                    <button type="button" class="btn btn-primary" onclick="workManager.saveWork()">Save & Publish</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteWorkModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirm Delete</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>Warning:</strong> This action cannot be undone!
+                    </div>
+                    <p>Are you sure you want to delete this work item?</p>
+                    <div id="deleteWorkTitle" class="fw-bold text-danger"></div>
+                    <p class="text-muted">All content, images, and project details will be permanently deleted.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete Work Item</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Modal -->
+    <div class="modal fade" id="profileModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Admin Profile</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="profileForm">
+                        <div class="mb-3">
+                            <label class="form-label">Username</label>
+                            <input type="text" class="form-control" id="profileUsername" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" id="profileEmail">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Full Name</label>
+                            <input type="text" class="form-control" id="profileFullName">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Role</label>
+                            <input type="text" class="form-control" id="profileRole" readonly>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="updateProfileBtn">Update Profile</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Change Password Modal -->
+    <div class="modal fade" id="changePasswordModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Change Password</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="changePasswordForm">
+                        <div class="mb-3">
+                            <label class="form-label">Current Password</label>
+                            <input type="password" class="form-control" id="currentPassword" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">New Password</label>
+                            <input type="password" class="form-control" id="newPassword" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Confirm New Password</label>
+                            <input type="password" class="form-control" id="confirmNewPassword" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="changePasswordBtn">Change Password</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js" integrity="sha512-p7NThnzM6NThBzE1F9Z9bL3bBgOSvM3b3GWoBFlT1zbQ+sHm+OobwMR4aT5E8Lwjje7T8V7loTDtYf5UZcKFw/w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.18/summernote-bs4.min.js" integrity="sha512-8n3L7z7K9wV+JMuq5Q9T8Kz8+8b6v1x2s3n7b9z5n5n3w5z9C2Kj1x2l9bP5F3q4b3h3L4w2V5F4L5cI5R5J4w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="/assets/admin.js"></script>
+    <script>
+        // Work Items Management
+        class WorkManager {
+            constructor() {
+                this.workItems = [];
+                this.filteredItems = [];
+                this.categories = [];
+                this.currentPage = 1;
+                this.itemsPerPage = 10;
+                this.selectedItems = new Set();
+                this.currentItemId = null;
+                this.isEditMode = false;
+                this.init();
+            }
+
+            async init() {
+                await this.checkAuth();
+                this.setupEventListeners();
+                this.initializeSummernote();
+                this.loadCategories();
+                await this.loadWorkItems();
+            }
+
+            async checkAuth() {
+                const token = localStorage.getItem('adminToken');
+                if (!token) {
+                    window.location.href = '/admin/login';
+                    return;
+                }
+
+                try {
+                    const response = await fetch('/api/admin/auth/me', {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    const result = await response.json();
+
+                    if (!result.success) {
+                        this.handleAuthError();
+                        return;
+                    }
+
+                    this.admin = result.data.admin;
+                    this.updateUI();
+                } catch (error) {
+                    this.handleAuthError();
+                }
+            }
+
+            handleAuthError() {
+                localStorage.removeItem('adminToken');
+                localStorage.removeItem('adminRefreshToken');
+                window.location.href = '/admin/login';
+            }
+
+            updateUI() {
+                document.getElementById('adminName').textContent = this.admin.fullName || this.admin.username;
+
+                if (this.admin.role === 'super_admin') {
+                    document.getElementById('usersNav').style.display = 'block';
+                    document.getElementById('settingsNav').style.display = 'block';
+                }
+
+                document.getElementById('profileUsername').value = this.admin.username;
+                document.getElementById('profileEmail').value = this.admin.email;
+                document.getElementById('profileFullName').value = this.admin.fullName;
+                document.getElementById('profileRole').value = this.admin.role;
+            }
+
+            setupEventListeners() {
+                document.getElementById('logoutBtn').addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.logout();
+                });
+
+                document.getElementById('updateProfileBtn').addEventListener('click', () => {
+                    this.updateProfile();
+                });
+
+                document.getElementById('changePasswordBtn').addEventListener('click', () => {
+                    this.changePassword();
+                });
+
+                document.getElementById('selectAll').addEventListener('change', (e) => {
+                    this.toggleSelectAll(e.target.checked);
+                });
+
+                document.getElementById('statusFilter').addEventListener('change', () => {
+                    this.applyFilters();
+                });
+
+                document.getElementById('categoryFilter').addEventListener('change', () => {
+                    this.applyFilters();
+                });
+
+                document.getElementById('searchInput').addEventListener('input', AdminUtils.debounce(() => {
+                    this.applyFilters();
+                }, 300));
+
+                document.getElementById('workImage').addEventListener('change', (e) => {
+                    this.handleImageUpload(e);
+                });
+
+                document.getElementById('workGallery').addEventListener('change', (e) => {
+                    this.handleGalleryUpload(e);
+                });
+
+                // Handle query parameters for create/edit
+                const params = new URLSearchParams(window.location.search);
+                const action = params.get('action');
+                if (action === 'create') {
+                    this.openCreateModal();
+                }
+            }
+
+            initializeSummernote() {
+                // Ensure jQuery is available
+                if (typeof $ === 'undefined' || typeof jQuery === 'undefined') {
+                    console.error('jQuery is not loaded. Cannot initialize Summernote.');
+                    return;
+                }
+                
+                $('#workDescription').summernote({
+                    height: 300,
+                    toolbar: [
+                        ['style', ['style']],
+                        ['font', ['bold', 'underline', 'clear']],
+                        ['fontname', ['fontname']],
+                        ['color', ['color']],
+                        ['para', ['ul', 'ol', 'paragraph']],
+                        ['table', ['table']],
+                        ['insert', ['link', 'picture', 'video']],
+                        ['view', ['fullscreen', 'codeview', 'help']]
+                    ],
+                    callbacks: {
+                        onImageUpload: (files) => {
+                            this.uploadImage(files[0]);
+                        }
+                    }
+                });
+            }
+
+            async loadCategories() {
+                try {
+                    const token = localStorage.getItem('adminToken');
+                    const response = await fetch('/api/admin/content/categories?type=work', {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        this.categories = result.data.categories;
+                        this.populateCategorySelects();
+                    }
+                } catch (error) {
+                    console.error('Error loading categories:', error);
+                }
+            }
+
+            populateCategorySelects() {
+                const categorySelects = ['workCategory', 'categoryFilter'];
+                
+                categorySelects.forEach(selectId => {
+                    const select = document.getElementById(selectId);
+                    const currentValue = select.value;
+                    
+                    // Clear existing options except first one
+                    while (select.children.length > 1) {
+                        select.removeChild(select.lastChild);
+                    }
+                    
+                    // Add category options
+                    this.categories.forEach(category => {
+                        const option = document.createElement('option');
+                        option.value = category._id;
+                        option.textContent = category.name;
+                        select.appendChild(option);
+                    });
+                    
+                    // Restore selected value
+                    select.value = currentValue;
+                });
+            }
+
+            async loadWorkItems() {
+                try {
+                    const token = localStorage.getItem('adminToken');
+                    const response = await fetch('/api/admin/content/work-items', {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        this.workItems = result.data.workItems;
+                        this.filteredItems = [...this.workItems];
+                        this.renderWorkItems();
+                        this.renderPagination();
+                    } else {
+                        AdminUtils.showAlert('Failed to load work items', 'danger');
+                    }
+                } catch (error) {
+                    console.error('Error loading work items:', error);
+                    AdminUtils.showAlert('Error loading work items', 'danger');
+                }
+            }
+
+            renderWorkItems() {
+                const tbody = document.getElementById('workItemsTableBody');
+                const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+                const endIndex = startIndex + this.itemsPerPage;
+                const pageItems = this.filteredItems.slice(startIndex, endIndex);
+
+                if (pageItems.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="8" class="text-center text-muted">
+                                <i class="fas fa-briefcase fa-2x mb-3 d-block"></i>
+                                No work items found
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                tbody.innerHTML = pageItems.map(item => `
+                    <tr>
+                        <td>
+                            <div class="form-check">
+                                <input class="form-check-input work-checkbox" type="checkbox" value="${item._id}" 
+                                       onchange="workManager.toggleItemSelection('${item._id}')"
+                                       ${this.selectedItems.has(item._id) ? 'checked' : ''}>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                ${item.image ? `
+                                    <img src="${item.image}" alt="Project" class="rounded me-2" style="width: 40px; height: 40px; object-fit: cover;">
+                                ` : `
+                                    <div class="bg-light rounded me-2 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                        <i class="fas fa-project-diagram text-muted"></i>
+                                    </div>
+                                `}
+                                <div>
+                                    <h6 class="mb-0">${item.title}</h6>
+                                    <small class="text-muted">${item.client || 'No client'}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>${item.client || 'N/A'}</td>
+                        <td>
+                            <span class="badge bg-secondary">${item.category?.name || 'Uncategorized'}</span>
+                        </td>
+                        <td>
+                            <span class="badge ${this.getStatusColor(item.status)}">
+                                ${this.getStatusText(item.status)}
+                            </span>
+                        </td>
+                        <td>
+                            ${item.technologies ? item.technologies.slice(0, 2).map(tech => `
+                                <span class="badge bg-info me-1">${tech}</span>
+                            `).join('') : 'N/A'}
+                            ${item.technologies && item.technologies.length > 2 ? '<small class="text-muted">...</small>' : ''}
+                        </td>
+                        <td>${item.completionDate ? new Date(item.completionDate).toLocaleDateString() : 'N/A'}</td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <button class="btn btn-sm btn-outline-primary" onclick="workManager.editWorkItem('${item._id}')" title="Edit">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-${item.status === 'completed' ? 'warning' : 'success'}" 
+                                        onclick="workManager.toggleItemStatus('${item._id}')" title="${item.status === 'completed' ? 'Mark as In Progress' : 'Mark as Completed'}">
+                                    <i class="fas fa-${item.status === 'completed' ? 'eye-slash' : 'eye'}"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" onclick="workManager.deleteWorkItem('${item._id}')" title="Delete">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+
+            getStatusColor(status) {
+                const colors = {
+                    'completed': 'bg-success',
+                    'in-progress': 'bg-primary',
+                    'planning': 'bg-warning'
+                };
+                return colors[status] || 'bg-secondary';
+            }
+
+            getStatusText(status) {
+                const texts = {
+                    'completed': 'Completed',
+                    'in-progress': 'In Progress',
+                    'planning': 'Planning'
+                };
+                return texts[status] || status;
+            }
+
+            renderPagination() {
+                const totalPages = Math.ceil(this.filteredItems.length / this.itemsPerPage);
+                const pagination = document.getElementById('workItemsPagination');
+
+                if (totalPages <= 1) {
+                    pagination.innerHTML = '';
+                    return;
+                }
+
+                let paginationHTML = '';
+
+                // Previous button
+                paginationHTML += `
+                    <li class="page-item ${this.currentPage === 1 ? 'disabled' : ''}">
+                        <a class="page-link" href="#" onclick="workManager.goToPage(${this.currentPage - 1})">Previous</a>
+                    </li>
+                `;
+
+                // Page numbers
+                for (let i = 1; i <= totalPages; i++) {
+                    if (i === 1 || i === totalPages || (i >= this.currentPage - 2 && i <= this.currentPage + 2)) {
+                        paginationHTML += `
+                            <li class="page-item ${i === this.currentPage ? 'active' : ''}">
+                                <a class="page-link" href="#" onclick="workManager.goToPage(${i})">${i}</a>
+                            </li>
+                        `;
+                    } else if (i === this.currentPage - 3 || i === this.currentPage + 3) {
+                        paginationHTML += '<li class="page-item disabled"><span class="page-link">...</span></li>';
+                    }
+                }
+
+                // Next button
+                paginationHTML += `
+                    <li class="page-item ${this.currentPage === totalPages ? 'disabled' : ''}">
+                        <a class="page-link" href="#" onclick="workManager.goToPage(${this.currentPage + 1})">Next</a>
+                    </li>
+                `;
+
+                pagination.innerHTML = paginationHTML;
+            }
+
+            goToPage(page) {
+                if (page >= 1 && page <= Math.ceil(this.filteredItems.length / this.itemsPerPage)) {
+                    this.currentPage = page;
+                    this.renderWorkItems();
+                    this.renderPagination();
+                }
+            }
+
+            applyFilters() {
+                const statusFilter = document.getElementById('statusFilter').value;
+                const categoryFilter = document.getElementById('categoryFilter').value;
+                const searchQuery = document.getElementById('searchInput').value.toLowerCase();
+
+                this.filteredItems = this.workItems.filter(item => {
+                    const matchesStatus = !statusFilter || item.status === statusFilter;
+                    const matchesCategory = !categoryFilter || item.category?._id === categoryFilter;
+                    const matchesSearch = !searchQuery || 
+                        item.title.toLowerCase().includes(searchQuery) ||
+                        (item.description && item.description.toLowerCase().includes(searchQuery)) ||
+                        (item.client && item.client.toLowerCase().includes(searchQuery)) ||
+                        (item.technologies && item.technologies.some(tech => tech.toLowerCase().includes(searchQuery)));
+
+                    return matchesStatus && matchesCategory && matchesSearch;
+                });
+
+                this.currentPage = 1;
+                this.renderWorkItems();
+                this.renderPagination();
+            }
+
+            toggleItemSelection(itemId) {
+                if (this.selectedItems.has(itemId)) {
+                    this.selectedItems.delete(itemId);
+                } else {
+                    this.selectedItems.add(itemId);
+                }
+                this.updateBulkActions();
+            }
+
+            toggleSelectAll(checked) {
+                const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+                const endIndex = startIndex + this.itemsPerPage;
+                const pageItems = this.filteredItems.slice(startIndex, endIndex);
+
+                pageItems.forEach(item => {
+                    if (checked) {
+                        this.selectedItems.add(item._id);
+                    } else {
+                        this.selectedItems.delete(item._id);
+                    }
+                });
+
+                this.updateBulkActions();
+                this.renderWorkItems();
+            }
+
+            updateBulkActions() {
+                const bulkActions = document.getElementById('bulkActions');
+                const selectedCount = document.getElementById('selectedCount');
+                
+                if (this.selectedItems.size > 0) {
+                    bulkActions.style.display = 'block';
+                    selectedCount.textContent = `${this.selectedItems.size} item(s) selected`;
+                } else {
+                    bulkActions.style.display = 'none';
+                }
+            }
+
+            clearSelection() {
+                this.selectedItems.clear();
+                this.updateBulkActions();
+                this.renderWorkItems();
+            }
+
+            executeBulkAction() {
+                const action = document.getElementById('bulkActionSelect').value;
+                if (!action) {
+                    AdminUtils.showAlert('Please select an action', 'warning');
+                    return;
+                }
+
+                const selectedIds = Array.from(this.selectedItems);
+                if (selectedIds.length === 0) {
+                    AdminUtils.showAlert('Please select items first', 'warning');
+                    return;
+                }
+
+                if (action === 'delete' && !confirm(`Delete ${selectedIds.length} item(s)?`)) {
+                    return;
+                }
+
+                // Implement bulk operations
+                switch (action) {
+                    case 'completed':
+                        this.bulkUpdateStatus(selectedIds, 'completed');
+                        break;
+                    case 'in-progress':
+                        this.bulkUpdateStatus(selectedIds, 'in-progress');
+                        break;
+                    case 'delete':
+                        this.bulkDeleteItems(selectedIds);
+                        break;
+                }
+            }
+
+            async bulkUpdateStatus(itemIds, status) {
+                try {
+                    const token = localStorage.getItem('adminToken');
+                    const response = await fetch('/api/admin/content/work-items/bulk', {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({
+                            workItemIds: itemIds,
+                            action: status,
+                            data: { status }
+                        })
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        AdminUtils.showAlert(`Items marked as ${this.getStatusText(status)} successfully`, 'success');
+                        await this.loadWorkItems();
+                        this.clearSelection();
+                    } else {
+                        AdminUtils.showAlert(result.error || `Failed to mark items as ${this.getStatusText(status)}`, 'danger');
+                    }
+                } catch (error) {
+                    AdminUtils.showAlert(`Error marking items as ${this.getStatusText(status)}`, 'danger');
+                }
+            }
+
+            async bulkDeleteItems(itemIds) {
+                try {
+                    const token = localStorage.getItem('adminToken');
+                    const response = await fetch('/api/admin/content/work-items/bulk', {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({
+                            workItemIds: itemIds,
+                            action: 'delete'
+                        })
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        AdminUtils.showAlert('Items deleted successfully', 'success');
+                        await this.loadWorkItems();
+                        this.clearSelection();
+                    } else {
+                        AdminUtils.showAlert(result.error || 'Failed to delete items', 'danger');
+                    }
+                } catch (error) {
+                    AdminUtils.showAlert('Error deleting items', 'danger');
+                }
+            }
+
+            openCreateModal() {
+                this.isEditMode = false;
+                this.currentItemId = null;
+                document.getElementById('workModalTitle').textContent = 'Create New Work Item';
+                this.resetForm();
+                new bootstrap.Modal(document.getElementById('createWorkModal')).show();
+            }
+
+            editWorkItem(itemId) {
+                const item = this.workItems.find(i => i._id === itemId);
+                if (!item) return;
+
+                this.isEditMode = true;
+                this.currentItemId = itemId;
+                document.getElementById('workModalTitle').textContent = 'Edit Work Item';
+                
+                // Populate form fields
+                document.getElementById('workTitle').value = item.title;
+                document.getElementById('workClient').value = item.client || '';
+                document.getElementById('workUrl').value = item.url || '';
+                document.getElementById('workGithub').value = item.github || '';
+                document.getElementById('workTechnologies').value = item.technologies ? item.technologies.join(', ') : '';
+                document.getElementById('workCategory').value = item.category?._id || '';
+                document.getElementById('workStatus').value = item.status;
+                document.getElementById('workCompletionDate').value = item.completionDate ? item.completionDate.split('T')[0] : '';
+                
+                // Set description
+                $('#workDescription').summernote('code', item.description);
+                
+                // Show main image if exists
+                if (item.image) {
+                    const preview = document.getElementById('workImagePreview');
+                    preview.src = item.image;
+                    preview.style.display = 'block';
+                }
+                
+                new bootstrap.Modal(document.getElementById('createWorkModal')).show();
+            }
+
+            resetForm() {
+                document.getElementById('workForm').reset();
+                $('#workDescription').summernote('code', '');
+                
+                // Hide image previews
+                const preview = document.getElementById('workImagePreview');
+                preview.src = '';
+                preview.style.display = 'none';
+                
+                // Clear gallery previews
+                const galleryPreview = document.getElementById('galleryPreview');
+                galleryPreview.innerHTML = '';
+                
+                // Reset file inputs
+                document.getElementById('workImage').value = '';
+                document.getElementById('workGallery').value = '';
+            }
+
+            async handleImageUpload(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                // Validate file type
+                if (!file.type.startsWith('image/')) {
+                    AdminUtils.showAlert('Please select an image file', 'warning');
+                    return;
+                }
+
+                // Validate file size (5MB max)
+                if (file.size > 5 * 1024 * 1024) {
+                    AdminUtils.showAlert('Image size must be less than 5MB', 'warning');
+                    return;
+                }
+
+                // Show preview
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const preview = document.getElementById('workImagePreview');
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+
+            async handleGalleryUpload(event) {
+                const files = Array.from(event.target.files);
+                if (files.length === 0) return;
+
+                const galleryPreview = document.getElementById('galleryPreview');
+                galleryPreview.innerHTML = '';
+
+                files.forEach((file, index) => {
+                    if (file.type.startsWith('image/')) {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            const col = document.createElement('div');
+                            col.className = 'col-4 mb-2';
+                            col.innerHTML = `
+                                <img src="${e.target.result}" alt="Gallery ${index + 1}" 
+                                     class="img-thumbnail" style="width: 100%; height: 100px; object-fit: cover;">
+                            `;
+                            galleryPreview.appendChild(col);
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
+
+            async uploadImage(file) {
+                const formData = new FormData();
+                formData.append('image', file);
+
+                try {
+                    const token = localStorage.getItem('adminToken');
+                    const response = await fetch('/api/admin/upload/image', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: formData
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        $('#workDescription').summernote('insertImage', result.data.url);
+                    } else {
+                        AdminUtils.showAlert(result.error || 'Failed to upload image', 'danger');
+                    }
+                } catch (error) {
+                    AdminUtils.showAlert('Error uploading image', 'danger');
+                }
+            }
+
+            async saveDraft() {
+                await this.saveWorkInternal('draft');
+            }
+
+            async saveWork() {
+                await this.saveWorkInternal('published');
+            }
+
+            async saveWorkInternal(status) {
+                const title = document.getElementById('workTitle').value;
+                const description = $('#workDescription').summernote('code');
+                const category = document.getElementById('workCategory').value;
+                const client = document.getElementById('workClient').value;
+                const url = document.getElementById('workUrl').value;
+                const github = document.getElementById('workGithub').value;
+                const technologies = document.getElementById('workTechnologies').value.split(',').map(tech => tech.trim()).filter(tech => tech);
+                const completionDate = document.getElementById('workCompletionDate').value;
+                
+                if (!title || !description || !category) {
+                    AdminUtils.showAlert('Please fill in all required fields', 'warning');
+                    return;
+                }
+
+                const workData = {
+                    title,
+                    description,
+                    category,
+                    status,
+                    client,
+                    url,
+                    github,
+                    technologies,
+                    completionDate
+                };
+
+                try {
+                    const token = localStorage.getItem('adminToken');
+                    const url = this.isEditMode 
+                        ? `/api/admin/content/work-items/${this.currentItemId}`
+                        : '/api/admin/content/work-items';
+                    const method = this.isEditMode ? 'PUT' : 'POST';
+
+                    // Handle main image upload if selected
+                    const imageFile = document.getElementById('workImage').files[0];
+                    if (imageFile) {
+                        const imageFormData = new FormData();
+                        imageFormData.append('image', imageFile);
+                        
+                        const imageResponse = await fetch('/api/admin/upload/image', {
+                            method: 'POST',
+                            headers: {
+                                'Authorization': `Bearer ${token}`
+                            },
+                            body: imageFormData
+                        });
+
+                        const imageResult = await imageResponse.json();
+                        if (imageResult.success) {
+                            workData.image = imageResult.data.url;
+                        }
+                    }
+
+                    // Handle gallery images if any
+                    const galleryFiles = document.getElementById('workGallery').files;
+                    if (galleryFiles.length > 0) {
+                        // This would require a separate gallery upload endpoint
+                        // For now, we'll skip gallery uploads in this implementation
+                    }
+
+                    const response = await fetch(url, {
+                        method,
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify(workData)
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        AdminUtils.showAlert(`Work item ${this.isEditMode ? 'updated' : 'created'} successfully`, 'success');
+                        bootstrap.Modal.getInstance(document.getElementById('createWorkModal')).hide();
+                        this.resetForm();
+                        await this.loadWorkItems();
+                    } else {
+                        AdminUtils.showAlert(result.error || `Failed to ${this.isEditMode ? 'update' : 'create'} work item`, 'danger');
+                    }
+                } catch (error) {
+                    AdminUtils.showAlert(`Error ${this.isEditMode ? 'updating' : 'creating'} work item`, 'danger');
+                }
+            }
+
+            async toggleItemStatus(itemId) {
+                try {
+                    const token = localStorage.getItem('adminToken');
+                    const item = this.workItems.find(i => i._id === itemId);
+                    const newStatus = item.status === 'completed' ? 'in-progress' : 'completed';
+
+                    const response = await fetch(`/api/admin/content/work-items/${itemId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({ status: newStatus })
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        AdminUtils.showAlert(`Item marked as ${this.getStatusText(newStatus)} successfully`, 'success');
+                        await this.loadWorkItems();
+                    } else {
+                        AdminUtils.showAlert(result.error || 'Failed to update item status', 'danger');
+                    }
+                } catch (error) {
+                    AdminUtils.showAlert('Error updating item status', 'danger');
+                }
+            }
+
+            deleteWorkItem(itemId) {
+                const item = this.workItems.find(i => i._id === itemId);
+                if (item) {
+                    document.getElementById('deleteWorkTitle').textContent = item.title;
+                    document.getElementById('confirmDeleteBtn').setAttribute('data-item-id', itemId);
+                    new bootstrap.Modal(document.getElementById('deleteWorkModal')).show();
+                }
+            }
+
+            async confirmDeleteItem() {
+                const itemId = document.getElementById('confirmDeleteBtn').getAttribute('data-item-id');
+
+                try {
+                    const token = localStorage.getItem('adminToken');
+                    const response = await fetch(`/api/admin/content/work-items/${itemId}`, {
+                        method: 'DELETE',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        AdminUtils.showAlert('Work item deleted successfully', 'success');
+                        bootstrap.Modal.getInstance(document.getElementById('deleteWorkModal')).hide();
+                        await this.loadWorkItems();
+                    } else {
+                        AdminUtils.showAlert(result.error || 'Failed to delete work item', 'danger');
+                    }
+                } catch (error) {
+                    AdminUtils.showAlert('Error deleting work item', 'danger');
+                }
+            }
+
+            async refreshWorkItems() {
+                await this.loadWorkItems();
+                AdminUtils.showAlert('Work items refreshed', 'info');
+            }
+
+            async updateProfile() {
+                const formData = {
+                    email: document.getElementById('profileEmail').value,
+                    fullName: document.getElementById('profileFullName').value
+                };
+
+                try {
+                    const token = localStorage.getItem('adminToken');
+                    const response = await fetch('/api/admin/auth/profile', {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify(formData)
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        AdminUtils.showAlert('Profile updated successfully!', 'success');
+                        bootstrap.Modal.getInstance(document.getElementById('profileModal')).hide();
+                        this.admin = result.data.admin;
+                        this.updateUI();
+                    } else {
+                        AdminUtils.showAlert(result.error || 'Failed to update profile', 'danger');
+                    }
+                } catch (error) {
+                    AdminUtils.showAlert('An error occurred while updating profile', 'danger');
+                }
+            }
+
+            async changePassword() {
+                const currentPassword = document.getElementById('currentPassword').value;
+                const newPassword = document.getElementById('newPassword').value;
+                const confirmPassword = document.getElementById('confirmNewPassword').value;
+
+                if (newPassword !== confirmPassword) {
+                    AdminUtils.showAlert('New passwords do not match', 'danger');
+                    return;
+                }
+
+                try {
+                    const token = localStorage.getItem('adminToken');
+                    const response = await fetch('/api/admin/auth/change-password', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({
+                            currentPassword,
+                            newPassword
+                        })
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        AdminUtils.showAlert('Password changed successfully!', 'success');
+                        bootstrap.Modal.getInstance(document.getElementById('changePasswordModal')).hide();
+                        document.getElementById('changePasswordForm').reset();
+                    } else {
+                        AdminUtils.showAlert(result.error || 'Failed to change password', 'danger');
+                    }
+                } catch (error) {
+                    AdminUtils.showAlert('An error occurred while changing password', 'danger');
+                }
+            }
+
+            async logout() {
+                try {
+                    const token = localStorage.getItem('adminToken');
+                    await fetch('/api/admin/auth/logout', {
+                        method: 'POST',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                } catch (error) {
+                    console.error('Logout error:', error);
+                } finally {
+                    localStorage.removeItem('adminToken');
+                    localStorage.removeItem('adminRefreshToken');
+                    window.location.href = '/admin/login';
+                }
+            }
+        }
+
+        // Initialize when page loads
+        let workManager;
+        document.addEventListener('DOMContentLoaded', () => {
+            workManager = new WorkManager();
+            
+            // Handle confirm delete
+            document.getElementById('confirmDeleteBtn').addEventListener('click', () => {
+                workManager.confirmDeleteItem();
+            });
+        });
+
+        // Global functions
+        function refreshWorkItems() {
+            workManager.refreshWorkItems();
+        }
+    </script>
+</body>
+</html>

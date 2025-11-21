@@ -1,0 +1,41 @@
+{
+  "core_doctrines": {
+    "salvation": ["grace", "faith", "not works", "gift", "eternal life"],
+    "trinity": ["Father", "Son", "Holy Spirit", "three persons", "one God"],
+    "christ": ["deity", "humanity", "savior", "lord", "mediator"],
+    "scripture": ["inspired", "authoritative", "sufficient", "inerrant"],
+    "grace": ["unmerited favor", "empowerment", "divine ability"],
+    "faith": ["trust", "belief", "substance", "evidence", "creative force"],
+    "divine_identity": [
+      "God's class of beings",
+      "partakers of divine nature",
+      "reproduction of Gods",
+      "authority to command blessings"
+    ],
+    "healing": [
+      "divine health mandate",
+      "supernatural immunity",
+      "confession over medicine",
+      "neutralization of diseases"
+    ],
+    "authority": [
+      "speaking reality into existence",
+      "commanding body functions",
+      "dominion over creation",
+      "unlimited abilities"
+    ]
+  },
+  "red_flags": [
+    "denying trinity",
+    "accepting natural death",
+    "medical dependence",
+    "poverty acceptance",
+    "sickness tolerance",
+    "vaccine effectiveness",
+    "human limitations",
+    "apostolic fallibility",
+    "scriptural insufficiency",
+    "grace without empowerment",
+    "faith without manifestation"
+  ],
+}

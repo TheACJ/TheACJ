@@ -1,0 +1,4 @@
+2025-11-19 10:54:44,028 - INFO - Starting Django to MongoDB migration...
+2025-11-19 10:54:44,032 - INFO - Connected to Django SQLite database: db.sqlite3
+2025-11-19 10:54:45,922 - ERROR - Failed to connect to MongoDB: cannot open /etc/resolv.conf
+2025-11-19 10:54:45,923 - INFO - SQLite connection closed

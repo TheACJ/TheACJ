@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Content Management - The ACJ Portfolio Admin</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="/assets/admin.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js" integrity="sha512-p7NThnzM6NThBzE1F9Z9bL3bBgOSvM3b3GWoBFlT1zbQ+sHm+OobwMR4aT5E8Lwjje7T8V7loTDtYf5UZcKFw/w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/admin/dashboard">
+                <i class="fas fa-edit me-2"></i>Content Management
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/dashboard">
+                            <i class="fas fa-chart-bar me-1"></i>Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/blog-posts">
+                            <i class="fas fa-blog me-1"></i>Blog Posts
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/work-items">
+                            <i class="fas fa-briefcase me-1"></i>Work Items
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/contacts">
+                            <i class="fas fa-envelope me-1"></i>Contacts
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/categories">
+                            <i class="fas fa-tags me-1"></i>Categories
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/admin/content">
+                            <i class="fas fa-edit me-1"></i>Content
+                        </a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-shield me-1"></i><span id="adminName">Admin</span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#profileModal">
+                                <i class="fas fa-user me-2"></i>Profile
+                            </a></li>
+                            <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
+                                <i class="fas fa-key me-2"></i>Change Password
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#" id="logoutBtn">
+                                <i class="fas fa-sign-out-alt me-2"></i>Logout
+                            </a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid mt-4">
+        <!-- Page Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h2><i class="fas fa-edit me-2"></i>Content Management</h2>
+                        <p class="text-muted">Customize your homepage sections</p>
+                    </div>
+                    <div>
+                        <button class="btn btn-success me-2" id="saveAllBtn">
+                            <i class="fas fa-save me-2"></i>Save All Changes
+                        </button>
+                        <button class="btn btn-info" id="resetAllBtn">
+                            <i class="fas fa-undo me-2"></i>Reset to Defaults
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content Tabs -->
+        <div class="row">
+            <div class="col-12">
+                <ul class="nav nav-tabs" id="contentTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="hero-tab" data-bs-toggle="tab" data-bs-target="#hero" type="button" role="tab">
+                            <i class="fas fa-home me-1"></i>Hero Section
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="about-tab" data-bs-toggle="tab" data-bs-target="#about" type="button" role="tab">
+                            <i class="fas fa-user me-1"></i>About Section
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="services-tab" data-bs-toggle="tab" data-bs-target="#services" type="button" role="tab">
+                            <i class="fas fa-cogs me-1"></i>Services
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="counter-tab" data-bs-toggle="tab" data-bs-target="#counter" type="button" role="tab">
+                            <i class="fas fa-chart-bar me-1"></i>Counter
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="skills-tab" data-bs-toggle="tab" data-bs-target="#skills" type="button" role="tab">
+                            <i class="fas fa-code me-1"></i>Skills
+                        </button>
+                    </li>
+                </ul>
+
+                <div class="tab-content" id="contentTabsContent">
+                    <!-- Hero Section -->
+                    <div class="tab-pane fade show active" id="hero" role="tabpanel">
+                        <div class="card mt-3">
+                            <div class="card-header">
+                                <h5 class="mb-0"><i class="fas fa-home me-2"></i>Hero Section</h5>
+                            </div>
+                            <div class="card-body">
+                                <form id="heroForm">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">Title</label>
+                                                <input type="text" class="form-control" id="heroTitle" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Subtitle</label>
+                                                <input type="text" class="form-control" id="heroSubtitle" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">CTA Text</label>
+                                                <input type="text" class="form-control" id="heroCtaText" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">CTA Link</label>
+                                                <input type="text" class="form-control" id="heroCtaLink" placeholder="#work">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">Description</label>
+                                                <textarea class="form-control" id="heroDescription" rows="4" required></textarea>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Profile Image URL</label>
+                                                <input type="text" class="form-control" id="heroImage" placeholder="/assets/img/theacj.jpg">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <h6 class="mt-4">Social Links</h6>
+                                    <div id="socialLinksContainer">
+                                        <!-- Social links will be added dynamically -->
+                                    </div>
+                                    <button type="button" class="btn btn-outline-primary btn-sm mt-2" onclick="addSocialLink()">
+                                        <i class="fas fa-plus me-1"></i>Add Social Link
+                                    </button>
+                                    
+                                    <div class="text-end mt-4">
+                                        <button type="button" class="btn btn-primary" onclick="saveSection('hero')">
+                                            <i class="fas fa-save me-2"></i>Save Hero Section
+                                        </button>
+                                        <button type="button" class="btn btn-secondary ms-2" onclick="resetSection('hero')">
+                                            <i class="fas fa-undo me-2"></i>Reset to Default
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- About Section -->
+                    <div class="tab-pane fade" id="about" role="tabpanel">
+                        <div class="card mt-3">
+                            <div class="card-header">
+                                <h5 class="mb-0"><i class="fas fa-user me-2"></i>About Section</h5>
+                            </div>
+                            <div class="card-body">
+                                <form id="aboutForm">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">Title</label>
+                                                <input type="text" class="form-control" id="aboutTitle" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">About Image URL</label>
+                                                <input type="text" class="form-control" id="aboutImage" placeholder="/assets/img/about.jpg">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">Description</label>
+                                                <textarea class="form-control" id="aboutDescription" rows="6" required></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <h6 class="mt-4">Achievements</h6>
+                                    <div id="achievementsContainer">
+                                        <!-- Achievements will be added dynamically -->
+                                    </div>
+                                    <button type="button" class="btn btn-outline-primary btn-sm mt-2" onclick="addAchievement()">
+                                        <i class="fas fa-plus me-1"></i>Add Achievement
+                                    </button>
+                                    
+                                    <div class="text-end mt-4">
+                                        <button type="button" class="btn btn-primary" onclick="saveSection('about')">
+                                            <i class="fas fa-save me-2"></i>Save About Section
+                                        </button>
+                                        <button type="button" class="btn btn-secondary ms-2" onclick="resetSection('about')">
+                                            <i class="fas fa-undo me-2"></i>Reset to Default
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Services Section -->
+                    <div class="tab-pane fade" id="services" role="tabpanel">
+                        <div class="card mt-3">
+                            <div class="card-header">
+                                <h5 class="mb-0"><i class="fas fa-cogs me-2"></i>Services</h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="servicesContainer">
+                                    <!-- Services will be added dynamically -->
+                                </div>
+                                <button type="button" class="btn btn-outline-primary btn-sm mt-2" onclick="addService()">
+                                    <i class="fas fa-plus me-1"></i>Add Service
+                                </button>
+                                
+                                <div class="text-end mt-4">
+                                    <button type="button" class="btn btn-primary" onclick="saveSection('services')">
+                                        <i class="fas fa-save me-2"></i>Save Services
+                                    </button>
+                                    <button type="button" class="btn btn-secondary ms-2" onclick="resetSection('services')">
+                                        <i class="fas fa-undo me-2"></i>Reset to Default
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Counter Section -->
+                    <div class="tab-pane fade" id="counter" role="tabpanel">
+                        <div class="card mt-3">
+                            <div class="card-header">
+                                <h5 class="mb-0"><i class="fas fa-chart-bar me-2"></i>Counter</h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="counterContainer">
+                                    <!-- Counters will be added dynamically -->
+                                </div>
+                                <button type="button" class="btn btn-outline-primary btn-sm mt-2" onclick="addCounter()">
+                                    <i class="fas fa-plus me-1"></i>Add Counter
+                                </button>
+                                
+                                <div class="text-end mt-4">
+                                    <button type="button" class="btn btn-primary" onclick="saveSection('counter')">
+                                        <i class="fas fa-save me-2"></i>Save Counter
+                                    </button>
+                                    <button type="button" class="btn btn-secondary ms-2" onclick="resetSection('counter')">
+                                        <i class="fas fa-undo me-2"></i>Reset to Default
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Skills Section -->
+                    <div class="tab-pane fade" id="skills" role="tabpanel">
+                        <div class="card mt-3">
+                            <div class="card-header">
+                                <h5 class="mb-0"><i class="fas fa-code me-2"></i>Skills</h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="skillsContainer">
+                                    <!-- Skills will be added dynamically -->
+                                </div>
+                                <button type="button" class="btn btn-outline-primary btn-sm mt-2" onclick="addSkill()">
+                                    <i class="fas fa-plus me-1"></i>Add Skill
+                                </button>
+                                
+                                <div class="text-end mt-4">
+                                    <button type="button" class="btn btn-primary" onclick="saveSection('skills')">
+                                        <i class="fas fa-save me-2"></i>Save Skills
+                                    </button>
+                                    <button type="button" class="btn btn-secondary ms-2" onclick="resetSection('skills')">
+                                        <i class="fas fa-undo me-2"></i>Reset to Default
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Modal -->
+    <div class="modal fade" id="profileModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Admin Profile</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="profileForm">
+                        <div class="mb-3">
+                            <label class="form-label">Username</label>
+                            <input type="text" class="form-control" id="profileUsername" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" id="profileEmail">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Full Name</label>
+                            <input type="text" class="form-control" id="profileFullName">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Role</label>
+                            <input type="text" class="form-control" id="profileRole" readonly>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="updateProfileBtn">Update Profile</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Change Password Modal -->
+    <div class="modal fade" id="changePasswordModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Change Password</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="changePasswordForm">
+                        <div class="mb-3">
+                            <label class="form-label">Current Password</label>
+                            <input type="password" class="form-control" id="currentPassword" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">New Password</label>
+                            <input type="password" class="form-control" id="newPassword" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Confirm New Password</label>
+                            <input type="password" class="form-control" id="confirmNewPassword" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="changePasswordBtn">Change Password</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/assets/admin.js"></script>
+    <script>
+        class ContentManager {
+            constructor() {
+                this.content = {};
+                this.init();
+            }
+
+            async init() {
+                await this.checkAuth();
+                this.setupEventListeners();
+                await this.loadContent();
+            }
+
+            async checkAuth() {
+                const token = localStorage.getItem('adminToken');
+                if (!token) {
+                    window.location.href = '/admin/login';
+                    return;
+                }
+
+                try {
+                    const response = await fetch('/api/admin/auth/me', {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    const result = await response.json();
+
+                    if (!result.success) {
+                        this.handleAuthError();
+                        return;
+                    }
+
+                    this.admin = result.data.admin;
+                    this.updateUI();
+                } catch (error) {
+                    this.handleAuthError();
+                }
+            }
+
+            handleAuthError() {
+                localStorage.removeItem('adminToken');
+                localStorage.removeItem('adminRefreshToken');
+                window.location.href = '/admin/login';
+            }
+
+            updateUI() {
+                document.getElementById('adminName').textContent = this.admin.fullName || this.admin.username;
+
+                document.getElementById('profileUsername').value = this.admin.username;
+                document.getElementById('profileEmail').value = this.admin.email;
+                document.getElementById('profileFullName').value = this.admin.fullName;
+                document.getElementById('profileRole').value = this.admin.role;
+            }
+
+            setupEventListeners() {
+                document.getElementById('logoutBtn').addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.logout();
+                });
+
+                document.getElementById('updateProfileBtn').addEventListener('click', () => {
+                    this.updateProfile();
+                });
+
+                document.getElementById('changePasswordBtn').addEventListener('click', () => {
+                    this.changePassword();
+                });
+
+                document.getElementById('saveAllBtn').addEventListener('click', () => {
+                    this.saveAllChanges();
+                });
+
+                document.getElementById('resetAllBtn').addEventListener('click', () => {
+                    this.resetAllSections();
+                });
+            }
+
+            async loadContent() {
+                try {
+                    const token = localStorage.getItem('adminToken');
+                    const response = await fetch('/api/admin/content/sections', {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        this.content = result.data.content || {};
+                        this.populateForms();
+                    } else {
+                        console.error('Failed to load content:', result.error);
+                        // Load default content for empty sections
+                        await this.loadDefaultContent();
+                    }
+                } catch (error) {
+                    console.error('Error loading content:', error);
+                    AdminUtils.showAlert('Error loading content', 'danger');
+                }
+            }
+
+            async loadDefaultContent() {
+                // This will use the default content from the backend
+                this.content = {};
+                this.populateForms();
+            }
+
+            populateForms() {
+                this.populateHeroForm();
+                this.populateAboutForm();
+                this.populateServicesForm();
+                this.populateCounterForm();
+                this.populateSkillsForm();
+            }
+
+            populateHeroForm() {
+                const hero = this.content.hero || {
+                    title: "Joshua Agbai",
+                    subtitle: "Data Analyst & Web Developer",
+                    description: "Transforming data into insights and building exceptional web experiences with modern technologies and innovative solutions.",
+                    image: "/assets/img/theacj.jpg",
+                    ctaText: "Explore My Work",
+                    ctaLink: "#work",
+                    socialLinks: [
+                        { platform: "GitHub", url: "https://github.com/TheACJ", icon: "fab fa-github" },
+                        { platform: "LinkedIn", url: "https://linkedin.com/in/joshuaagbai", icon: "fab fa-linkedin" },
+                        { platform: "Twitter", url: "https://twitter.com/realACJoshua", icon: "fab fa-twitter" }
+                    ]
+                };
+
+                document.getElementById('heroTitle').value = hero.title || '';
+                document.getElementById('heroSubtitle').value = hero.subtitle || '';
+                document.getElementById('heroDescription').value = hero.description || '';
+                document.getElementById('heroImage').value = hero.image || '';
+                document.getElementById('heroCtaText').value = hero.ctaText || '';
+                document.getElementById('heroCtaLink').value = hero.ctaLink || '';
+
+                this.populateSocialLinks(hero.socialLinks || []);
+            }
+
+            populateAboutForm() {
+                const about = this.content.about || {
+                    title: "About Me",
+                    description: "I'm a passionate Data Analyst and Web Developer with expertise in transforming complex data into actionable insights and creating responsive web applications.",
+                    image: "/assets/img/about.jpg",
+                    achievements: [
+                        "3+ Years of Data Analysis Experience",
+                        "50+ Projects Completed",
+                        "Multiple Technology Certifications",
+                        "Full-Stack Development Expertise"
+                    ]
+                };
+
+                document.getElementById('aboutTitle').value = about.title || '';
+                document.getElementById('aboutDescription').value = about.description || '';
+                document.getElementById('aboutImage').value = about.image || '';
+
+                this.populateAchievements(about.achievements || []);
+            }
+
+            populateServicesForm() {
+                const services = this.content.services || [
+                    {
+                        title: "Data Analysis",
+                        description: "Transform raw data into meaningful insights using Python, Pandas, NumPy, and visualization tools.",
+                        icon: "fas fa-chart-bar",
+                        order: 1
+                    },
+                    {
+                        title: "Web Development",
+                        description: "Build responsive, modern web applications using React, Node.js, and cutting-edge technologies.",
+                        icon: "fas fa-code",
+                        order: 2
+                    }
+                ];
+
+                const container = document.getElementById('servicesContainer');
+                container.innerHTML = '';
+                services.forEach((service, index) => {
+                    this.addServiceToForm(service, index);
+                });
+            }
+
+            populateCounterForm() {
+                const counter = this.content.counter || [
+                    { title: "Projects Completed", value: "50+", icon: "fas fa-project-diagram" },
+                    { title: "Happy Clients", value: "30+", icon: "fas fa-smile" },
+                    { title: "Years Experience", value: "3+", icon: "fas fa-calendar" },
+                    { title: "Technologies", value: "15+", icon: "fas fa-laptop-code" }
+                ];
+
+                const container = document.getElementById('counterContainer');
+                container.innerHTML = '';
+                counter.forEach((item, index) => {
+                    this.addCounterToForm(item, index);
+                });
+            }
+
+            populateSkillsForm() {
+                const skills = this.content.skills || [
+                    { name: "Python", level: 95, icon: "fab fa-python" },
+                    { name: "JavaScript", level: 90, icon: "fab fa-js" },
+                    { name: "React", level: 88, icon: "fab fa-react" }
+                ];
+
+                const container = document.getElementById('skillsContainer');
+                container.innerHTML = '';
+                skills.forEach((skill, index) => {
+                    this.addSkillToForm(skill, index);
+                });
+            }
+
+            populateSocialLinks(socialLinks) {
+                const container = document.getElementById('socialLinksContainer');
+                container.innerHTML = '';
+                socialLinks.forEach((link, index) => {
+                    this.addSocialLinkToForm(link, index);
+                });
+            }
+
+            populateAchievements(achievements) {
+                const container = document.getElementById('achievementsContainer');
+                container.innerHTML = '';
+                achievements.forEach((achievement, index) => {
+                    this.addAchievementToForm(achievement, index);
+                });
+            }
+
+            addSocialLink() {
+                const index = document.querySelectorAll('.social-link').length;
+                this.addSocialLinkToForm({ platform: "", url: "", icon: "" }, index);
+            }
+
+            addSocialLinkToForm(link, index) {
+                const container = document.getElementById('socialLinksContainer');
+                const div = document.createElement('div');
+                div.className = 'row social-link mb-2';
+                div.innerHTML = `
+                    <div class="col-md-3">
+                        <input type="text" class="form-control form-control-sm" placeholder="Platform" 
+                               value="${link.platform || ''}" data-field="platform" data-index="${index}">
+                    </div>
+                    <div class="col-md-4">
+                        <input type="text" class="form-control form-control-sm" placeholder="URL" 
+                               value="${link.url || ''}" data-field="url" data-index="${index}">
+                    </div>
+                    <div class="col-md-3">
+                        <input type="text" class="form-control form-control-sm" placeholder="Icon (FontAwesome)" 
+                               value="${link.icon || ''}" data-field="icon" data-index="${index}">
+                    </div>
+                    <div class="col-md-2">
+                        <button type="button" class="btn btn-danger btn-sm" onclick="removeSocialLink(${index})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+                container.appendChild(div);
+            }
+
+            addAchievement() {
+                const index = document.querySelectorAll('.achievement').length;
+                this.addAchievementToForm("", index);
+            }
+
+            addAchievementToForm(achievement, index) {
+                const container = document.getElementById('achievementsContainer');
+                const div = document.createElement('div');
+                div.className = 'row achievement mb-2';
+                div.innerHTML = `
+                    <div class="col-md-10">
+                        <input type="text" class="form-control form-control-sm" placeholder="Achievement description" 
+                               value="${achievement || ''}" data-field="achievement" data-index="${index}">
+                    </div>
+                    <div class="col-md-2">
+                        <button type="button" class="btn btn-danger btn-sm" onclick="removeAchievement(${index})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+                container.appendChild(div);
+            }
+
+            addService() {
+                const index = document.querySelectorAll('.service-item').length;
+                this.addServiceToForm({ title: "", description: "", icon: "", order: index + 1 }, index);
+            }
+
+            addServiceToForm(service, index) {
+                const container = document.getElementById('servicesContainer');
+                const div = document.createElement('div');
+                div.className = 'card mb-3 service-item';
+                div.innerHTML = `
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <input type="text" class="form-control form-control-sm mb-2" placeholder="Service Title" 
+                                       value="${service.title || ''}" data-field="title" data-index="${index}">
+                                <input type="text" class="form-control form-control-sm" placeholder="Icon (FontAwesome)" 
+                                       value="${service.icon || ''}" data-field="icon" data-index="${index}">
+                            </div>
+                            <div class="col-md-6">
+                                <textarea class="form-control form-control-sm" rows="3" placeholder="Service Description" 
+                                          data-field="description" data-index="${index}">${service.description || ''}</textarea>
+                            </div>
+                            <div class="col-md-2">
+                                <input type="number" class="form-control form-control-sm mb-2" placeholder="Order" 
+                                       value="${service.order || index + 1}" data-field="order" data-index="${index}">
+                                <button type="button" class="btn btn-danger btn-sm" onclick="removeService(${index})">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(div);
+            }
+
+            addCounter() {
+                const index = document.querySelectorAll('.counter-item').length;
+                this.addCounterToForm({ title: "", value: "", icon: "" }, index);
+            }
+
+            addCounterToForm(counter, index) {
+                const container = document.getElementById('counterContainer');
+                const div = document.createElement('div');
+                div.className = 'card mb-3 counter-item';
+                div.innerHTML = `
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-5">
+                                <input type="text" class="form-control form-control-sm mb-2" placeholder="Counter Title" 
+                                       value="${counter.title || ''}" data-field="title" data-index="${index}">
+                                <input type="text" class="form-control form-control-sm" placeholder="Icon (FontAwesome)" 
+                                       value="${counter.icon || ''}" data-field="icon" data-index="${index}">
+                            </div>
+                            <div class="col-md-5">
+                                <input type="text" class="form-control form-control-sm" placeholder="Counter Value" 
+                                       value="${counter.value || ''}" data-field="value" data-index="${index}">
+                            </div>
+                            <div class="col-md-2">
+                                <button type="button" class="btn btn-danger btn-sm" onclick="removeCounter(${index})">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(div);
+            }
+
+            addSkill() {
+                const index = document.querySelectorAll('.skill-item').length;
+                this.addSkillToForm({ name: "", level: 50, icon: "" }, index);
+            }
+
+            addSkillToForm(skill, index) {
+                const container = document.getElementById('skillsContainer');
+                const div = document.createElement('div');
+                div.className = 'card mb-3 skill-item';
+                div.innerHTML = `
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <input type="text" class="form-control form-control-sm mb-2" placeholder="Skill Name" 
+                                       value="${skill.name || ''}" data-field="name" data-index="${index}">
+                                <input type="text" class="form-control form-control-sm" placeholder="Icon (FontAwesome)" 
+                                       value="${skill.icon || ''}" data-field="icon" data-index="${index}">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Proficiency Level: <span id="skillLevel_${index}">${skill.level || 50}%</span></label>
+                                <input type="range" class="form-range" min="0" max="100" value="${skill.level || 50}" 
+                                       data-field="level" data-index="${index}" oninput="updateSkillLevel(${index}, this.value)">
+                            </div>
+                            <div class="col-md-2">
+                                <button type="button" class="btn btn-danger btn-sm" onclick="removeSkill(${index})">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(div);
+            }
+
+            async saveSection(sectionType) {
+                try {
+                    const token = localStorage.getItem('adminToken');
+                    const sectionData = this.getSectionData(sectionType);
+
+                    const response = await fetch(`/api/admin/content/sections/${sectionType}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify(sectionData)
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        AdminUtils.showAlert(`${sectionType.charAt(0).toUpperCase() + sectionType.slice(1)} section saved successfully!`, 'success');
+                        this.content[sectionType] = result.data.content[sectionType];
+                    } else {
+                        AdminUtils.showAlert(result.error || `Failed to save ${sectionType} section`, 'danger');
+                    }
+                } catch (error) {
+                    console.error('Error saving section:', error);
+                    AdminUtils.showAlert(`Error saving ${sectionType} section`, 'danger');
+                }
+            }
+
+            async resetSection(sectionType) {
+                if (!confirm(`Are you sure you want to reset the ${sectionType} section to default values?`)) {
+                    return;
+                }
+
+                try {
+                    const token = localStorage.getItem('adminToken');
+                    const response = await fetch(`/api/admin/content/sections/reset/${sectionType}`, {
+                        method: 'POST',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        AdminUtils.showAlert(`${sectionType.charAt(0).toUpperCase() + sectionType.slice(1)} section reset to default!`, 'success');
+                        await this.loadContent();
+                    } else {
+                        AdminUtils.showAlert(result.error || `Failed to reset ${sectionType} section`, 'danger');
+                    }
+                } catch (error) {
+                    console.error('Error resetting section:', error);
+                    AdminUtils.showAlert(`Error resetting ${sectionType} section`, 'danger');
+                }
+            }
+
+            async saveAllChanges() {
+                if (!confirm('Save all changes? This will overwrite current content for all sections.')) {
+                    return;
+                }
+
+                const sections = ['hero', 'about', 'services', 'counter', 'skills'];
+                let successCount = 0;
+                let errorCount = 0;
+
+                for (const section of sections) {
+                    try {
+                        await this.saveSection(section);
+                        successCount++;
+                    } catch (error) {
+                        errorCount++;
+                    }
+                }
+
+                AdminUtils.showAlert(`Save completed: ${successCount} successful, ${errorCount} errors`, 
+                                    errorCount === 0 ? 'success' : 'warning');
+            }
+
+            async resetAllSections() {
+                if (!confirm('Are you sure you want to reset ALL sections to default values? This cannot be undone.')) {
+                    return;
+                }
+
+                const sections = ['hero', 'about', 'services', 'counter', 'skills'];
+                let successCount = 0;
+                let errorCount = 0;
+
+                for (const section of sections) {
+                    try {
+                        await this.resetSection(section);
+                        successCount++;
+                    } catch (error) {
+                        errorCount++;
+                    }
+                }
+
+                AdminUtils.showAlert(`Reset completed: ${successCount} successful, ${errorCount} errors`, 
+                                    errorCount === 0 ? 'success' : 'warning');
+            }
+
+            getSectionData(sectionType) {
+                switch (sectionType) {
+                    case 'hero':
+                        return this.getHeroData();
+                    case 'about':
+                        return this.getAboutData();
+                    case 'services':
+                        return this.getServicesData();
+                    case 'counter':
+                        return this.getCounterData();
+                    case 'skills':
+                        return this.getSkillsData();
+                    default:
+                        return {};
+                }
+            }
+
+            getHeroData() {
+                const socialLinks = [];
+                document.querySelectorAll('#socialLinksContainer .social-link').forEach((link, index) => {
+                    const platform = link.querySelector('[data-field="platform"]').value;
+                    const url = link.querySelector('[data-field="url"]').value;
+                    const icon = link.querySelector('[data-field="icon"]').value;
+                    
+                    if (platform || url || icon) {
+                        socialLinks.push({ platform, url, icon });
+                    }
+                });
+
+                return {
+                    title: document.getElementById('heroTitle').value,
+                    subtitle: document.getElementById('heroSubtitle').value,
+                    description: document.getElementById('heroDescription').value,
+                    image: document.getElementById('heroImage').value,
+                    ctaText: document.getElementById('heroCtaText').value,
+                    ctaLink: document.getElementById('heroCtaLink').value,
+                    socialLinks
+                };
+            }
+
+            getAboutData() {
+                const achievements = [];
+                document.querySelectorAll('#achievementsContainer .achievement').forEach((item) => {
+                    const achievement = item.querySelector('[data-field="achievement"]').value;
+                    if (achievement) {
+                        achievements.push(achievement);
+                    }
+                });
+
+                return {
+                    title: document.getElementById('aboutTitle').value,
+                    description: document.getElementById('aboutDescription').value,
+                    image: document.getElementById('aboutImage').value,
+                    achievements
+                };
+            }
+
+            getServicesData() {
+                const services = [];
+                document.querySelectorAll('#servicesContainer .service-item').forEach((item, index) => {
+                    const title = item.querySelector('[data-field="title"]').value;
+                    const description = item.querySelector('[data-field="description"]').value;
+                    const icon = item.querySelector('[data-field="icon"]').value;
+                    const order = parseInt(item.querySelector('[data-field="order"]').value) || index + 1;
+                    
+                    if (title) {
+                        services.push({ title, description, icon, order });
+                    }
+                });
+
+                return services;
+            }
+
+            getCounterData() {
+                const counter = [];
+                document.querySelectorAll('#counterContainer .counter-item').forEach((item) => {
+                    const title = item.querySelector('[data-field="title"]').value;
+                    const value = item.querySelector('[data-field="value"]').value;
+                    const icon = item.querySelector('[data-field="icon"]').value;
+                    
+                    if (title && value) {
+                        counter.push({ title, value, icon });
+                    }
+                });
+
+                return counter;
+            }
+
+            getSkillsData() {
+                const skills = [];
+                document.querySelectorAll('#skillsContainer .skill-item').forEach((item) => {
+                    const name = item.querySelector('[data-field="name"]').value;
+                    const level = parseInt(item.querySelector('[data-field="level"]').value) || 0;
+                    const icon = item.querySelector('[data-field="icon"]').value;
+                    
+                    if (name) {
+                        skills.push({ name, level, icon });
+                    }
+                });
+
+                return skills;
+            }
+
+            async logout() {
+                try {
+                    const token = localStorage.getItem('adminToken');
+                    await fetch('/api/admin/auth/logout', {
+                        method: 'POST',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                } catch (error) {
+                    console.error('Logout error:', error);
+                } finally {
+                    localStorage.removeItem('adminToken');
+                    localStorage.removeItem('adminRefreshToken');
+                    window.location.href = '/admin/login';
+                }
+            }
+
+            async updateProfile() {
+                const formData = {
+                    email: document.getElementById('profileEmail').value,
+                    fullName: document.getElementById('profileFullName').value
+                };
+
+                try {
+                    const token = localStorage.getItem('adminToken');
+                    const response = await fetch('/api/admin/auth/profile', {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify(formData)
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        AdminUtils.showAlert('Profile updated successfully!', 'success');
+                        bootstrap.Modal.getInstance(document.getElementById('profileModal')).hide();
+                        this.admin = result.data.admin;
+                        this.updateUI();
+                    } else {
+                        AdminUtils.showAlert(result.error || 'Failed to update profile', 'danger');
+                    }
+                } catch (error) {
+                    AdminUtils.showAlert('An error occurred while updating profile', 'danger');
+                }
+            }
+
+            async changePassword() {
+                const currentPassword = document.getElementById('currentPassword').value;
+                const newPassword = document.getElementById('newPassword').value;
+                const confirmPassword = document.getElementById('confirmNewPassword').value;
+
+                if (newPassword !== confirmPassword) {
+                    AdminUtils.showAlert('New passwords do not match', 'danger');
+                    return;
+                }
+
+                try {
+                    const token = localStorage.getItem('adminToken');
+                    const response = await fetch('/api/admin/auth/change-password', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({
+                            currentPassword,
+                            newPassword
+                        })
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        AdminUtils.showAlert('Password changed successfully!', 'success');
+                        bootstrap.Modal.getInstance(document.getElementById('changePasswordModal')).hide();
+                        document.getElementById('changePasswordForm').reset();
+                    } else {
+                        AdminUtils.showAlert(result.error || 'Failed to change password', 'danger');
+                    }
+                } catch (error) {
+                    AdminUtils.showAlert('An error occurred while changing password', 'danger');
+                }
+            }
+        }
+
+        // Global functions for form interactions
+        function addSocialLink() {
+            contentManager.addSocialLink();
+        }
+
+        function removeSocialLink(index) {
+            const link = document.querySelector(`#socialLinksContainer .social-link:nth-child(${index + 1})`);
+            if (link) link.remove();
+        }
+
+        function addAchievement() {
+            contentManager.addAchievement();
+        }
+
+        function removeAchievement(index) {
+            const achievement = document.querySelector(`#achievementsContainer .achievement:nth-child(${index + 1})`);
+            if (achievement) achievement.remove();
+        }
+
+        function addService() {
+            contentManager.addService();
+        }
+
+        function removeService(index) {
+            const service = document.querySelector(`#servicesContainer .service-item:nth-child(${index + 1})`);
+            if (service) service.remove();
+        }
+
+        function addCounter() {
+            contentManager.addCounter();
+        }
+
+        function removeCounter(index) {
+            const counter = document.querySelector(`#counterContainer .counter-item:nth-child(${index + 1})`);
+            if (counter) counter.remove();
+        }
+
+        function addSkill() {
+            contentManager.addSkill();
+        }
+
+        function removeSkill(index) {
+            const skill = document.querySelector(`#skillsContainer .skill-item:nth-child(${index + 1})`);
+            if (skill) skill.remove();
+        }
+
+        function updateSkillLevel(index, value) {
+            document.getElementById(`skillLevel_${index}`).textContent = value + '%';
+        }
+
+        function saveSection(sectionType) {
+            contentManager.saveSection(sectionType);
+        }
+
+        function resetSection(sectionType) {
+            contentManager.resetSection(sectionType);
+        }
+
+        // Initialize content manager when page loads
+        let contentManager;
+        document.addEventListener('DOMContentLoaded', () => {
+            contentManager = new ContentManager();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+# SQLite to MongoDB Migration Script Requirements
+# =============================================
+
+# MongoDB driver for Python
+pymongo>=4.6.0
+
+# Environment variable management
+python-dotenv>=1.0.0
+
+# Optional: For enhanced logging and progress tracking
+tqdm>=4.66.0
+
+# Optional: For better datetime handling
+python-dateutil>=2.8.2
+
+# Optional: For validation
+pydantic>=2.5.0

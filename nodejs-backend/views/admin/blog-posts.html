@@ -1,0 +1,1206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog Posts Management - The ACJ Portfolio Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.css" rel="stylesheet">
+    <link href="/assets/admin.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/admin/dashboard">
+                <i class="fas fa-tachometer-alt me-2"></i>Admin Panel
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/dashboard">
+                            <i class="fas fa-chart-bar me-1"></i>Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/admin/blog-posts">
+                            <i class="fas fa-blog me-1"></i>Blog Posts
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/work-items">
+                            <i class="fas fa-briefcase me-1"></i>Work Items
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/contacts">
+                            <i class="fas fa-envelope me-1"></i>Contacts
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/categories">
+                            <i class="fas fa-tags me-1"></i>Categories
+                        </a>
+                    </li>
+                    <li class="nav-item" id="usersNav" style="display: none;">
+                        <a class="nav-link" href="/admin/users">
+                            <i class="fas fa-users me-1"></i>Users
+                        </a>
+                    </li>
+                    <li class="nav-item" id="settingsNav" style="display: none;">
+                        <a class="nav-link" href="/admin/settings">
+                            <i class="fas fa-cog me-1"></i>Settings
+                        </a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-shield me-1"></i><span id="adminName">Admin</span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#profileModal">
+                                <i class="fas fa-user me-2"></i>Profile
+                            </a></li>
+                            <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
+                                <i class="fas fa-key me-2"></i>Change Password
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#" id="logoutBtn">
+                                <i class="fas fa-sign-out-alt me-2"></i>Logout
+                            </a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid mt-4">
+        <!-- Page Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h2><i class="fas fa-blog me-2"></i>Blog Posts Management</h2>
+                        <p class="text-muted">Create, edit, and manage your blog posts</p>
+                    </div>
+                    <div>
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createPostModal">
+                            <i class="fas fa-plus me-2"></i>New Blog Post
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters and Search -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <select class="form-select" id="statusFilter">
+                                    <option value="">All Status</option>
+                                    <option value="published">Published</option>
+                                    <option value="draft">Draft</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <select class="form-select" id="categoryFilter">
+                                    <option value="">All Categories</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" class="form-control" id="searchInput" placeholder="Search posts...">
+                            </div>
+                            <div class="col-md-2">
+                                <button class="btn btn-outline-secondary w-100" onclick="blogManager.refreshPosts()">
+                                    <i class="fas fa-refresh me-1"></i>Refresh
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bulk Actions -->
+        <div class="row mb-3" id="bulkActions" style="display: none;">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <span class="me-3" id="selectedCount">0 posts selected</span>
+                            <select class="form-select w-auto me-2" id="bulkActionSelect">
+                                <option value="">Select Action</option>
+                                <option value="publish">Publish</option>
+                                <option value="draft">Move to Draft</option>
+                                <option value="delete">Delete</option>
+                            </select>
+                            <button class="btn btn-primary" onclick="blogManager.executeBulkAction()">Execute</button>
+                            <button class="btn btn-outline-secondary ms-2" onclick="blogManager.clearSelection()">Clear Selection</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Blog Posts Table -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">Blog Posts</h5>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="selectAll">
+                                <label class="form-check-label" for="selectAll">
+                                    Select All
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover" id="postsTable">
+                                <thead>
+                                    <tr>
+                                        <th width="40">Select</th>
+                                        <th>Title</th>
+                                        <th>Author</th>
+                                        <th>Category</th>
+                                        <th>Status</th>
+                                        <th>Views</th>
+                                        <th>Created</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="postsTableBody">
+                                    <tr>
+                                        <td colspan="8" class="text-center">
+                                            <div class="spinner-border text-primary" role="status">
+                                                <span class="visually-hidden">Loading...</span>
+                                            </div>
+                                            <p class="mt-2 text-muted">Loading blog posts...</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <!-- Pagination -->
+                        <nav aria-label="Posts pagination">
+                            <ul class="pagination justify-content-center" id="postsPagination">
+                                <!-- Pagination will be generated by JavaScript -->
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create/Edit Post Modal -->
+    <div class="modal fade" id="createPostModal" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="postModalTitle">Create New Blog Post</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="postForm">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="mb-3">
+                                    <label class="form-label">Title *</label>
+                                    <input type="text" class="form-control" id="postTitle" required placeholder="Enter blog post title">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Content *</label>
+                                    <div id="postContent" style="height: 400px;"></div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Tags</label>
+                                    <input type="text" class="form-control" id="postTags" placeholder="tag1, tag2, tag3">
+                                    <small class="form-text text-muted">Separate tags with commas</small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">Featured Image</label>
+                                    <div class="border rounded p-3 text-center" id="imageUploadArea">
+                                        <img id="featuredImagePreview" src="" alt="Preview" style="max-width: 100%; display: none; margin-bottom: 10px;">
+                                        <input type="file" id="featuredImage" accept="image/*" style="display: none;">
+                                        <button type="button" class="btn btn-outline-primary" onclick="document.getElementById('featuredImage').click()">
+                                            <i class="fas fa-image me-1"></i>Upload Image
+                                        </button>
+                                        <p class="small text-muted mt-2">Recommended: 1200x630px</p>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Category *</label>
+                                    <select class="form-select" id="postCategory" required>
+                                        <option value="">Select Category</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Status *</label>
+                                    <select class="form-select" id="postStatus" required>
+                                        <option value="draft">Draft</option>
+                                        <option value="published">Published</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Excerpt</label>
+                                    <textarea class="form-control" id="postExcerpt" rows="3" placeholder="Brief description of the post"></textarea>
+                                    <small class="form-text text-muted">Leave empty to auto-generate from content</small>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Meta Description</label>
+                                    <textarea class="form-control" id="postMetaDescription" rows="2" placeholder="SEO meta description"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-info" onclick="blogManager.saveDraft()">Save Draft</button>
+                    <button type="button" class="btn btn-primary" onclick="blogManager.savePost()">Save & Publish</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deletePostModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirm Delete</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>Warning:</strong> This action cannot be undone!
+                    </div>
+                    <p>Are you sure you want to delete this blog post?</p>
+                    <div id="deletePostTitle" class="fw-bold text-danger"></div>
+                    <p class="text-muted">All content, images, and comments will be permanently deleted.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete Post</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Modal -->
+    <div class="modal fade" id="profileModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Admin Profile</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="profileForm">
+                        <div class="mb-3">
+                            <label class="form-label">Username</label>
+                            <input type="text" class="form-control" id="profileUsername" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" id="profileEmail">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Full Name</label>
+                            <input type="text" class="form-control" id="profileFullName">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Role</label>
+                            <input type="text" class="form-control" id="profileRole" readonly>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="updateProfileBtn">Update Profile</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Change Password Modal -->
+    <div class="modal fade" id="changePasswordModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Change Password</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="changePasswordForm">
+                        <div class="mb-3">
+                            <label class="form-label">Current Password</label>
+                            <input type="password" class="form-control" id="currentPassword" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">New Password</label>
+                            <input type="password" class="form-control" id="newPassword" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Confirm New Password</label>
+                            <input type="password" class="form-control" id="confirmNewPassword" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="changePasswordBtn">Change Password</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.js"></script>
+    <script src="/assets/admin.js"></script>
+    <script>
+        // Blog Posts Management
+        class BlogManager {
+            constructor() {
+                this.posts = [];
+                this.filteredPosts = [];
+                this.categories = [];
+                this.currentPage = 1;
+                this.postsPerPage = 10;
+                this.selectedPosts = new Set();
+                this.currentPostId = null;
+                this.isEditMode = false;
+                this.init();
+            }
+
+            async init() {
+                await this.checkAuth();
+                this.setupEventListeners();
+                this.initializeSummernote();
+                this.loadCategories();
+                await this.loadPosts();
+            }
+
+            async checkAuth() {
+                const token = localStorage.getItem('adminToken');
+                if (!token) {
+                    window.location.href = '/admin/login';
+                    return;
+                }
+
+                try {
+                    const response = await fetch('/api/admin/auth/me', {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    const result = await response.json();
+
+                    if (!result.success) {
+                        this.handleAuthError();
+                        return;
+                    }
+
+                    this.admin = result.data.admin;
+                    this.updateUI();
+                } catch (error) {
+                    this.handleAuthError();
+                }
+            }
+
+            handleAuthError() {
+                localStorage.removeItem('adminToken');
+                localStorage.removeItem('adminRefreshToken');
+                window.location.href = '/admin/login';
+            }
+
+            updateUI() {
+                document.getElementById('adminName').textContent = this.admin.fullName || this.admin.username;
+
+                if (this.admin.role === 'super_admin') {
+                    document.getElementById('usersNav').style.display = 'block';
+                    document.getElementById('settingsNav').style.display = 'block';
+                }
+
+                document.getElementById('profileUsername').value = this.admin.username;
+                document.getElementById('profileEmail').value = this.admin.email;
+                document.getElementById('profileFullName').value = this.admin.fullName;
+                document.getElementById('profileRole').value = this.admin.role;
+            }
+
+            setupEventListeners() {
+                document.getElementById('logoutBtn').addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.logout();
+                });
+
+                document.getElementById('updateProfileBtn').addEventListener('click', () => {
+                    this.updateProfile();
+                });
+
+                document.getElementById('changePasswordBtn').addEventListener('click', () => {
+                    this.changePassword();
+                });
+
+                document.getElementById('selectAll').addEventListener('change', (e) => {
+                    this.toggleSelectAll(e.target.checked);
+                });
+
+                document.getElementById('statusFilter').addEventListener('change', () => {
+                    this.applyFilters();
+                });
+
+                document.getElementById('categoryFilter').addEventListener('change', () => {
+                    this.applyFilters();
+                });
+
+                document.getElementById('searchInput').addEventListener('input', AdminUtils.debounce(() => {
+                    this.applyFilters();
+                }, 300));
+
+                document.getElementById('featuredImage').addEventListener('change', (e) => {
+                    this.handleImageUpload(e);
+                });
+
+                // Handle query parameters for create/edit
+                const params = new URLSearchParams(window.location.search);
+                const action = params.get('action');
+                if (action === 'create') {
+                    this.openCreateModal();
+                }
+            }
+
+            initializeSummernote() {
+                $('#postContent').summernote({
+                    height: 400,
+                    toolbar: [
+                        ['style', ['style']],
+                        ['font', ['bold', 'underline', 'clear']],
+                        ['fontname', ['fontname']],
+                        ['color', ['color']],
+                        ['para', ['ul', 'ol', 'paragraph']],
+                        ['table', ['table']],
+                        ['insert', ['link', 'picture', 'video']],
+                        ['view', ['fullscreen', 'codeview', 'help']]
+                    ],
+                    callbacks: {
+                        onImageUpload: (files) => {
+                            this.uploadImage(files[0]);
+                        }
+                    }
+                });
+            }
+
+            async loadCategories() {
+                try {
+                    const token = localStorage.getItem('adminToken');
+                    const response = await fetch('/api/admin/content/categories?type=blog', {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        this.categories = result.data.categories;
+                        this.populateCategorySelects();
+                    }
+                } catch (error) {
+                    console.error('Error loading categories:', error);
+                }
+            }
+
+            populateCategorySelects() {
+                const categorySelects = ['postCategory', 'categoryFilter'];
+                
+                categorySelects.forEach(selectId => {
+                    const select = document.getElementById(selectId);
+                    const currentValue = select.value;
+                    
+                    // Clear existing options except first one
+                    while (select.children.length > 1) {
+                        select.removeChild(select.lastChild);
+                    }
+                    
+                    // Add category options
+                    this.categories.forEach(category => {
+                        const option = document.createElement('option');
+                        option.value = category._id;
+                        option.textContent = category.name;
+                        select.appendChild(option);
+                    });
+                    
+                    // Restore selected value
+                    select.value = currentValue;
+                });
+            }
+
+            async loadPosts() {
+                try {
+                    const token = localStorage.getItem('adminToken');
+                    const response = await fetch('/api/admin/content/blog-posts', {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        this.posts = result.data.posts;
+                        this.filteredPosts = [...this.posts];
+                        this.renderPosts();
+                        this.renderPagination();
+                    } else {
+                        AdminUtils.showAlert('Failed to load blog posts', 'danger');
+                    }
+                } catch (error) {
+                    console.error('Error loading posts:', error);
+                    AdminUtils.showAlert('Error loading blog posts', 'danger');
+                }
+            }
+
+            renderPosts() {
+                const tbody = document.getElementById('postsTableBody');
+                const startIndex = (this.currentPage - 1) * this.postsPerPage;
+                const endIndex = startIndex + this.postsPerPage;
+                const pagePosts = this.filteredPosts.slice(startIndex, endIndex);
+
+                if (pagePosts.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="8" class="text-center text-muted">
+                                <i class="fas fa-blog fa-2x mb-3 d-block"></i>
+                                No blog posts found
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                tbody.innerHTML = pagePosts.map(post => `
+                    <tr>
+                        <td>
+                            <div class="form-check">
+                                <input class="form-check-input post-checkbox" type="checkbox" value="${post._id}" 
+                                       onchange="blogManager.togglePostSelection('${post._id}')"
+                                       ${this.selectedPosts.has(post._id) ? 'checked' : ''}>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                ${post.featuredImage ? `
+                                    <img src="${post.featuredImage}" alt="Featured" class="rounded me-2" style="width: 40px; height: 40px; object-fit: cover;">
+                                ` : `
+                                    <div class="bg-light rounded me-2 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                        <i class="fas fa-image text-muted"></i>
+                                    </div>
+                                `}
+                                <div>
+                                    <h6 class="mb-0">${post.title}</h6>
+                                    <small class="text-muted">${AdminUtils.truncateText(post.excerpt || '', 50)}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>${post.author}</td>
+                        <td>
+                            <span class="badge bg-secondary">${post.category?.name || 'Uncategorized'}</span>
+                        </td>
+                        <td>
+                            <span class="badge ${post.status === 'published' ? 'bg-success' : 'bg-warning'}">
+                                ${post.status}
+                            </span>
+                        </td>
+                        <td>${post.views || 0}</td>
+                        <td>${AdminUtils.formatDate(post.createdAt)}</td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <button class="btn btn-sm btn-outline-primary" onclick="blogManager.editPost('${post._id}')" title="Edit">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-${post.status === 'published' ? 'warning' : 'success'}" 
+                                        onclick="blogManager.togglePostStatus('${post._id}')" title="${post.status === 'published' ? 'Unpublish' : 'Publish'}">
+                                    <i class="fas fa-${post.status === 'published' ? 'eye-slash' : 'eye'}"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" onclick="blogManager.deletePost('${post._id}')" title="Delete">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+
+            renderPagination() {
+                const totalPages = Math.ceil(this.filteredPosts.length / this.postsPerPage);
+                const pagination = document.getElementById('postsPagination');
+
+                if (totalPages <= 1) {
+                    pagination.innerHTML = '';
+                    return;
+                }
+
+                let paginationHTML = '';
+
+                // Previous button
+                paginationHTML += `
+                    <li class="page-item ${this.currentPage === 1 ? 'disabled' : ''}">
+                        <a class="page-link" href="#" onclick="blogManager.goToPage(${this.currentPage - 1})">Previous</a>
+                    </li>
+                `;
+
+                // Page numbers
+                for (let i = 1; i <= totalPages; i++) {
+                    if (i === 1 || i === totalPages || (i >= this.currentPage - 2 && i <= this.currentPage + 2)) {
+                        paginationHTML += `
+                            <li class="page-item ${i === this.currentPage ? 'active' : ''}">
+                                <a class="page-link" href="#" onclick="blogManager.goToPage(${i})">${i}</a>
+                            </li>
+                        `;
+                    } else if (i === this.currentPage - 3 || i === this.currentPage + 3) {
+                        paginationHTML += '<li class="page-item disabled"><span class="page-link">...</span></li>';
+                    }
+                }
+
+                // Next button
+                paginationHTML += `
+                    <li class="page-item ${this.currentPage === totalPages ? 'disabled' : ''}">
+                        <a class="page-link" href="#" onclick="blogManager.goToPage(${this.currentPage + 1})">Next</a>
+                    </li>
+                `;
+
+                pagination.innerHTML = paginationHTML;
+            }
+
+            goToPage(page) {
+                if (page >= 1 && page <= Math.ceil(this.filteredPosts.length / this.postsPerPage)) {
+                    this.currentPage = page;
+                    this.renderPosts();
+                    this.renderPagination();
+                }
+            }
+
+            applyFilters() {
+                const statusFilter = document.getElementById('statusFilter').value;
+                const categoryFilter = document.getElementById('categoryFilter').value;
+                const searchQuery = document.getElementById('searchInput').value.toLowerCase();
+
+                this.filteredPosts = this.posts.filter(post => {
+                    const matchesStatus = !statusFilter || post.status === statusFilter;
+                    const matchesCategory = !categoryFilter || post.category?._id === categoryFilter;
+                    const matchesSearch = !searchQuery || 
+                        post.title.toLowerCase().includes(searchQuery) ||
+                        (post.excerpt && post.excerpt.toLowerCase().includes(searchQuery)) ||
+                        (post.content && post.content.toLowerCase().includes(searchQuery));
+
+                    return matchesStatus && matchesCategory && matchesSearch;
+                });
+
+                this.currentPage = 1;
+                this.renderPosts();
+                this.renderPagination();
+            }
+
+            togglePostSelection(postId) {
+                if (this.selectedPosts.has(postId)) {
+                    this.selectedPosts.delete(postId);
+                } else {
+                    this.selectedPosts.add(postId);
+                }
+                this.updateBulkActions();
+            }
+
+            toggleSelectAll(checked) {
+                const startIndex = (this.currentPage - 1) * this.postsPerPage;
+                const endIndex = startIndex + this.postsPerPage;
+                const pagePosts = this.filteredPosts.slice(startIndex, endIndex);
+
+                pagePosts.forEach(post => {
+                    if (checked) {
+                        this.selectedPosts.add(post._id);
+                    } else {
+                        this.selectedPosts.delete(post._id);
+                    }
+                });
+
+                this.updateBulkActions();
+                this.renderPosts();
+            }
+
+            updateBulkActions() {
+                const bulkActions = document.getElementById('bulkActions');
+                const selectedCount = document.getElementById('selectedCount');
+                
+                if (this.selectedPosts.size > 0) {
+                    bulkActions.style.display = 'block';
+                    selectedCount.textContent = `${this.selectedPosts.size} post(s) selected`;
+                } else {
+                    bulkActions.style.display = 'none';
+                }
+            }
+
+            clearSelection() {
+                this.selectedPosts.clear();
+                this.updateBulkActions();
+                this.renderPosts();
+            }
+
+            executeBulkAction() {
+                const action = document.getElementById('bulkActionSelect').value;
+                if (!action) {
+                    AdminUtils.showAlert('Please select an action', 'warning');
+                    return;
+                }
+
+                const selectedIds = Array.from(this.selectedPosts);
+                if (selectedIds.length === 0) {
+                    AdminUtils.showAlert('Please select posts first', 'warning');
+                    return;
+                }
+
+                if (action === 'delete' && !confirm(`Delete ${selectedIds.length} post(s)?`)) {
+                    return;
+                }
+
+                // Implement bulk operations
+                switch (action) {
+                    case 'publish':
+                        this.bulkUpdateStatus(selectedIds, 'published');
+                        break;
+                    case 'draft':
+                        this.bulkUpdateStatus(selectedIds, 'draft');
+                        break;
+                    case 'delete':
+                        this.bulkDeletePosts(selectedIds);
+                        break;
+                }
+            }
+
+            async bulkUpdateStatus(postIds, status) {
+                try {
+                    const token = localStorage.getItem('adminToken');
+                    const response = await fetch('/api/admin/content/blog-posts/bulk', {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({
+                            postIds,
+                            action: status,
+                            data: { status }
+                        })
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        AdminUtils.showAlert(`Posts ${status} successfully`, 'success');
+                        await this.loadPosts();
+                        this.clearSelection();
+                    } else {
+                        AdminUtils.showAlert(result.error || `Failed to ${status} posts`, 'danger');
+                    }
+                } catch (error) {
+                    AdminUtils.showAlert(`Error ${status} posts`, 'danger');
+                }
+            }
+
+            async bulkDeletePosts(postIds) {
+                try {
+                    const token = localStorage.getItem('adminToken');
+                    const response = await fetch('/api/admin/content/blog-posts/bulk', {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({
+                            postIds,
+                            action: 'delete'
+                        })
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        AdminUtils.showAlert('Posts deleted successfully', 'success');
+                        await this.loadPosts();
+                        this.clearSelection();
+                    } else {
+                        AdminUtils.showAlert(result.error || 'Failed to delete posts', 'danger');
+                    }
+                } catch (error) {
+                    AdminUtils.showAlert('Error deleting posts', 'danger');
+                }
+            }
+
+            openCreateModal() {
+                this.isEditMode = false;
+                this.currentPostId = null;
+                document.getElementById('postModalTitle').textContent = 'Create New Blog Post';
+                this.resetForm();
+                new bootstrap.Modal(document.getElementById('createPostModal')).show();
+            }
+
+            editPost(postId) {
+                const post = this.posts.find(p => p._id === postId);
+                if (!post) return;
+
+                this.isEditMode = true;
+                this.currentPostId = postId;
+                document.getElementById('postModalTitle').textContent = 'Edit Blog Post';
+                
+                // Populate form fields
+                document.getElementById('postTitle').value = post.title;
+                document.getElementById('postExcerpt').value = post.excerpt || '';
+                document.getElementById('postMetaDescription').value = post.metaDescription || '';
+                document.getElementById('postTags').value = post.tags ? post.tags.join(', ') : '';
+                document.getElementById('postCategory').value = post.category?._id || '';
+                document.getElementById('postStatus').value = post.status;
+                
+                // Set content
+                $('#postContent').summernote('code', post.content);
+                
+                // Show featured image if exists
+                if (post.featuredImage) {
+                    const preview = document.getElementById('featuredImagePreview');
+                    preview.src = post.featuredImage;
+                    preview.style.display = 'block';
+                }
+                
+                new bootstrap.Modal(document.getElementById('createPostModal')).show();
+            }
+
+            resetForm() {
+                document.getElementById('postForm').reset();
+                $('#postContent').summernote('code', '');
+                
+                // Hide image preview
+                const preview = document.getElementById('featuredImagePreview');
+                preview.src = '';
+                preview.style.display = 'none';
+                
+                // Reset file input
+                document.getElementById('featuredImage').value = '';
+            }
+
+            async handleImageUpload(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                // Validate file type
+                if (!file.type.startsWith('image/')) {
+                    AdminUtils.showAlert('Please select an image file', 'warning');
+                    return;
+                }
+
+                // Validate file size (5MB max)
+                if (file.size > 5 * 1024 * 1024) {
+                    AdminUtils.showAlert('Image size must be less than 5MB', 'warning');
+                    return;
+                }
+
+                // Show preview
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const preview = document.getElementById('featuredImagePreview');
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+
+            async uploadImage(file) {
+                const formData = new FormData();
+                formData.append('image', file);
+
+                try {
+                    const token = localStorage.getItem('adminToken');
+                    const response = await fetch('/api/admin/upload/image', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: formData
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        $('#postContent').summernote('insertImage', result.data.url);
+                    } else {
+                        AdminUtils.showAlert(result.error || 'Failed to upload image', 'danger');
+                    }
+                } catch (error) {
+                    AdminUtils.showAlert('Error uploading image', 'danger');
+                }
+            }
+
+            async saveDraft() {
+                await this.savePostInternal('draft');
+            }
+
+            async savePost() {
+                await this.savePostInternal('published');
+            }
+
+            async savePostInternal(status) {
+                const title = document.getElementById('postTitle').value;
+                const content = $('#postContent').summernote('code');
+                const category = document.getElementById('postCategory').value;
+                const excerpt = document.getElementById('postExcerpt').value;
+                const metaDescription = document.getElementById('postMetaDescription').value;
+                const tags = document.getElementById('postTags').value.split(',').map(tag => tag.trim()).filter(tag => tag);
+                
+                if (!title || !content || !category) {
+                    AdminUtils.showAlert('Please fill in all required fields', 'warning');
+                    return;
+                }
+
+                const postData = {
+                    title,
+                    content,
+                    category,
+                    status,
+                    excerpt,
+                    metaDescription,
+                    tags,
+                    author: this.admin.fullName || this.admin.username
+                };
+
+                try {
+                    const token = localStorage.getItem('adminToken');
+                    const url = this.isEditMode 
+                        ? `/api/admin/content/blog-posts/${this.currentPostId}`
+                        : '/api/admin/content/blog-posts';
+                    const method = this.isEditMode ? 'PUT' : 'POST';
+
+                    // Handle image upload if selected
+                    const imageFile = document.getElementById('featuredImage').files[0];
+                    if (imageFile) {
+                        const imageFormData = new FormData();
+                        imageFormData.append('image', imageFile);
+                        
+                        const imageResponse = await fetch('/api/admin/upload/image', {
+                            method: 'POST',
+                            headers: {
+                                'Authorization': `Bearer ${token}`
+                            },
+                            body: imageFormData
+                        });
+
+                        const imageResult = await imageResponse.json();
+                        if (imageResult.success) {
+                            postData.featuredImage = imageResult.data.url;
+                        }
+                    }
+
+                    const response = await fetch(url, {
+                        method,
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify(postData)
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        AdminUtils.showAlert(`Post ${this.isEditMode ? 'updated' : 'created'} successfully`, 'success');
+                        bootstrap.Modal.getInstance(document.getElementById('createPostModal')).hide();
+                        this.resetForm();
+                        await this.loadPosts();
+                    } else {
+                        AdminUtils.showAlert(result.error || `Failed to ${this.isEditMode ? 'update' : 'create'} post`, 'danger');
+                    }
+                } catch (error) {
+                    AdminUtils.showAlert(`Error ${this.isEditMode ? 'updating' : 'creating'} post`, 'danger');
+                }
+            }
+
+            async togglePostStatus(postId) {
+                try {
+                    const token = localStorage.getItem('adminToken');
+                    const post = this.posts.find(p => p._id === postId);
+                    const newStatus = post.status === 'published' ? 'draft' : 'published';
+
+                    const response = await fetch(`/api/admin/content/blog-posts/${postId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({ status: newStatus })
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        AdminUtils.showAlert(`Post ${newStatus} successfully`, 'success');
+                        await this.loadPosts();
+                    } else {
+                        AdminUtils.showAlert(result.error || 'Failed to update post status', 'danger');
+                    }
+                } catch (error) {
+                    AdminUtils.showAlert('Error updating post status', 'danger');
+                }
+            }
+
+            deletePost(postId) {
+                const post = this.posts.find(p => p._id === postId);
+                if (post) {
+                    document.getElementById('deletePostTitle').textContent = post.title;
+                    document.getElementById('confirmDeleteBtn').setAttribute('data-post-id', postId);
+                    new bootstrap.Modal(document.getElementById('deletePostModal')).show();
+                }
+            }
+
+            async confirmDeletePost() {
+                const postId = document.getElementById('confirmDeleteBtn').getAttribute('data-post-id');
+
+                try {
+                    const token = localStorage.getItem('adminToken');
+                    const response = await fetch(`/api/admin/content/blog-posts/${postId}`, {
+                        method: 'DELETE',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        AdminUtils.showAlert('Post deleted successfully', 'success');
+                        bootstrap.Modal.getInstance(document.getElementById('deletePostModal')).hide();
+                        await this.loadPosts();
+                    } else {
+                        AdminUtils.showAlert(result.error || 'Failed to delete post', 'danger');
+                    }
+                } catch (error) {
+                    AdminUtils.showAlert('Error deleting post', 'danger');
+                }
+            }
+
+            async refreshPosts() {
+                await this.loadPosts();
+                AdminUtils.showAlert('Posts refreshed', 'info');
+            }
+
+            async updateProfile() {
+                const formData = {
+                    email: document.getElementById('profileEmail').value,
+                    fullName: document.getElementById('profileFullName').value
+                };
+
+                try {
+                    const token = localStorage.getItem('adminToken');
+                    const response = await fetch('/api/admin/auth/profile', {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify(formData)
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        AdminUtils.showAlert('Profile updated successfully!', 'success');
+                        bootstrap.Modal.getInstance(document.getElementById('profileModal')).hide();
+                        this.admin = result.data.admin;
+                        this.updateUI();
+                    } else {
+                        AdminUtils.showAlert(result.error || 'Failed to update profile', 'danger');
+                    }
+                } catch (error) {
+                    AdminUtils.showAlert('An error occurred while updating profile', 'danger');
+                }
+            }
+
+            async changePassword() {
+                const currentPassword = document.getElementById('currentPassword').value;
+                const newPassword = document.getElementById('newPassword').value;
+                const confirmPassword = document.getElementById('confirmNewPassword').value;
+
+                if (newPassword !== confirmPassword) {
+                    AdminUtils.showAlert('New passwords do not match', 'danger');
+                    return;
+                }
+
+                try {
+                    const token = localStorage.getItem('adminToken');
+                    const response = await fetch('/api/admin/auth/change-password', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({
+                            currentPassword,
+                            newPassword
+                        })
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        AdminUtils.showAlert('Password changed successfully!', 'success');
+                        bootstrap.Modal.getInstance(document.getElementById('changePasswordModal')).hide();
+                        document.getElementById('changePasswordForm').reset();
+                    } else {
+                        AdminUtils.showAlert(result.error || 'Failed to change password', 'danger');
+                    }
+                } catch (error) {
+                    AdminUtils.showAlert('An error occurred while changing password', 'danger');
+                }
+            }
+
+            async logout() {
+                try {
+                    const token = localStorage.getItem('adminToken');
+                    await fetch('/api/admin/auth/logout', {
+                        method: 'POST',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                } catch (error) {
+                    console.error('Logout error:', error);
+                } finally {
+                    localStorage.removeItem('adminToken');
+                    localStorage.removeItem('adminRefreshToken');
+                    window.location.href = '/admin/login';
+                }
+            }
+        }
+
+        // Initialize when page loads
+        let blogManager;
+        document.addEventListener('DOMContentLoaded', () => {
+            blogManager = new BlogManager();
+            
+            // Handle confirm delete
+            document.getElementById('confirmDeleteBtn').addEventListener('click', () => {
+                blogManager.confirmDeletePost();
+            });
+        });
+
+        // Global functions
+        function refreshPosts() {
+            blogManager.refreshPosts();
+        }
+    </script>
+</body>
+</html>

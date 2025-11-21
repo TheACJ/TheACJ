@@ -1,0 +1,4 @@
+2025-11-19 10:49:35,296 - INFO - Starting SQLite to MongoDB migration...
+2025-11-19 10:49:35,300 - INFO - Connected to SQLite database: db.sqlite3
+2025-11-19 10:49:38,017 - ERROR - Failed to connect to MongoDB: cannot open /etc/resolv.conf
+2025-11-19 10:49:38,018 - INFO - SQLite connection closed

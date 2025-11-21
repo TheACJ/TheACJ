@@ -1,0 +1,47 @@
+[
+  {
+    "_id": "1",
+    "name": "Tutorial",
+    "friendly_name": "tutorial",
+    "slug": "tutorial",
+    "type": "blog",
+    "created_at": "2025-11-19T10:56:13.432479",
+    "updated_at": "2025-11-19T10:56:13.432515"
+  },
+  {
+    "_id": "2",
+    "name": "Web3",
+    "friendly_name": "web3",
+    "slug": "web3",
+    "type": "blog",
+    "created_at": "2025-11-19T10:56:13.432539",
+    "updated_at": "2025-11-19T10:56:13.432547"
+  },
+  {
+    "_id": "3",
+    "name": "Frontend",
+    "friendly_name": "frontend",
+    "slug": "frontend",
+    "type": "blog",
+    "created_at": "2025-11-19T10:56:13.432558",
+    "updated_at": "2025-11-19T10:56:13.432563"
+  },
+  {
+    "_id": "4",
+    "name": "Backend",
+    "friendly_name": "backend",
+    "slug": "backend",
+    "type": "blog",
+    "created_at": "2025-11-19T10:56:13.432572",
+    "updated_at": "2025-11-19T10:56:13.432577"
+  },
+  {
+    "_id": "5",
+    "name": "Data Analytics",
+    "friendly_name": "data_analytics",
+    "slug": "data_analytics",
+    "type": "blog",
+    "created_at": "2025-11-19T10:56:13.432586",
+    "updated_at": "2025-11-19T10:56:13.432592"
+  }
+]

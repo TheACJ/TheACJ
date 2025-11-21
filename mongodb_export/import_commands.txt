@@ -1,0 +1,17 @@
+# MongoDB Import Commands
+# =====================
+
+# 1. Import Categories
+mongoimport --uri="your-mongodb-uri" --collection=categories --file="mongodb_export/categories.json" --jsonArray
+
+# 2. Import Blog Posts  
+mongoimport --uri="your-mongodb-uri" --collection=blog_posts --file="mongodb_export/blog_posts.json" --jsonArray
+
+# 3. Import Work Items
+mongoimport --uri="your-mongodb-uri" --collection=work_items --file="mongodb_export/work_items.json" --jsonArray
+
+# 4. Import Contacts (if any)
+mongoimport --uri="your-mongodb-uri" --collection=contacts --file="mongodb_export/contacts.json" --jsonArray
+
+# Note: Replace "your-mongodb-uri" with your actual MongoDB connection string
+# Example: mongodb+srv://username:password@cluster.mongodb.net/database

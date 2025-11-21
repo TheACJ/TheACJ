@@ -1,0 +1,79 @@
+[
+  {
+    "_id": "1",
+    "title": "A Survey App",
+    "description": "This is a Survey App with Analytics. This App makes analytics alot easier. This App collects Data, Analyzes Data and Visualizes Data",
+    "technologies": [
+      "CSS",
+      "Python",
+      "Django",
+      "HTML",
+      "React",
+      "JavaScript"
+    ],
+    "project_url": "https://theacj.com.ng",
+    "github_url": "",
+    "status": "published",
+    "featured_image": "img-4.jpg",
+    "gallery_images": [],
+    "category": "web-app",
+    "start_date": null,
+    "end_date": null,
+    "created_at": "2025-11-19T10:56:13.436763",
+    "updated_at": "2025-11-19T10:56:13.436826"
+  },
+  {
+    "_id": "2",
+    "title": "ShopWCandy",
+    "description": "This is a fashion ecommerce website built with React, Tailwind and Glasmorphism effects. The backend is built with serveless Deno Edge Functions and Supabase Database and User Authentication is used",
+    "technologies": [
+      "CSS",
+      "MongoDB",
+      "Express",
+      "Node.js",
+      "HTML",
+      "React",
+      "JavaScript"
+    ],
+    "project_url": "https://shop-w-candy.vercel.app/",
+    "github_url": "",
+    "status": "published",
+    "featured_image": "work_images/Screenshot_18-2-2025_144817_shop-w-candy.vercel.app.jpeg",
+    "gallery_images": [
+      "work_images/Screenshot_from_2025-05-20_09-35-09.png",
+      "work_images/Screenshot_from_2025-05-20_09-35-09_ko8jcmk.png",
+      "work_images/Screenshot_from_2025-05-20_09-35-09_Qoj3zmA.png"
+    ],
+    "category": "web-app",
+    "start_date": null,
+    "end_date": null,
+    "created_at": "2025-11-19T10:56:13.436954",
+    "updated_at": "2025-11-19T10:56:13.436979"
+  },
+  {
+    "_id": "6",
+    "title": "MyRateacard",
+    "description": "This is a superb progressive web app that gives creators (freelancers and influencers) the tools to showcase their professional rate card and also allows clients to locate and view creators rate cards",
+    "technologies": [
+      "CSS",
+      "HTML",
+      "React",
+      "JavaScript",
+      "PWA"
+    ],
+    "project_url": "https://myratecard-lime.vercel.app/",
+    "github_url": "",
+    "status": "published",
+    "featured_image": "work_images/1000086500.jpg",
+    "gallery_images": [
+      "work_images/1000086501.jpg",
+      "work_images/1000086503.jpg",
+      "work_images/1000086502.jpg"
+    ],
+    "category": "web-app",
+    "start_date": null,
+    "end_date": null,
+    "created_at": "2025-11-19T10:56:13.437064",
+    "updated_at": "2025-11-19T10:56:13.437085"
+  }
+]
