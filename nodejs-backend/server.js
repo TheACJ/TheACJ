@@ -63,7 +63,7 @@ app.use(limiter);
 
 // CORS configuration
 const corsOptions = {
-  origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
+  origin: process.env.CORS_ORIGIN ? [process.env.CORS_ORIGIN] : ['http://localhost:3000', 'http://localhost:5175'],
   credentials: true,
   optionsSuccessStatus: 200
 };

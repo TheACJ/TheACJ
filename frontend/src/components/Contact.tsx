@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { contactService, ContactForm } from '../services/api';
+import { contactService } from '../services/api_node';
 import { useScrollAnimation } from '../hooks/useAnimations';
 
 const Contact = () => {
-  const [formData, setFormData] = useState<ContactForm>({
+  const [formData, setFormData] = useState({
     name: '',
     email: '',
     subject: '',

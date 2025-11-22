@@ -1,9 +1,27 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { blogService, BlogPost } from '../services/api';
+import { blogService, type BlogPost } from '../services/api_node';
 import { useScrollAnimation } from '../hooks/useAnimations';
 import {  MdChevronRight } from 'react-icons/md'; // Modern arrow icons
 import { ExternalLink } from 'lucide-react';
+
+// Helper function to extract posts from different response formats
+const extractPostsFromResponse = (response: any): BlogPost[] => {
+  // Handle different response structures
+  if (response?.data?.data && Array.isArray(response.data.data)) {
+    // Node.js backend structure: response.data.data
+    return response.data.data;
+  } else if (response?.data && Array.isArray(response.data)) {
+    // Direct array structure: response.data
+    return response.data;
+  } else if (Array.isArray(response)) {
+    // Direct array response
+    return response;
+  }
+  
+  console.warn('Unexpected response structure:', response);
+  return [];
+};
 
 const Gallery = () => {
   const [posts, setPosts] = useState<BlogPost[]>([]);
@@ -15,9 +33,13 @@ const Gallery = () => {
     const fetchPosts = async () => {
       setLoading(true);
       try {
-        const response = await blogService.getRecentPosts();
-        // Get the top 4 posts sorted by date_published
-        setPosts(response.data.slice(0, 4));
+        const response = await blogService.getBlogPosts();
+        
+        // The api_node service returns ApiResponse<BlogPost[]>
+        // The actual posts are in response.data
+        const extractedPosts = extractPostsFromResponse(response);
+        // Get the top 4 posts sorted by date
+        setPosts(extractedPosts.slice(0, 4));
         setError(null);
       } catch (error) {
         console.error('Error fetching posts:', error);
@@ -58,7 +80,7 @@ const Gallery = () => {
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {posts.map((post, index) => (
             <motion.div
-              key={post.id}
+              key={post._id}
               initial={{ opacity: 0, y: 20 }}
               animate={controls}
               variants={{
@@ -70,9 +92,9 @@ const Gallery = () => {
               }}
               className="bg-white dark:bg-gray-900 dark:text-[#b9b8b8] rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
             >
-              {(post.image || post.image_url) && (
-                <img 
-                  src={post.image || post.image_url}
+              {(post.image || post.imageUrl) && (
+                <img
+                  src={post.image || post.imageUrl}
                   alt={post.title}
                   className="w-full h-48 object-cover transform hover:scale-105 transition-transform duration-300"
                 />
@@ -82,13 +104,13 @@ const Gallery = () => {
                   <p className="hover:text-primary transition-colors">{post.title}</p>
                 </h3>
                 <div className="text-sm text-gray-500 dark:text-gray-200 mb-4">
-                  <span>{new Date(post.date_published).toLocaleDateString()}</span>
-                  {post.category && <span> | {post.category.name}</span>}
+                  <span>{post.publishedAt ? new Date(post.publishedAt).toLocaleDateString() : new Date(post.createdAt).toLocaleDateString()}</span>
+                  {post.category && <span> | {post.category.friendlyName || post.category.name}</span>}
                 </div>
-                <p className="text-gray-600 dark:text-gray-100">{post.content}</p>
+                <p className="text-gray-600 dark:text-gray-100">{post.excerpt || (post.content ? post.content.substring(0, 150) + '...' : 'No content available')}</p>
               </div>
-              <a 
-               href={post.link}
+              <a
+               href={`/blog/${post.slug}`}
                target="_blank"
                rel="noopener noreferrer"
                className="inline-flex items-center p-6 text-primary hover:text-blue-600 transition-colors ml-1 pb-5">

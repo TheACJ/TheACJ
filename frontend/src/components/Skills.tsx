@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
+import { useContent } from '../hooks/useContent';
 import nodejs from '../assets/img/Node.js.svg';
 import solidity from '../assets/img/Solidity.svg';
 import djangorest from '../assets/img/Django REST.svg';

@@ -11,6 +11,7 @@ import AllPosts from './components/AllPosts';
 import BlogForm from './components/AddBlog';
 // import ParticlesBackground from 'interactive-backgrounds';
 import { ConstellationFieldBackground  } from 'interactive-backgrounds';
+import { ContentProvider } from './hooks/useContent';
 
 
 
@@ -65,34 +66,35 @@ function App() {
     : 'black'
 
   return (
+    <ContentProvider>
+      <div className="min-h-screen bg-gray-50  dark:bg-gray-900 dark:text-[#b9b8b8]">
 
-    <div className="min-h-screen bg-gray-50  dark:bg-gray-900 dark:text-[#b9b8b8]">
-      
-      <ConstellationFieldBackground
-        particleColor={particleColor}
-        connectionColor={connectionColor}
-        rippleColor={rippleColor}
-        color={particleColor}
-        constfill={colorsword}
-        // lineWidth ={10}
-        text="THE ACJ"
-      />
-      <AnimatePresence>
-        {loading && <Loader />}
-      </AnimatePresence>
-      
-      <Sidebar />
-      <DarkModeToggle />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/works/add" element={<WorkForm />} />
-        <Route path="/blogs/add" element={<BlogForm />} />
-        <Route path="/works/:id/edit" element={<WorkForm />} />
-        <Route path="/all-posts" element={<AllPosts />} />
-        
-      </Routes>
-     
-    </div>
+        <ConstellationFieldBackground
+          particleColor={particleColor}
+          connectionColor={connectionColor}
+          rippleColor={rippleColor}
+          color={particleColor}
+          constfill={colorsword}
+          // lineWidth ={10}
+          text="THE ACJ"
+        />
+        <AnimatePresence>
+          {loading && <Loader />}
+        </AnimatePresence>
+
+        <Sidebar />
+        <DarkModeToggle />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/works/add" element={<WorkForm />} />
+          <Route path="/blogs/add" element={<BlogForm />} />
+          <Route path="/works/:id/edit" element={<WorkForm />} />
+          <Route path="/all-posts" element={<AllPosts />} />
+
+        </Routes>
+
+      </div>
+    </ContentProvider>
   );
 }
 

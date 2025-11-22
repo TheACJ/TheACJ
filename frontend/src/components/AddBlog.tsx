@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { blogService } from '../services/api';
-import type { Category } from '../services/api';
+import { blogService, categoryService, type Category } from '../services/api_node';
 
 const BlogPostForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);

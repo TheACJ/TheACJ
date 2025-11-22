@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { WorkItem, workService } from '../services/api';
+import { workService, type WorkItem } from '../services/api_node';
 import WorkModal from './WorkModal';
 import toast from 'react-hot-toast';
 
@@ -18,7 +18,7 @@ const Work = () => {
   useEffect(() => {
     const fetchWorks = async () => {
       try {
-        const response = await workService.getAllWorks();
+        const response = await workService.getWorkItems();
         console.log("Fetched works:", response.data);
         setWorks(Array.isArray(response.data) ? response.data : []);
         setError(null);

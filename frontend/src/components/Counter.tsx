@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
+import { useContent } from '../hooks/useContent';
 
 const counters = [
   { value: 20, label: "Projects" },
@@ -9,7 +10,8 @@ const counters = [
 ];
 
 const Counter = () => {
-  const [counts, setCounts] = useState(counters.map(() => 0));
+  const { content, loading } = useContent();
+  const [counts, setCounts] = useState<number[]>([]);
   const { ref, inView } = useInView({
     threshold: 0.5,
     triggerOnce: true
@@ -36,6 +38,18 @@ const Counter = () => {
     }
   }, [inView]);
 
+  if (loading || !content.counter || content.counter.length === 0) {
+    return (
+      <section ref={ref} className="relative h-[400px] overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary" />
+        <div className="absolute inset-0 bg-black/60" />
+        <div className="relative h-full flex items-center justify-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section ref={ref} className="relative h-[400px] overflow-hidden">
       {/* Background Video */}
@@ -46,31 +60,37 @@ const Counter = () => {
         playsInline
         className="absolute inset-0 w-full h-full object-cover"
       >
-        <source 
-          src="https://static.videezy.com/system/resources/previews/000/056/476/original/Glowy-things-2-.mp4" 
+        <source
+          src="https://static.videezy.com/system/resources/previews/000/056/476/original/Glowy-things-2-.mp4"
           type="video/mp4"
         />
       </video>
-      
+
       {/* Overlay */}
       <div className="absolute inset-0 bg-black/60" />
 
       {/* Content */}
       <div className="relative h-full max-w-6xl mx-auto px-4">
-        <div className="h-full grid md:grid-cols-3 gap-8 items-center">
-          {counters.map((counter, index) => (
+        <div className="h-full grid md:grid-cols-4 gap-8 items-center">
+          {content.counter.map((counter, index) => (
             <motion.div
-              key={index}
+              key={counter._id || index}
               initial={{ opacity: 0, y: 20 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6, delay: index * 0.2 }}
               className="text-center"
             >
-              <span className="text-5xl font-bold text-white block mb-2">
-                {counts[index]}
+              <div className="flex items-center justify-center mb-2">
+                <i className={`${counter.icon} text-3xl text-white mr-2`}></i>
+                <span className="text-5xl font-bold text-white">
+                  {counts[index] || 0}
+                </span>
+              </div>
+              <span className="text-lg text-white/80 uppercase tracking-wider block">
+                {counter.title}
               </span>
-              <span className="text-lg text-white/80 uppercase tracking-wider">
-                {counter.label}
+              <span className="text-sm text-white/60">
+                {counter.value}
               </span>
             </motion.div>
           ))}
