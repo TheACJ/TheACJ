@@ -12,7 +12,7 @@ import BlogForm from './components/AddBlog';
 // import ParticlesBackground from 'interactive-backgrounds';
 import { ConstellationFieldBackground  } from 'interactive-backgrounds';
 import { ContentProvider } from './hooks/useContent';
-import './services/analytics'; // Initialize analytics tracking
+import analytics from './services/analytics'; // Import analytics service
 
 
 
@@ -30,6 +30,14 @@ function App() {
     }, 2000);
 
     return () => clearTimeout(timer);
+  }, []);
+
+  // Initialize analytics
+  useEffect(() => {
+    console.log('[App] Initializing analytics service...');
+    analytics.initialize().catch(error => {
+      console.error('[App] Failed to initialize analytics:', error);
+    });
   }, []);
   
   useEffect(() => {

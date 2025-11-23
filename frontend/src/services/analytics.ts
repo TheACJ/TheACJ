@@ -336,20 +336,7 @@ class AnalyticsService {
 // Create singleton instance
 export const analytics = new AnalyticsService();
 
-// Auto-initialize when module is imported
-if (typeof window !== 'undefined') {
-  console.log('[Analytics] Module loaded, checking DOM readiness...');
-  // Initialize after DOM is ready
-  if (document.readyState === 'loading') {
-    console.log('[Analytics] DOM loading, waiting for DOMContentLoaded...');
-    document.addEventListener('DOMContentLoaded', () => {
-      console.log('[Analytics] DOMContentLoaded fired, initializing analytics...');
-      analytics.initialize();
-    });
-  } else {
-    console.log('[Analytics] DOM already ready, initializing analytics immediately...');
-    analytics.initialize();
-  }
-}
+// Analytics service is now initialized explicitly in App.tsx
+// This prevents double initialization and ensures proper timing
 
 export default analytics;
