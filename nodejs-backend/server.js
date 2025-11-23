@@ -32,8 +32,8 @@ connectDB();
 
 const app = express();
 
-// Trust proxy for accurate IP detection behind reverse proxies
-app.set('trust proxy', true);
+// Trust proxy for accurate IP detection behind reverse proxies (trust 1 proxy hop)
+app.set('trust proxy', 1);
 
 // Security middleware
 app.use(helmet({
@@ -42,10 +42,10 @@ app.use(helmet({
     directives: {
       "default-src": ["'self'"],
       "script-src": ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net", "https://cdnjs.cloudflare.com", "https://code.jquery.com"],
-      "style-src": ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net", "https://cdnjs.cloudflare.com"],
+      "style-src": ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net", "https://cdnjs.cloudflare.com", "https://fonts.googleapis.com"],
       "font-src": ["'self'", "https://cdnjs.cloudflare.com", "https://cdn.jsdelivr.net", "https://fonts.googleapis.com", "https://fonts.gstatic.com"],
       "img-src": ["'self'", "data:", "https:", "blob:"],
-      "connect-src": ["'self'"],
+      "connect-src": ["'self'", "https://cdn.jsdelivr.net"],
       "media-src": ["'self'"],
       "object-src": ["'none'"],
       "base-uri": ["'self'"],
@@ -149,6 +149,21 @@ app.use('/api/admin/dashboard', adminDashboardRoutes);
 app.use('/api/admin/content', adminContentRoutes);
 app.use('/api/admin/upload', uploadRoutes);
 app.use('/api/admin/content/sections', contentRoutes);
+
+// Additional admin routes for frontend compatibility
+const { authenticateAdmin } = require('./middleware/auth');
+const adminDashboardController = require('./controllers/adminDashboardController');
+
+app.get('/api/admin/activity', authenticateAdmin, adminDashboardController.getActivityLogs);
+app.get('/api/admin/notifications', authenticateAdmin, (req, res) => {
+  res.status(200).json({
+    success: true,
+    data: {
+      notifications: [],
+      unreadCount: 0
+    }
+  });
+});
 
 // For compatibility with existing frontend
 app.use('/api/blog-posts/', blogRoutes);

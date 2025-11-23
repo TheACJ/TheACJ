@@ -77,6 +77,20 @@ router.delete('/users/:id', requireSuperAdmin, adminDashboardController.deleteUs
 // Activity logs (super admin only)
 router.get('/activity-logs', requireSuperAdmin, adminDashboardController.getActivityLogs);
 
+// Activity feed (accessible to all authenticated admins)
+router.get('/activity', authenticateAdmin, adminDashboardController.getActivityLogs);
+
+// Notifications (placeholder - accessible to all authenticated admins)
+router.get('/notifications', authenticateAdmin, (req, res) => {
+  res.status(200).json({
+    success: true,
+    data: {
+      notifications: [],
+      unreadCount: 0
+    }
+  });
+});
+
 // Settings (super admin only)
 router.get('/settings', requireSuperAdmin, adminDashboardController.getSettings);
 router.put('/settings', requireSuperAdmin, settingsValidation, adminDashboardController.updateSettings);
