@@ -32,6 +32,9 @@ connectDB();
 
 const app = express();
 
+// Trust proxy for accurate IP detection behind reverse proxies
+app.set('trust proxy', true);
+
 // Security middleware
 app.use(helmet({
   contentSecurityPolicy: {
