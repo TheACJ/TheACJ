@@ -77,6 +77,8 @@ class AnalyticsService {
   async initialize(): Promise<void> {
     if (this.isInitialized) return;
 
+    console.log('[Analytics] Initializing analytics service...');
+
     try {
       // Track initial page view
       await this.trackPageView();
@@ -88,8 +90,9 @@ class AnalyticsService {
       this.startSessionTracking();
 
       this.isInitialized = true;
+      console.log('[Analytics] Analytics service initialized successfully');
     } catch (error) {
-      console.error('Failed to initialize analytics:', error);
+      console.error('[Analytics] Failed to initialize analytics:', error);
     }
   }
 
@@ -162,14 +165,17 @@ class AnalyticsService {
       this.pageViews.push(pageViewData.page);
     }
 
+    console.log('[Analytics] Tracking page view:', pageViewData.page);
+
     try {
       await axios.post('/api/analytics/pageview', pageViewData, {
         headers: {
           'Content-Type': 'application/json'
         }
       });
+      console.log('[Analytics] Page view tracked successfully');
     } catch (error) {
-      console.error('Failed to track page view:', error);
+      console.error('[Analytics] Failed to track page view:', error);
     }
   }
 
@@ -188,18 +194,23 @@ class AnalyticsService {
       timestamp: Date.now()
     };
 
+    console.log('[Analytics] Tracking click:', clickData.element, 'on', clickData.page);
+
     try {
       await axios.post('/api/analytics/click', clickData, {
         headers: {
           'Content-Type': 'application/json'
         }
       });
+      console.log('[Analytics] Click tracked successfully');
     } catch (error) {
-      console.error('Failed to track click:', error);
+      console.error('[Analytics] Failed to track click:', error);
     }
   }
 
   private async trackScrollDepth(depth: number): Promise<void> {
+    console.log('[Analytics] Tracking scroll depth:', depth + '%');
+
     try {
       await axios.post('/api/analytics/scroll', {
         depth,
@@ -211,8 +222,9 @@ class AnalyticsService {
           'Content-Type': 'application/json'
         }
       });
+      console.log('[Analytics] Scroll depth tracked successfully');
     } catch (error) {
-      console.error('Failed to track scroll depth:', error);
+      console.error('[Analytics] Failed to track scroll depth:', error);
     }
   }
 
@@ -228,18 +240,27 @@ class AnalyticsService {
       os: this.getOS()
     };
 
+    console.log('[Analytics] Tracking session end:', {
+      sessionId: sessionData.sessionId,
+      duration: sessionData.duration ? Math.round(sessionData.duration / 1000) + 's' : 'unknown',
+      pages: sessionData.pages.length
+    });
+
     try {
       await axios.post('/api/analytics/session', sessionData, {
         headers: {
           'Content-Type': 'application/json'
         }
       });
+      console.log('[Analytics] Session end tracked successfully');
     } catch (error) {
-      console.error('Failed to track session end:', error);
+      console.error('[Analytics] Failed to track session end:', error);
     }
   }
 
   private async trackSessionResume(): Promise<void> {
+    console.log('[Analytics] Tracking session resume for:', this.sessionId);
+
     try {
       await axios.post('/api/analytics/session-resume', {
         sessionId: this.sessionId,
@@ -249,13 +270,16 @@ class AnalyticsService {
           'Content-Type': 'application/json'
         }
       });
+      console.log('[Analytics] Session resume tracked successfully');
     } catch (error) {
-      console.error('Failed to track session resume:', error);
+      console.error('[Analytics] Failed to track session resume:', error);
     }
   }
 
   // Public methods for manual tracking
   async trackEvent(eventName: string, data: Record<string, unknown> = {}): Promise<void> {
+    console.log('[Analytics] Tracking custom event:', eventName, data);
+
     try {
       await axios.post('/api/analytics/event', {
         event: eventName,
@@ -268,12 +292,15 @@ class AnalyticsService {
           'Content-Type': 'application/json'
         }
       });
+      console.log('[Analytics] Custom event tracked successfully');
     } catch (error) {
-      console.error('Failed to track event:', error);
+      console.error('[Analytics] Failed to track event:', error);
     }
   }
 
   async trackConversion(conversionType: string, value?: number): Promise<void> {
+    console.log('[Analytics] Tracking conversion:', conversionType, value ? `$${value}` : '');
+
     try {
       await axios.post('/api/analytics/conversion', {
         type: conversionType,
@@ -286,8 +313,9 @@ class AnalyticsService {
           'Content-Type': 'application/json'
         }
       });
+      console.log('[Analytics] Conversion tracked successfully');
     } catch (error) {
-      console.error('Failed to track conversion:', error);
+      console.error('[Analytics] Failed to track conversion:', error);
     }
   }
 
@@ -310,12 +338,16 @@ export const analytics = new AnalyticsService();
 
 // Auto-initialize when module is imported
 if (typeof window !== 'undefined') {
+  console.log('[Analytics] Module loaded, checking DOM readiness...');
   // Initialize after DOM is ready
   if (document.readyState === 'loading') {
+    console.log('[Analytics] DOM loading, waiting for DOMContentLoaded...');
     document.addEventListener('DOMContentLoaded', () => {
+      console.log('[Analytics] DOMContentLoaded fired, initializing analytics...');
       analytics.initialize();
     });
   } else {
+    console.log('[Analytics] DOM already ready, initializing analytics immediately...');
     analytics.initialize();
   }
 }
