@@ -114,7 +114,7 @@
                     <li class="nav-item dropdown me-3">
                         <a class="nav-link position-relative" href="#" id="notificationDropdown" data-bs-toggle="dropdown">
                             <i class="fas fa-bell"></i>
-                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="notificationCount">3</span>
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="notificationCount">0</span>
                         </a>
                         <div class="dropdown-menu dropdown-menu-end" style="width: 350px;">
                             <div class="dropdown-header d-flex justify-content-between align-items-center">
@@ -208,18 +208,19 @@
                     <li class="nav-item">
                         <a class="nav-link" href="/admin/blog-posts">
                             <i class="fas fa-blog me-2"></i>Blog Posts
-                            <span class="badge bg-primary float-end">12</span>
+                            <span class="badge bg-primary float-end" id="sidebar-blog-count">0</span>
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/admin/work-items">
                             <i class="fas fa-briefcase me-2"></i>Work Items
+                            <span class="badge bg-success float-end" id="sidebar-work-count">0</span>
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/admin/contacts">
                             <i class="fas fa-envelope me-2"></i>Contacts
-                            <span class="badge bg-warning float-end">5</span>
+                            <span class="badge bg-warning float-end" id="sidebar-contacts-count">0</span>
                         </a>
                     </li>
                     <li class="nav-item">
@@ -324,45 +325,45 @@
                     </div>
                     <div class="stat-value" data-stat="total-users">0</div>
                     <div class="stat-label">Total Users</div>
-                    <div class="stat-change positive">
+                    <div class="stat-change" id="users-change">
                         <i class="fas fa-arrow-up"></i>
-                        <span>12% from last month</span>
+                        <span>Loading...</span>
                     </div>
                 </div>
-                
+
                 <div class="stat-card success" data-context-menu="card">
                     <div class="stat-icon bg-success bg-gradient">
                         <i class="fas fa-blog"></i>
                     </div>
                     <div class="stat-value" data-stat="total-posts">0</div>
                     <div class="stat-label">Blog Posts</div>
-                    <div class="stat-change positive">
+                    <div class="stat-change" id="posts-change">
                         <i class="fas fa-arrow-up"></i>
-                        <span>8 new this month</span>
+                        <span>Loading...</span>
                     </div>
                 </div>
-                
+
                 <div class="stat-card info" data-context-menu="card">
                     <div class="stat-icon bg-info bg-gradient">
                         <i class="fas fa-briefcase"></i>
                     </div>
                     <div class="stat-value" data-stat="total-work">0</div>
                     <div class="stat-label">Work Items</div>
-                    <div class="stat-change positive">
+                    <div class="stat-change" id="work-change">
                         <i class="fas fa-arrow-up"></i>
-                        <span>3 new projects</span>
+                        <span>Loading...</span>
                     </div>
                 </div>
-                
+
                 <div class="stat-card warning" data-context-menu="card">
                     <div class="stat-icon bg-warning bg-gradient">
                         <i class="fas fa-envelope"></i>
                     </div>
                     <div class="stat-value" data-stat="unread-contacts">0</div>
                     <div class="stat-label">Unread Contacts</div>
-                    <div class="stat-change negative">
-                        <i class="fas fa-arrow-down"></i>
-                        <span>5 pending replies</span>
+                    <div class="stat-change" id="contacts-change">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>Loading...</span>
                     </div>
                 </div>
             </div>
@@ -437,35 +438,10 @@
                         </div>
                         <div class="dashboard-card-body">
                             <div id="tasksList">
-                                <div class="form-check mb-3">
-                                    <input class="form-check-input" type="checkbox" id="task1">
-                                    <label class="form-check-label" for="task1">
-                                        Review pending blog comments
-                                    </label>
-                                </div>
-                                <div class="form-check mb-3">
-                                    <input class="form-check-input" type="checkbox" id="task2">
-                                    <label class="form-check-label" for="task2">
-                                        Update portfolio showcase
-                                    </label>
-                                </div>
-                                <div class="form-check mb-3">
-                                    <input class="form-check-input" type="checkbox" id="task3">
-                                    <label class="form-check-label" for="task3">
-                                        Respond to contact inquiries
-                                    </label>
-                                </div>
-                                <div class="form-check mb-3">
-                                    <input class="form-check-input" type="checkbox" id="task4">
-                                    <label class="form-check-label" for="task4">
-                                        Backup database
-                                    </label>
-                                </div>
-                                <div class="form-check mb-3">
-                                    <input class="form-check-input" type="checkbox" id="task5">
-                                    <label class="form-check-label" for="task5">
-                                        Check system updates
-                                    </label>
+                                <div class="text-center text-muted">
+                                    <i class="fas fa-tasks fa-2x mb-3"></i>
+                                    <p>No pending tasks</p>
+                                    <small>Click "Add Task" to create your first task</small>
                                 </div>
                             </div>
                         </div>
@@ -547,7 +523,7 @@
                         </div>
                         <div class="dashboard-card-body">
                             <div class="data-table">
-                                <table class="table table-hover">
+                                <table class="table table-hover" id="topReferrersTable">
                                     <thead>
                                         <tr>
                                             <th>Source</th>
@@ -556,40 +532,11 @@
                                         </tr>
                                     </thead>
                                     <tbody>
+                                        <!-- Referrer data will be loaded dynamically -->
                                         <tr>
-                                            <td>
-                                                <i class="fab fa-google me-2"></i>Google
+                                            <td colspan="3" class="text-center text-muted">
+                                                <i class="fas fa-spinner fa-spin me-2"></i>Loading referrer data...
                                             </td>
-                                            <td>1,234</td>
-                                            <td><span class="badge bg-success">23%</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td>
-                                                <i class="fab fa-twitter me-2"></i>Twitter
-                                            </td>
-                                            <td>892</td>
-                                            <td><span class="badge bg-warning">45%</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td>
-                                                <i class="fab fa-linkedin me-2"></i>LinkedIn
-                                            </td>
-                                            <td>756</td>
-                                            <td><span class="badge bg-success">31%</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td>
-                                                <i class="fab fa-github me-2"></i>GitHub
-                                            </td>
-                                            <td>543</td>
-                                            <td><span class="badge bg-success">28%</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td>
-                                                <i class="fas fa-link me-2"></i>Direct
-                                            </td>
-                                            <td>432</td>
-                                            <td><span class="badge bg-danger">52%</span></td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -868,11 +815,15 @@
             
             async init() {
                 await this.loadDashboardData();
+                await this.loadAnalyticsData();
                 this.initializeCharts();
                 this.setupRealtimeUpdates();
                 this.updateDateTime();
                 this.loadNotifications();
                 this.loadActivityFeed();
+                this.loadSystemPerformance();
+                this.loadReferrerAnalytics();
+                this.setupPeriodButtons();
             }
             
             async loadDashboardData() {
@@ -888,18 +839,47 @@
             
             updateStats(data) {
                 // Update stat cards
-                document.querySelector('[data-stat="total-users"]').textContent = data.totalUsers || 0;
-                document.querySelector('[data-stat="total-posts"]').textContent = data.totalPosts || 0;
-                document.querySelector('[data-stat="total-work"]').textContent = data.totalWork || 0;
-                document.querySelector('[data-stat="unread-contacts"]').textContent = data.unreadContacts || 0;
-                
+                document.querySelector('[data-stat="total-users"]').textContent = data.total.users || 0;
+                document.querySelector('[data-stat="total-posts"]').textContent = data.total.blogPosts || 0;
+                document.querySelector('[data-stat="total-work"]').textContent = data.total.workItems || 0;
+                document.querySelector('[data-stat="unread-contacts"]').textContent = data.active.unreadContacts || 0;
+
+                // Update sidebar counts
+                document.getElementById('sidebar-blog-count').textContent = data.total.blogPosts || 0;
+                document.getElementById('sidebar-work-count').textContent = data.total.workItems || 0;
+                document.getElementById('sidebar-contacts-count').textContent = data.active.unreadContacts || 0;
+
+                // Update stat changes
+                this.updateStatChanges(data.changes);
+
                 // Update notification count
                 document.getElementById('notificationCount').textContent = data.notifications || 0;
-                
+
                 // Update last login
                 if (data.lastLogin) {
                     document.getElementById('lastLogin').textContent = adminSystem.formatDate(data.lastLogin);
                 }
+            }
+
+            updateStatChanges(changes) {
+                const updateChangeElement = (elementId, changeValue, label) => {
+                    const element = document.getElementById(elementId);
+                    if (!element) return;
+
+                    const isPositive = changeValue >= 0;
+                    const absChange = Math.abs(changeValue);
+
+                    element.className = `stat-change ${isPositive ? 'positive' : 'negative'}`;
+                    element.innerHTML = `
+                        <i class="fas fa-arrow-${isPositive ? 'up' : 'down'}"></i>
+                        <span>${absChange}% ${label}</span>
+                    `;
+                };
+
+                updateChangeElement('users-change', changes?.users || 0, 'from last month');
+                updateChangeElement('posts-change', changes?.posts || 0, 'from last month');
+                updateChangeElement('work-change', changes?.work || 0, 'from last month');
+                updateChangeElement('contacts-change', changes?.contacts || 0, 'from last month');
             }
             
             initializeCharts() {
@@ -907,10 +887,10 @@
                 const trafficOptions = {
                     series: [{
                         name: 'Page Views',
-                        data: [31, 40, 28, 51, 42, 82, 56]
+                        data: this.trafficData?.datasets?.pageViews || [31, 40, 28, 51, 42, 82, 56]
                     }, {
                         name: 'Unique Visitors',
-                        data: [11, 32, 45, 32, 34, 52, 41]
+                        data: this.trafficData?.datasets?.uniqueVisitors || [11, 32, 45, 32, 34, 52, 41]
                     }],
                     chart: {
                         height: 350,
@@ -934,28 +914,38 @@
                         }
                     },
                     xaxis: {
-                        categories: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+                        categories: this.trafficData?.labels || ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
                     },
                     colors: ['#6366f1', '#22d3ee']
                 };
-                
+
                 this.charts.traffic = new ApexCharts(document.querySelector("#trafficChart"), trafficOptions);
                 this.charts.traffic.render();
-                
+
                 // Content Distribution Chart
+                const contentSeries = this.contentData?.distribution?.map(item => item.value) || [44, 55, 13, 43];
+                const contentLabels = this.contentData?.distribution?.map(item => item.name) || ['Blog Posts', 'Work Items', 'Categories', 'Contacts'];
+
                 const contentOptions = {
-                    series: [44, 55, 13, 43],
+                    series: contentSeries,
                     chart: {
                         height: 350,
                         type: 'donut'
                     },
-                    labels: ['Blog Posts', 'Work Items', 'Categories', 'Pages'],
+                    labels: contentLabels,
                     colors: ['#6366f1', '#10b981', '#f59e0b', '#ef4444'],
                     legend: {
                         position: 'bottom'
+                    },
+                    tooltip: {
+                        y: {
+                            formatter: function(value) {
+                                return value + ' items';
+                            }
+                        }
                     }
                 };
-                
+
                 this.charts.content = new ApexCharts(document.querySelector("#contentChart"), contentOptions);
                 this.charts.content.render();
             }
@@ -964,6 +954,9 @@
                 // Update every 30 seconds
                 setInterval(() => {
                     this.loadDashboardData();
+                    this.loadSystemPerformance();
+                    this.loadReferrerAnalytics();
+                    // Don't reload analytics data to preserve period selection
                 }, 30000);
             }
             
@@ -1029,15 +1022,87 @@
                     console.error('Failed to load activity:', error);
                 }
             }
+
+            async loadAnalyticsData(period = 'week') {
+                try {
+                    const [trafficResponse, contentResponse] = await Promise.all([
+                        adminSystem.apiRequest(`/dashboard/analytics/traffic?period=${period}`),
+                        adminSystem.apiRequest('/dashboard/analytics/content-distribution')
+                    ]);
+
+                    if (trafficResponse.success) {
+                        this.trafficData = trafficResponse.data;
+                    }
+
+                    if (contentResponse.success) {
+                        this.contentData = contentResponse.data;
+                    }
+                } catch (error) {
+                    console.error('Failed to load analytics data:', error);
+                }
+            }
+
+            setupPeriodButtons() {
+                const periodButtons = document.querySelectorAll('[data-period]');
+                periodButtons.forEach(button => {
+                    button.addEventListener('click', async (e) => {
+                        // Update active state
+                        periodButtons.forEach(btn => btn.classList.remove('active'));
+                        e.target.classList.add('active');
+
+                        // Load data for selected period
+                        const period = e.target.getAttribute('data-period');
+                        await this.loadAnalyticsData(period);
+
+                        // Update chart
+                        if (this.charts.traffic && this.trafficData) {
+                            this.charts.traffic.updateOptions({
+                                series: [{
+                                    name: 'Page Views',
+                                    data: this.trafficData.datasets.pageViews
+                                }, {
+                                    name: 'Unique Visitors',
+                                    data: this.trafficData.datasets.uniqueVisitors
+                                }],
+                                xaxis: {
+                                    categories: this.trafficData.labels
+                                }
+                            });
+                        }
+                    });
+                });
+            }
+
+            async loadSystemPerformance() {
+                try {
+                    const response = await adminSystem.apiRequest('/dashboard/system/performance');
+                    if (response.success) {
+                        this.updateSystemPerformance(response.data);
+                    }
+                } catch (error) {
+                    console.error('Failed to load system performance:', error);
+                }
+            }
+
+            async loadReferrerAnalytics() {
+                try {
+                    const response = await adminSystem.apiRequest('/dashboard/analytics/referrers');
+                    if (response.success) {
+                        this.updateReferrerAnalytics(response.data.referrers);
+                    }
+                } catch (error) {
+                    console.error('Failed to load referrer analytics:', error);
+                }
+            }
             
             displayActivity(activities) {
                 const container = document.getElementById('activityFeed');
-                
+
                 if (activities.length === 0) {
                     container.innerHTML = '<div class="text-center text-muted">No recent activity</div>';
                     return;
                 }
-                
+
                 container.innerHTML = activities.map(activity => `
                     <div class="timeline-item">
                         <div class="timeline-content">
@@ -1046,6 +1111,60 @@
                             <div class="timeline-description">${activity.description}</div>
                         </div>
                     </div>
+                `).join('');
+            }
+
+            updateSystemPerformance(data) {
+                // Update CPU usage
+                const cpuElement = document.querySelector('.performance-metric:nth-child(1) .h4');
+                const cpuProgress = document.querySelector('.performance-metric:nth-child(1) .progress-bar');
+                if (cpuElement && cpuProgress) {
+                    cpuElement.textContent = data.cpu.usage + '%';
+                    cpuProgress.style.width = data.cpu.usage + '%';
+                    cpuProgress.className = `progress-bar ${data.cpu.usage > 80 ? 'bg-danger' : data.cpu.usage > 60 ? 'bg-warning' : 'bg-success'}`;
+                }
+
+                // Update Memory usage
+                const memoryElement = document.querySelector('.performance-metric:nth-child(2) .h4');
+                const memoryProgress = document.querySelector('.performance-metric:nth-child(2) .progress-bar');
+                if (memoryElement && memoryProgress) {
+                    memoryElement.textContent = data.memory.used + '%';
+                    memoryProgress.style.width = data.memory.used + '%';
+                    memoryProgress.className = `progress-bar ${data.memory.used > 80 ? 'bg-danger' : data.memory.used > 60 ? 'bg-warning' : 'bg-info'}`;
+                }
+
+                // Update Disk usage
+                const diskElement = document.querySelector('.performance-metric:nth-child(3) .h4');
+                const diskProgress = document.querySelector('.performance-metric:nth-child(3) .progress-bar');
+                if (diskElement && diskProgress) {
+                    diskElement.textContent = data.disk.used + '%';
+                    diskProgress.style.width = data.disk.used + '%';
+                    diskProgress.className = `progress-bar ${data.disk.used > 80 ? 'bg-danger' : data.disk.used > 60 ? 'bg-warning' : 'bg-success'}`;
+                }
+
+                // Update Network I/O
+                const networkElement = document.querySelector('.performance-metric:nth-child(4) .h4');
+                if (networkElement) {
+                    networkElement.textContent = data.network.upload + ' MB/s';
+                }
+            }
+
+            updateReferrerAnalytics(referrers) {
+                const tbody = document.querySelector('#topReferrersTable tbody');
+                if (!tbody) return;
+
+                tbody.innerHTML = referrers.map(referrer => `
+                    <tr>
+                        <td>
+                            <i class="${referrer.icon} me-2"></i>${referrer.source}
+                        </td>
+                        <td>${referrer.visitors.toLocaleString()}</td>
+                        <td>
+                            <span class="badge bg-${referrer.bounceRate > 50 ? 'danger' : referrer.bounceRate > 30 ? 'warning' : 'success'}">
+                                ${referrer.bounceRate}%
+                            </span>
+                        </td>
+                    </tr>
                 `).join('');
             }
             

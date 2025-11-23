@@ -12,6 +12,7 @@ import BlogForm from './components/AddBlog';
 // import ParticlesBackground from 'interactive-backgrounds';
 import { ConstellationFieldBackground  } from 'interactive-backgrounds';
 import { ContentProvider } from './hooks/useContent';
+import './services/analytics'; // Initialize analytics tracking
 
 
 

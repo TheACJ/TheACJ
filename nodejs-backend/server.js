@@ -16,6 +16,7 @@ const blogRoutes = require('./routes/blog');
 const workRoutes = require('./routes/work');
 const categoryRoutes = require('./routes/category');
 const contactRoutes = require('./routes/contact');
+const analyticsRoutes = require('./routes/analytics');
 
 // Import admin routes
 const adminAuthRoutes = require('./routes/adminAuth');
@@ -142,6 +143,7 @@ app.use('/api/works', workRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/contacts', contactRoutes);
 app.use('/api/content', contentRoutes);
+app.use('/api/analytics', analyticsRoutes);
 
 // Admin API routes
 app.use('/api/admin/auth', adminAuthRoutes);

@@ -95,6 +95,14 @@ router.get('/notifications', authenticateAdmin, (req, res) => {
 router.get('/settings', requireSuperAdmin, adminDashboardController.getSettings);
 router.put('/settings', requireSuperAdmin, settingsValidation, adminDashboardController.updateSettings);
 
+// Analytics routes (accessible to all authenticated admins)
+router.get('/analytics/traffic', authenticateAdmin, adminDashboardController.getTrafficAnalytics);
+router.get('/analytics/content-distribution', authenticateAdmin, adminDashboardController.getContentDistribution);
+router.get('/analytics/referrers', authenticateAdmin, adminDashboardController.getReferrerAnalytics);
+
+// System routes (accessible to all authenticated admins)
+router.get('/system/performance', authenticateAdmin, adminDashboardController.getSystemPerformance);
+
 // Health check for admin dashboard
 router.get('/health', (req, res) => {
   res.status(200).json({
