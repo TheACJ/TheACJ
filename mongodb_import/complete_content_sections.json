@@ -1,0 +1,160 @@
+[
+  {
+    "_id": { "$oid": "507f1f77bcf86cd799439011" },
+    "sectionType": "hero",
+    "hero": {
+      "slides": [
+        {
+          "title": "Hi!",
+          "subtitle": "The ACJ",
+          "description": "With us Tech Emancipation is achievable",
+          "bgImage": "/assets/img/theacj.jpg",
+          "buttonText": "View CV",
+          "buttonIcon": "icon-download",
+          "buttonLink": "/assets/JoshuaAgbai.pdf"
+        },
+        {
+          "title": "I am a",
+          "subtitle": "Data Analyst",
+          "description": "Where there is Data, The ACJ will make sense of it",
+          "bgImage": "/assets/img/data_analytics.jpg",
+          "buttonText": "View Portfolio",
+          "buttonIcon": "icon-briefcase",
+          "buttonLink": "#work"
+        },
+        {
+          "title": "I am a",
+          "subtitle": "Web2 Developer",
+          "description": "Imagine it, The ACJ will make it real",
+          "bgImage": "/assets/img/web2.jpg",
+          "buttonText": "View Portfolio",
+          "buttonIcon": "icon-briefcase",
+          "buttonLink": "#work"
+        },
+        {
+          "title": "I am a",
+          "subtitle": "Web3 Developer",
+          "description": "Building worldclass solution using Blockchain Technology",
+          "bgImage": "/assets/img/Web3.webp",
+          "buttonText": "View Portfolio",
+          "buttonIcon": "icon-briefcase",
+          "buttonLink": "#work"
+        }
+      ],
+      "socialLinks": [
+        { "platform": "GitHub", "url": "https://github.com/TheACJ", "icon": "fab fa-github" },
+        { "platform": "LinkedIn", "url": "https://linkedin.com/in/joshuaagbai", "icon": "fab fa-linkedin" },
+        { "platform": "Twitter", "url": "https://twitter.com/realACJoshua", "icon": "fab fa-twitter" }
+      ]
+    },
+    "isActive": true,
+    "updatedAt": { "$date": "2025-11-22T23:42:00.000Z" }
+  },
+  {
+    "_id": { "$oid": "507f1f77bcf86cd799439012" },
+    "sectionType": "about",
+    "about": {
+      "title": "About Me",
+      "description": "I'm a passionate Data Analyst and Web Developer with expertise in transforming complex data into actionable insights and creating responsive web applications. With experience in Python, JavaScript, and modern frameworks, I bridge the gap between data science and web development.",
+      "image": "/assets/img/about.jpg",
+      "achievements": [
+        "3+ Years of Data Analysis Experience",
+        "50+ Projects Completed",
+        "Multiple Technology Certifications",
+        "Full-Stack Development Expertise"
+      ]
+    },
+    "isActive": true,
+    "updatedAt": { "$date": "2025-11-22T23:42:00.000Z" }
+  },
+  {
+    "_id": { "$oid": "507f1f77bcf86cd799439013" },
+    "sectionType": "services",
+    "services": [
+      {
+        "title": "Data Analysis",
+        "description": "Transform raw data into meaningful insights using Python, Pandas, NumPy, and visualization tools.",
+        "icon": "fas fa-chart-bar",
+        "order": 1
+      },
+      {
+        "title": "Web Development",
+        "description": "Build responsive, modern web applications using React, Node.js, and cutting-edge technologies.",
+        "icon": "fas fa-code",
+        "order": 2
+      },
+      {
+        "title": "Blockchain Development",
+        "description": "Develop decentralized applications and smart contracts using Solidity and Web3 technologies.",
+        "icon": "fas fa-link",
+        "order": 3
+      },
+      {
+        "title": "API Development",
+        "description": "Create robust and scalable RESTful APIs and GraphQL services for modern applications.",
+        "icon": "fas fa-cogs",
+        "order": 4
+      }
+    ],
+    "isActive": true,
+    "updatedAt": { "$date": "2025-11-22T23:42:00.000Z" }
+  },
+  {
+    "_id": { "$oid": "507f1f77bcf86cd799439014" },
+    "sectionType": "skills",
+    "skills": [
+      { "name": "Python", "level": 95, "icon": "fab fa-python" },
+      { "name": "JavaScript", "level": 90, "icon": "fab fa-js" },
+      { "name": "React", "level": 88, "icon": "fab fa-react" },
+      { "name": "TypeScript", "level": 88, "icon": "fab fa-js-square" },
+      { "name": "HTML5", "level": 92, "icon": "fab fa-html5" },
+      { "name": "CSS3", "level": 90, "icon": "fab fa-css3-alt" },
+      { "name": "Git", "level": 92, "icon": "fab fa-git-alt" },
+      { "name": "Node.js", "level": 85, "icon": "fab fa-node-js" },
+      { "name": "Excel", "level": 88, "icon": "fas fa-file-excel" },
+      { "name": "Responsive Design", "level": 90, "icon": "fas fa-mobile-alt" },
+      { "name": "Problem Solving", "level": 90, "icon": "fas fa-lightbulb" },
+      { "name": "Team Collaboration", "level": 85, "icon": "fas fa-users" },
+      { "name": "Django", "level": 80, "icon": "fab fa-django" },
+      { "name": "MongoDB", "level": 80, "icon": "fas fa-database" },
+      { "name": "Express.js", "level": 82, "icon": "fab fa-node-js" },
+      { "name": "Pandas", "level": 85, "icon": "fas fa-chart-line" },
+      { "name": "API Development", "level": 85, "icon": "fas fa-cogs" },
+      { "name": "Full-Stack Development", "level": 85, "icon": "fas fa-code" },
+      { "name": "RESTful APIs", "level": 85, "icon": "fas fa-server" },
+      { "name": "SQL", "level": 85, "icon": "fas fa-database" },
+      { "name": "Tailwind CSS", "level": 85, "icon": "fab fa-tailwind" },
+      { "name": "Data Visualization", "level": 82, "icon": "fas fa-chart-pie" },
+      { "name": "NumPy", "level": 82, "icon": "fas fa-calculator" },
+      { "name": "Jupyter", "level": 80, "icon": "fas fa-code" },
+      { "name": "GitHub", "level": 90, "icon": "fab fa-github" },
+      { "name": "Matplotlib", "level": 78, "icon": "fas fa-chart-bar" },
+      { "name": "PostgreSQL", "level": 78, "icon": "fas fa-database" },
+      { "name": "Project Management", "level": 78, "icon": "fas fa-tasks" },
+      { "name": "Bootstrap", "level": 75, "icon": "fab fa-bootstrap" },
+      { "name": "GraphQL", "level": 75, "icon": "fas fa-project-diagram" },
+      { "name": "MySQL", "level": 75, "icon": "fas fa-database" },
+      { "name": "Progressive Web Apps", "level": 75, "icon": "fas fa-mobile-alt" },
+      { "name": "R", "level": 70, "icon": "fas fa-chart-line" },
+      { "name": "Redis", "level": 70, "icon": "fas fa-database" },
+      { "name": "Solidity", "level": 65, "icon": "fab fa-ethereum" },
+      { "name": "AWS", "level": 65, "icon": "fab fa-aws" },
+      { "name": "Docker", "level": 68, "icon": "fab fa-docker" },
+      { "name": "Web3", "level": 60, "icon": "fas fa-link" }
+    ],
+    "isActive": true,
+    "updatedAt": { "$date": "2025-11-22T23:42:00.000Z" }
+  },
+  {
+    "_id": { "$oid": "507f1f77bcf86cd799439015" },
+    "sectionType": "counter",
+    "counter": [
+      { "title": "Projects Completed", "value": "50+", "icon": "fas fa-project-diagram" },
+      { "title": "Happy Clients", "value": "30+", "icon": "fas fa-smile" },
+      { "title": "Years Experience", "value": "3+", "icon": "fas fa-calendar" },
+      { "title": "Technologies", "value": "15+", "icon": "fas fa-laptop-code" }
+    ],
+    "isActive": true,
+    "updatedAt": { "$date": "2025-11-22T23:42:00.000Z" }
+  }
+]

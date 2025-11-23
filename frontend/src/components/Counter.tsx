@@ -3,12 +3,6 @@ import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { useContent } from '../hooks/useContent';
 
-const counters = [
-  { value: 20, label: "Projects" },
-  { value: 4, label: "Clients" },
-  { value: 3, label: "Partners" }
-];
-
 const Counter = () => {
   const { content, loading } = useContent();
   const [counts, setCounts] = useState<number[]>([]);
@@ -18,14 +12,17 @@ const Counter = () => {
   });
 
   useEffect(() => {
-    if (inView) {
-      counters.forEach((counter, index) => {
+    if (inView && content.counter && content.counter.length > 0) {
+      content.counter.forEach((counter, index) => {
+        // Extract numeric value from string (e.g., "50+" -> 50)
+        const targetValue = parseInt(counter.value.replace(/\D/g, '')) || 0;
+        
         let start = 0;
-        const increment = counter.value / 50;
+        const increment = targetValue / 50;
         const timer = setInterval(() => {
           start += increment;
-          if (start >= counter.value) {
-            start = counter.value;
+          if (start >= targetValue) {
+            start = targetValue;
             clearInterval(timer);
           }
           setCounts(prev => {
@@ -36,15 +33,31 @@ const Counter = () => {
         }, 40);
       });
     }
-  }, [inView]);
+  }, [inView, content.counter]);
 
-  if (loading || !content.counter || content.counter.length === 0) {
+  if (loading) {
     return (
       <section ref={ref} className="relative h-[400px] overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary" />
         <div className="absolute inset-0 bg-black/60" />
         <div className="relative h-full flex items-center justify-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
+          <span className="ml-4 text-white">Loading counter content from MongoDB...</span>
+        </div>
+      </section>
+    );
+  }
+
+  if (!content.counter || content.counter.length === 0) {
+    return (
+      <section ref={ref} className="relative h-[400px] overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary" />
+        <div className="absolute inset-0 bg-black/60" />
+        <div className="relative h-full flex items-center justify-center">
+          <div className="text-center text-white">
+            <h2 className="text-2xl mb-4">No Counter Data Available</h2>
+            <p>Please check your MongoDB content sections.</p>
+          </div>
         </div>
       </section>
     );

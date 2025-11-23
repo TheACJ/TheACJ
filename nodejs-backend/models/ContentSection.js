@@ -19,6 +19,16 @@ const serviceSchema = new mongoose.Schema({
   order: Number
 });
 
+const slideSchema = new mongoose.Schema({
+  title: String,
+  subtitle: String,
+  description: String,
+  bgImage: String,
+  buttonText: String,
+  buttonIcon: String,
+  buttonLink: String
+});
+
 const contentSectionSchema = new mongoose.Schema({
   sectionType: {
     type: String,
@@ -27,12 +37,7 @@ const contentSectionSchema = new mongoose.Schema({
     unique: true
   },
   hero: {
-    title: String,
-    subtitle: String,
-    description: String,
-    image: String,
-    ctaText: String,
-    ctaLink: String,
+    slides: [slideSchema],
     socialLinks: [{
       platform: String,
       url: String,

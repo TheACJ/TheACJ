@@ -1,4 +1,3 @@
-
 import '../assets/style.css'
 
 import React from 'react';
@@ -13,12 +12,28 @@ const AnimatedDivider = () => (
 const About = () => {
   const { content, loading } = useContent();
 
+  // Show loading state while content is being fetched
   if (loading) {
     return (
       <section id="about" className="py-20 bg-white dark:bg-gray-900 dark:text-[#b9b8b8]">
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+            <span className="ml-4 dark:text-[#b9b8b8]">Loading about content from MongoDB...</span>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // Show error state if no about content available
+  if (!content.about.title && !content.about.description) {
+    return (
+      <section id="about" className="py-20 bg-white dark:bg-gray-900 dark:text-[#b9b8b8]">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="text-center text-gray-500 dark:text-[#b9b8b8]">
+            <h2 className="text-2xl mb-4">No About Content Available</h2>
+            <p>Please check your MongoDB content sections.</p>
           </div>
         </div>
       </section>
@@ -39,38 +54,13 @@ const About = () => {
         </div>
 
         {/* Main Content */}
-        <div className="mb-16 space-y-6">
-          <div className="transform transition-all hover:scale-102 duration-300">
-            <strong className="text-xl">Hello</strong> {content.about.description}
+        {content.about.description && (
+          <div className="mb-16 space-y-6">
+            <div className="transform transition-all hover:scale-102 duration-300">
+              <strong className="text-xl">Hello</strong> {content.about.description}
+            </div>
           </div>
-
-          <AnimatedDivider />
-
-          <div className="transform transition-all hover:scale-102 duration-300">
-            <span className="font-semibold text-primary dark:text-blue-400">Web Development:</span>{" "}
-            I build websites and apps using Django, React, and Tailwind CSS, creating intuitive digital experiences from frontend design to backend functionality.
-          </div>
-
-          <AnimatedDivider />
-
-          <div className="transform transition-all hover:scale-102 duration-300">
-            <span className="font-semibold text-primary dark:text-blue-400">Data Analytics:</span>{" "}
-            Using Python and Excel, I transform raw data into strategic insights, helping businesses make smarter decisions by uncovering hidden patterns.
-          </div>
-
-          <AnimatedDivider />
-
-          <div className="transform transition-all hover:scale-102 duration-300">
-            <span className="font-semibold text-primary dark:text-blue-400">Blockchain & Web3:</span>{" "}
-            I'm exploring the next digital frontier, developing projects that simplify blockchain technology and create meaningful connections in the Web3 ecosystem.
-          </div>
-
-          <AnimatedDivider />
-
-          <div className="transform transition-all hover:scale-102 duration-300 text-center font-medium italic">
-            My core mission? To bridge technology and human potential, making complex digital solutions simple and engaging for everyone.
-          </div>
-        </div>
+        )}
 
         {/* Achievements Section */}
         {content.about.achievements && content.about.achievements.length > 0 && (

@@ -1,1126 +1,2601 @@
+<!-- views/admin/content.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Content Management - The ACJ Portfolio Admin">
     <title>Content Management - The ACJ Portfolio Admin</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Icons & Libraries -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Code Editor -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/monokai.min.css">
+    
+    <!-- Color Picker -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/themes/nano.min.css"/>
+    
+    <!-- Custom CSS -->
     <link href="/assets/admin.css" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js" integrity="sha512-p7NThnzM6NThBzE1F9Z9bL3bBgOSvM3b3GWoBFlT1zbQ+sHm+OobwMR4aT5E8Lwjje7T8V7loTDtYf5UZcKFw/w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    
+    <style>
+        /* Content Management Specific Styles */
+        .content-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .content-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: float 20s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            50% { transform: translate(30px, -30px) rotate(180deg); }
+        }
+        
+        .content-tabs {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+        }
+        
+        [data-theme="dark"] .content-tabs {
+            background: var(--gray-800);
+        }
+        
+        .nav-tabs {
+            border-bottom: 2px solid var(--gray-200);
+            background: var(--gray-50);
+            padding: 1rem 1rem 0;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+        }
+        
+        [data-theme="dark"] .nav-tabs {
+            background: var(--gray-900);
+            border-bottom-color: var(--gray-700);
+        }
+        
+        .nav-tabs .nav-link {
+            color: var(--gray-600);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            font-weight: 500;
+            position: relative;
+            white-space: nowrap;
+            transition: all var(--transition);
+            border-radius: 0.5rem 0.5rem 0 0;
+        }
+        
+        .nav-tabs .nav-link:hover {
+            color: var(--primary);
+            background: rgba(99, 102, 241, 0.1);
+        }
+        
+        .nav-tabs .nav-link.active {
+            color: var(--primary);
+            background: white;
+            font-weight: 600;
+        }
+        
+        [data-theme="dark"] .nav-tabs .nav-link.active {
+            background: var(--gray-800);
+        }
+        
+        .nav-tabs .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--primary);
+        }
+        
+        .tab-content {
+            padding: 2rem;
+        }
+        
+        /* Form Sections */
+        .form-section {
+            background: var(--gray-50);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        [data-theme="dark"] .form-section {
+            background: var(--gray-900);
+        }
+        
+        .form-section-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--gray-800);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        [data-theme="dark"] .form-section-title {
+            color: var(--gray-200);
+        }
+        
+        /* Dynamic Items */
+        .dynamic-item {
+            background: white;
+            border: 2px solid var(--gray-200);
+            border-radius: 0.75rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            position: relative;
+            transition: all var(--transition);
+        }
+        
+        [data-theme="dark"] .dynamic-item {
+            background: var(--gray-800);
+            border-color: var(--gray-700);
+        }
+        
+        .dynamic-item:hover {
+            border-color: var(--primary);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .dynamic-item.dragging {
+            opacity: 0.5;
+        }
+        
+        .drag-handle {
+            cursor: move;
+            color: var(--gray-400);
+            margin-right: 0.5rem;
+        }
+        
+        .drag-handle:hover {
+            color: var(--primary);
+        }
+        
+        /* Icon Picker */
+        .icon-picker-wrapper {
+            position: relative;
+        }
+        
+        .icon-preview {
+            width: 40px;
+            height: 40px;
+            border: 2px solid var(--gray-300);
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all var(--transition);
+        }
+        
+        .icon-preview:hover {
+            border-color: var(--primary);
+            background: var(--gray-50);
+        }
+        
+        .icon-picker-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            z-index: 1000;
+            background: white;
+            border: 1px solid var(--gray-200);
+            border-radius: 0.5rem;
+            box-shadow: var(--shadow-lg);
+            padding: 1rem;
+            display: none;
+            width: 300px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .icon-picker-dropdown.show {
+            display: block;
+        }
+        
+        .icon-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+            gap: 0.5rem;
+        }
+        
+        .icon-option {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--gray-200);
+            border-radius: 0.25rem;
+            cursor: pointer;
+            transition: all var(--transition);
+        }
+        
+        .icon-option:hover {
+            background: var(--primary);
+            color: white;
+            transform: scale(1.1);
+        }
+        
+        /* Progress Bar */
+        .skill-preview {
+            background: var(--gray-200);
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 0.5rem;
+        }
+        
+        .skill-preview-bar {
+            background: var(--primary-gradient);
+            height: 100%;
+            transition: width var(--transition);
+        }
+        
+        /* Live Preview */
+        .preview-panel {
+            position: sticky;
+            top: 80px;
+            background: white;
+            border-radius: 1rem;
+            box-shadow: var(--shadow-lg);
+            padding: 1.5rem;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        
+        [data-theme="dark"] .preview-panel {
+            background: var(--gray-800);
+        }
+        
+        .preview-device-selector {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .preview-device-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--gray-300);
+            background: white;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all var(--transition);
+        }
+        
+        .preview-device-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .preview-iframe {
+            width: 100%;
+            border: 1px solid var(--gray-300);
+            border-radius: 0.5rem;
+            transition: all var(--transition);
+        }
+        
+        .preview-iframe.mobile {
+            max-width: 375px;
+            margin: 0 auto;
+        }
+        
+        .preview-iframe.tablet {
+            max-width: 768px;
+            margin: 0 auto;
+        }
+        
+        /* Version History */
+        .version-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem;
+            border-bottom: 1px solid var(--gray-200);
+            cursor: pointer;
+            transition: background var(--transition);
+        }
+        
+        .version-item:hover {
+            background: var(--gray-50);
+        }
+        
+        .version-item.active {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .version-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--gray-400);
+            margin-right: 1rem;
+        }
+        
+        .version-item.active .version-dot {
+            background: white;
+        }
+        
+        /* Auto-save Indicator */
+        .autosave-indicator {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 2rem;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            z-index: 1000;
+            transition: all var(--transition);
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        
+        .autosave-indicator.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .autosave-indicator.saving {
+            background: var(--warning);
+            color: white;
+        }
+        
+        .autosave-indicator.saved {
+            background: var(--success);
+            color: white;
+        }
+        
+        .autosave-indicator.error {
+            background: var(--danger);
+            color: white;
+        }
+        
+        /* Import/Export */
+        .import-zone {
+            border: 3px dashed var(--gray-300);
+            border-radius: 1rem;
+            padding: 3rem;
+            text-align: center;
+            transition: all var(--transition);
+        }
+        
+        .import-zone.dragover {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.05);
+        }
+        
+        /* Code Editor */
+        .code-editor-wrapper {
+            border: 2px solid var(--gray-200);
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+        
+        .CodeMirror {
+            height: 300px;
+        }
+        
+        /* Responsive */
+        @media (max-width: 992px) {
+            .preview-panel {
+                position: relative;
+                margin-top: 2rem;
+            }
+        }
+    </style>
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <!-- Loading Bar -->
+    <div class="loading-bar"></div>
+    
+    <!-- Main Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light admin-navbar">
         <div class="container-fluid">
+            <button class="btn btn-link text-decoration-none p-2" id="sidebarToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            
             <a class="navbar-brand" href="/admin/dashboard">
-                <i class="fas fa-edit me-2"></i>Content Management
+                <i class="fas fa-shield-alt"></i>
+                Admin Portal
             </a>
+            
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
+            
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/admin/dashboard">
-                            <i class="fas fa-chart-bar me-1"></i>Dashboard
-                        </a>
+                <ul class="navbar-nav ms-auto">
+                    <!-- Search -->
+                    <li class="nav-item me-3">
+                        <div class="search-box" style="width: 300px;">
+                            <i class="fas fa-search search-icon"></i>
+                            <input type="text" class="form-control" placeholder="Search content..." data-search>
+                        </div>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/admin/blog-posts">
-                            <i class="fas fa-blog me-1"></i>Blog Posts
+                    
+                    <!-- Quick Actions -->
+                    <li class="nav-item dropdown me-3">
+                        <a class="nav-link" href="#" data-bs-toggle="dropdown">
+                            <i class="fas fa-magic"></i>
                         </a>
+                        <div class="dropdown-menu dropdown-menu-end">
+                            <h6 class="dropdown-header">Quick Actions</h6>
+                            <a class="dropdown-item" href="#" onclick="contentManager.resetToDefaults()">
+                                <i class="fas fa-undo me-2"></i>Reset to Defaults
+                            </a>
+                            <a class="dropdown-item" href="#" onclick="contentManager.importContent()">
+                                <i class="fas fa-file-import me-2"></i>Import Content
+                            </a>
+                            <a class="dropdown-item" href="#" onclick="contentManager.exportContent()">
+                                <i class="fas fa-file-export me-2"></i>Export Content
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#versionHistoryModal">
+                                <i class="fas fa-history me-2"></i>Version History
+                            </a>
+                        </div>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/admin/work-items">
-                            <i class="fas fa-briefcase me-1"></i>Work Items
-                        </a>
+                    
+                    <!-- Preview Toggle -->
+                    <li class="nav-item me-3">
+                        <button class="btn btn-link nav-link" onclick="contentManager.togglePreview()">
+                            <i class="fas fa-eye"></i> Preview
+                        </button>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/admin/contacts">
-                            <i class="fas fa-envelope me-1"></i>Contacts
-                        </a>
+                    
+                    <!-- Theme Toggle -->
+                    <li class="nav-item me-3">
+                        <button class="btn btn-link nav-link" id="themeToggle">
+                            <i class="fas fa-moon"></i>
+                        </button>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/admin/categories">
-                            <i class="fas fa-tags me-1"></i>Categories
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="/admin/content">
-                            <i class="fas fa-edit me-1"></i>Content
-                        </a>
-                    </li>
-                </ul>
-                <ul class="navbar-nav">
+                    
+                    <!-- User Menu -->
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown">
-                            <i class="fas fa-user-shield me-1"></i><span id="adminName">Admin</span>
+                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" data-bs-toggle="dropdown">
+                            <img src="/assets/img/default-avatar.png" alt="Avatar" class="rounded-circle me-2" width="32" height="32" data-user-avatar>
+                            <span data-user-name>Admin</span>
                         </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#profileModal">
-                                <i class="fas fa-user me-2"></i>Profile
-                            </a></li>
-                            <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
-                                <i class="fas fa-key me-2"></i>Change Password
-                            </a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="#" id="logoutBtn">
+                        <div class="dropdown-menu dropdown-menu-end">
+                            <a class="dropdown-item" href="/admin/dashboard">
+                                <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="#" id="logoutBtn">
                                 <i class="fas fa-sign-out-alt me-2"></i>Logout
-                            </a></li>
-                        </ul>
+                            </a>
+                        </div>
                     </li>
                 </ul>
             </div>
         </div>
     </nav>
-
-    <div class="container-fluid mt-4">
-        <!-- Page Header -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h2><i class="fas fa-edit me-2"></i>Content Management</h2>
-                        <p class="text-muted">Customize your homepage sections</p>
-                    </div>
-                    <div>
-                        <button class="btn btn-success me-2" id="saveAllBtn">
-                            <i class="fas fa-save me-2"></i>Save All Changes
-                        </button>
-                        <button class="btn btn-info" id="resetAllBtn">
-                            <i class="fas fa-undo me-2"></i>Reset to Defaults
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Content Tabs -->
-        <div class="row">
-            <div class="col-12">
-                <ul class="nav nav-tabs" id="contentTabs" role="tablist">
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="hero-tab" data-bs-toggle="tab" data-bs-target="#hero" type="button" role="tab">
-                            <i class="fas fa-home me-1"></i>Hero Section
-                        </button>
+    
+    <div class="d-flex">
+        <!-- Sidebar -->
+        <nav class="admin-sidebar">
+            <div class="p-3">
+                <h6 class="text-muted text-uppercase small fw-bold mb-3">Content Sections</h6>
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#hero" onclick="contentManager.switchTab('hero')">
+                            <i class="fas fa-home me-2"></i>Hero Section
+                        </a>
                     </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="about-tab" data-bs-toggle="tab" data-bs-target="#about" type="button" role="tab">
-                            <i class="fas fa-user me-1"></i>About Section
-                        </button>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#about" onclick="contentManager.switchTab('about')">
+                            <i class="fas fa-user me-2"></i>About Section
+                        </a>
                     </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="services-tab" data-bs-toggle="tab" data-bs-target="#services" type="button" role="tab">
-                            <i class="fas fa-cogs me-1"></i>Services
-                        </button>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#services" onclick="contentManager.switchTab('services')">
+                            <i class="fas fa-cogs me-2"></i>Services
+                        </a>
                     </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="counter-tab" data-bs-toggle="tab" data-bs-target="#counter" type="button" role="tab">
-                            <i class="fas fa-chart-bar me-1"></i>Counter
-                        </button>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#counter" onclick="contentManager.switchTab('counter')">
+                            <i class="fas fa-chart-bar me-2"></i>Counter
+                        </a>
                     </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="skills-tab" data-bs-toggle="tab" data-bs-target="#skills" type="button" role="tab">
-                            <i class="fas fa-code me-1"></i>Skills
-                        </button>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#skills" onclick="contentManager.switchTab('skills')">
+                            <i class="fas fa-code me-2"></i>Skills
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#portfolio" onclick="contentManager.switchTab('portfolio')">
+                            <i class="fas fa-briefcase me-2"></i>Portfolio
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#testimonials" onclick="contentManager.switchTab('testimonials')">
+                            <i class="fas fa-quote-left me-2"></i>Testimonials
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#contact" onclick="contentManager.switchTab('contact')">
+                            <i class="fas fa-envelope me-2"></i>Contact Info
+                        </a>
                     </li>
                 </ul>
-
-                <div class="tab-content" id="contentTabsContent">
-                    <!-- Hero Section -->
-                    <div class="tab-pane fade show active" id="hero" role="tabpanel">
-                        <div class="card mt-3">
-                            <div class="card-header">
-                                <h5 class="mb-0"><i class="fas fa-home me-2"></i>Hero Section</h5>
+                
+                <h6 class="text-muted text-uppercase small fw-bold mb-3 mt-4">Quick Links</h6>
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/dashboard">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+        
+        <!-- Main Content -->
+        <main class="admin-content">
+            <!-- Content Header -->
+            <div class="content-header">
+                <div class="position-relative">
+                    <h1 class="h3 mb-3">
+                        <i class="fas fa-edit me-2"></i>Content Management
+                    </h1>
+                    <p class="mb-4">Customize your website content and homepage sections</p>
+                    <div class="row g-3">
+                        <div class="col-auto">
+                            <button class="btn btn-light" onclick="contentManager.saveAll()">
+                                <i class="fas fa-save me-2"></i>Save All Changes
+                            </button>
+                        </div>
+                        <div class="col-auto">
+                            <button class="btn btn-outline-light" onclick="contentManager.previewChanges()">
+                                <i class="fas fa-eye me-2"></i>Preview
+                            </button>
+                        </div>
+                        <div class="col-auto">
+                            <button class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#publishModal">
+                                <i class="fas fa-rocket me-2"></i>Publish
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-lg-8">
+                    <!-- Content Tabs -->
+                    <div class="content-tabs">
+                        <ul class="nav nav-tabs" id="contentTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="hero-tab" data-bs-toggle="tab" data-bs-target="#hero" type="button">
+                                    <i class="fas fa-home me-2"></i>Hero
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="about-tab" data-bs-toggle="tab" data-bs-target="#about" type="button">
+                                    <i class="fas fa-user me-2"></i>About
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="services-tab" data-bs-toggle="tab" data-bs-target="#services" type="button">
+                                    <i class="fas fa-cogs me-2"></i>Services
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="counter-tab" data-bs-toggle="tab" data-bs-target="#counter" type="button">
+                                    <i class="fas fa-chart-bar me-2"></i>Counter
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="skills-tab" data-bs-toggle="tab" data-bs-target="#skills" type="button">
+                                    <i class="fas fa-code me-2"></i>Skills
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="portfolio-tab" data-bs-toggle="tab" data-bs-target="#portfolio" type="button">
+                                    <i class="fas fa-briefcase me-2"></i>Portfolio
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="testimonials-tab" data-bs-toggle="tab" data-bs-target="#testimonials" type="button">
+                                    <i class="fas fa-quote-left me-2"></i>Testimonials
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button">
+                                    <i class="fas fa-envelope me-2"></i>Contact
+                                </button>
+                            </li>
+                        </ul>
+                        
+                        <div class="tab-content" id="contentTabsContent">
+                            <!-- Hero Section -->
+                            <div class="tab-pane fade show active" id="hero" role="tabpanel">
+                                <form id="heroForm" data-autosave>
+                                    <div class="form-section">
+                                        <h5 class="form-section-title">
+                                            <span><i class="fas fa-heading me-2"></i>Main Content</span>
+                                            <button type="button" class="btn btn-sm btn-outline-primary" onclick="contentManager.resetSection('hero')">
+                                                <i class="fas fa-undo"></i> Reset
+                                            </button>
+                                        </h5>
+                                        
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label fw-bold">Title</label>
+                                                <input type="text" class="form-control" id="heroTitle" placeholder="Your Name">
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label fw-bold">Subtitle</label>
+                                                <input type="text" class="form-control" id="heroSubtitle" placeholder="Your Role">
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">Description</label>
+                                            <textarea class="form-control" id="heroDescription" rows="4" placeholder="Brief introduction..."></textarea>
+                                        </div>
+                                        
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label fw-bold">Profile Image</label>
+                                                <div class="input-group">
+                                                    <input type="text" class="form-control" id="heroImage" placeholder="/assets/img/profile.jpg">
+                                                    <button class="btn btn-outline-secondary" type="button" onclick="contentManager.openMediaLibrary('heroImage')">
+                                                        <i class="fas fa-image"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label fw-bold">Background Image</label>
+                                                <div class="input-group">
+                                                    <input type="text" class="form-control" id="heroBgImage" placeholder="/assets/img/hero-bg.jpg">
+                                                    <button class="btn btn-outline-secondary" type="button" onclick="contentManager.openMediaLibrary('heroBgImage')">
+                                                        <i class="fas fa-image"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label fw-bold">CTA Button Text</label>
+                                                <input type="text" class="form-control" id="heroCtaText" placeholder="View My Work">
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label fw-bold">CTA Button Link</label>
+                                                <input type="text" class="form-control" id="heroCtaLink" placeholder="#portfolio">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-section">
+                                        <h5 class="form-section-title">
+                                            <span><i class="fas fa-share-alt me-2"></i>Social Links</span>
+                                            <button type="button" class="btn btn-sm btn-success" onclick="contentManager.addSocialLink()">
+                                                <i class="fas fa-plus"></i> Add
+                                            </button>
+                                        </h5>
+                                        
+                                        <div id="socialLinksContainer" class="sortable">
+                                            <!-- Social links will be added dynamically -->
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-section">
+                                        <h5 class="form-section-title">
+                                            <span><i class="fas fa-keyboard me-2"></i>Typed Text Animation</span>
+                                        </h5>
+                                        
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">Animated Text (comma separated)</label>
+                                            <input type="text" class="form-control" id="heroTypedText" placeholder="Developer, Designer, Creator">
+                                        </div>
+                                        
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label fw-bold">Type Speed (ms)</label>
+                                                <input type="number" class="form-control" id="heroTypeSpeed" value="100">
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label fw-bold">Back Speed (ms)</label>
+                                                <input type="number" class="form-control" id="heroBackSpeed" value="50">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
                             </div>
-                            <div class="card-body">
-                                <form id="heroForm">
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <div class="mb-3">
-                                                <label class="form-label">Title</label>
-                                                <input type="text" class="form-control" id="heroTitle" required>
-                                            </div>
-                                            <div class="mb-3">
-                                                <label class="form-label">Subtitle</label>
-                                                <input type="text" class="form-control" id="heroSubtitle" required>
-                                            </div>
-                                            <div class="mb-3">
-                                                <label class="form-label">CTA Text</label>
-                                                <input type="text" class="form-control" id="heroCtaText" required>
-                                            </div>
-                                            <div class="mb-3">
-                                                <label class="form-label">CTA Link</label>
-                                                <input type="text" class="form-control" id="heroCtaLink" placeholder="#work">
-                                            </div>
+                            
+                            <!-- About Section -->
+                            <div class="tab-pane fade" id="about" role="tabpanel">
+                                <form id="aboutForm" data-autosave>
+                                    <div class="form-section">
+                                        <h5 class="form-section-title">
+                                            <span><i class="fas fa-info-circle me-2"></i>About Information</span>
+                                        </h5>
+                                        
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">Section Title</label>
+                                            <input type="text" class="form-control" id="aboutTitle" placeholder="About Me">
                                         </div>
-                                        <div class="col-md-6">
-                                            <div class="mb-3">
-                                                <label class="form-label">Description</label>
-                                                <textarea class="form-control" id="heroDescription" rows="4" required></textarea>
+                                        
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">Biography</label>
+                                            <textarea class="form-control" id="aboutBio" rows="6" placeholder="Your detailed biography..."></textarea>
+                                        </div>
+                                        
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label fw-bold">About Image</label>
+                                                <div class="input-group">
+                                                    <input type="text" class="form-control" id="aboutImage" placeholder="/assets/img/about.jpg">
+                                                    <button class="btn btn-outline-secondary" type="button" onclick="contentManager.openMediaLibrary('aboutImage')">
+                                                        <i class="fas fa-image"></i>
+                                                    </button>
+                                                </div>
                                             </div>
-                                            <div class="mb-3">
-                                                <label class="form-label">Profile Image URL</label>
-                                                <input type="text" class="form-control" id="heroImage" placeholder="/assets/img/theacj.jpg">
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label fw-bold">Resume/CV Link</label>
+                                                <div class="input-group">
+                                                    <input type="text" class="form-control" id="aboutResume" placeholder="/assets/resume.pdf">
+                                                    <button class="btn btn-outline-secondary" type="button" onclick="contentManager.uploadFile('aboutResume')">
+                                                        <i class="fas fa-upload"></i>
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                     
-                                    <h6 class="mt-4">Social Links</h6>
-                                    <div id="socialLinksContainer">
-                                        <!-- Social links will be added dynamically -->
+                                    <div class="form-section">
+                                        <h5 class="form-section-title">
+                                            <span><i class="fas fa-trophy me-2"></i>Achievements</span>
+                                            <button type="button" class="btn btn-sm btn-success" onclick="contentManager.addAchievement()">
+                                                <i class="fas fa-plus"></i> Add
+                                            </button>
+                                        </h5>
+                                        
+                                        <div id="achievementsContainer" class="sortable">
+                                            <!-- Achievements will be added dynamically -->
+                                        </div>
                                     </div>
-                                    <button type="button" class="btn btn-outline-primary btn-sm mt-2" onclick="addSocialLink()">
-                                        <i class="fas fa-plus me-1"></i>Add Social Link
-                                    </button>
                                     
-                                    <div class="text-end mt-4">
-                                        <button type="button" class="btn btn-primary" onclick="saveSection('hero')">
-                                            <i class="fas fa-save me-2"></i>Save Hero Section
-                                        </button>
-                                        <button type="button" class="btn btn-secondary ms-2" onclick="resetSection('hero')">
-                                            <i class="fas fa-undo me-2"></i>Reset to Default
-                                        </button>
+                                    <div class="form-section">
+                                        <h5 class="form-section-title">
+                                            <span><i class="fas fa-user-circle me-2"></i>Personal Information</span>
+                                        </h5>
+                                        
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label fw-bold">Full Name</label>
+                                                <input type="text" class="form-control" id="aboutFullName">
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label fw-bold">Date of Birth</label>
+                                                <input type="date" class="form-control" id="aboutDob">
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label fw-bold">Location</label>
+                                                <input type="text" class="form-control" id="aboutLocation">
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label fw-bold">Languages</label>
+                                                <input type="text" class="form-control" id="aboutLanguages" placeholder="English, Spanish">
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label fw-bold">Email</label>
+                                                <input type="email" class="form-control" id="aboutEmail">
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label fw-bold">Phone</label>
+                                                <input type="tel" class="form-control" id="aboutPhone">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            
+                            <!-- Services Section -->
+                            <div class="tab-pane fade" id="services" role="tabpanel">
+                                <form id="servicesForm" data-autosave>
+                                    <div class="form-section">
+                                        <h5 class="form-section-title">
+                                            <span><i class="fas fa-cogs me-2"></i>Services Offered</span>
+                                            <button type="button" class="btn btn-sm btn-success" onclick="contentManager.addService()">
+                                                <i class="fas fa-plus"></i> Add Service
+                                            </button>
+                                        </h5>
+                                        
+                                        <div id="servicesContainer" class="sortable">
+                                            <!-- Services will be added dynamically -->
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            
+                            <!-- Counter Section -->
+                            <div class="tab-pane fade" id="counter" role="tabpanel">
+                                <form id="counterForm" data-autosave>
+                                    <div class="form-section">
+                                        <h5 class="form-section-title">
+                                            <span><i class="fas fa-chart-bar me-2"></i>Statistics Counter</span>
+                                            <button type="button" class="btn btn-sm btn-success" onclick="contentManager.addCounter()">
+                                                <i class="fas fa-plus"></i> Add Counter
+                                            </button>
+                                        </h5>
+                                        
+                                        <div id="counterContainer" class="sortable">
+                                            <!-- Counters will be added dynamically -->
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-section">
+                                        <h5 class="form-section-title">
+                                            <span><i class="fas fa-sliders-h me-2"></i>Counter Settings</span>
+                                        </h5>
+                                        
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label fw-bold">Animation Duration (ms)</label>
+                                                <input type="number" class="form-control" id="counterDuration" value="2000">
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label fw-bold">Animation Delay (ms)</label>
+                                                <input type="number" class="form-control" id="counterDelay" value="100">
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="counterAutoStart" checked>
+                                            <label class="form-check-label" for="counterAutoStart">
+                                                Start animation when visible
+                                            </label>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            
+                            <!-- Skills Section -->
+                            <div class="tab-pane fade" id="skills" role="tabpanel">
+                                <form id="skillsForm" data-autosave>
+                                    <div class="form-section">
+                                        <h5 class="form-section-title">
+                                            <span><i class="fas fa-code me-2"></i>Technical Skills</span>
+                                            <button type="button" class="btn btn-sm btn-success" onclick="contentManager.addSkill()">
+                                                <i class="fas fa-plus"></i> Add Skill
+                                            </button>
+                                        </h5>
+                                        
+                                        <div id="skillsContainer" class="sortable">
+                                            <!-- Skills will be added dynamically -->
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-section">
+                                        <h5 class="form-section-title">
+                                            <span><i class="fas fa-palette me-2"></i>Skill Display Settings</span>
+                                        </h5>
+                                        
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label fw-bold">Display Type</label>
+                                                <select class="form-select" id="skillDisplayType">
+                                                    <option value="progress">Progress Bars</option>
+                                                    <option value="circle">Circle Progress</option>
+                                                    <option value="tags">Tag Cloud</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label fw-bold">Animation Style</label>
+                                                <select class="form-select" id="skillAnimationStyle">
+                                                    <option value="slide">Slide In</option>
+                                                    <option value="fade">Fade In</option>
+                                                    <option value="bounce">Bounce</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            
+                            <!-- Portfolio Section -->
+                            <div class="tab-pane fade" id="portfolio" role="tabpanel">
+                                <form id="portfolioForm" data-autosave>
+                                    <div class="form-section">
+                                        <h5 class="form-section-title">
+                                            <span><i class="fas fa-briefcase me-2"></i>Portfolio Settings</span>
+                                        </h5>
+                                        
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">Section Title</label>
+                                            <input type="text" class="form-control" id="portfolioTitle" placeholder="My Work">
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">Section Description</label>
+                                            <textarea class="form-control" id="portfolioDescription" rows="3"></textarea>
+                                        </div>
+                                        
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label fw-bold">Items Per Page</label>
+                                                <input type="number" class="form-control" id="portfolioItemsPerPage" value="6">
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label fw-bold">Layout Style</label>
+                                                <select class="form-select" id="portfolioLayout">
+                                                    <option value="grid">Grid</option>
+                                                    <option value="masonry">Masonry</option>
+                                                    <option value="carousel">Carousel</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" id="portfolioShowFilter" checked>
+                                            <label class="form-check-label" for="portfolioShowFilter">
+                                                Show category filter
+                                            </label>
+                                        </div>
+                                        
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="portfolioShowDetails" checked>
+                                            <label class="form-check-label" for="portfolioShowDetails">
+                                                Show project details on hover
+                                            </label>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            
+                            <!-- Testimonials Section -->
+                            <div class="tab-pane fade" id="testimonials" role="tabpanel">
+                                <form id="testimonialsForm" data-autosave>
+                                    <div class="form-section">
+                                        <h5 class="form-section-title">
+                                            <span><i class="fas fa-quote-left me-2"></i>Testimonials</span>
+                                            <button type="button" class="btn btn-sm btn-success" onclick="contentManager.addTestimonial()">
+                                                <i class="fas fa-plus"></i> Add Testimonial
+                                            </button>
+                                        </h5>
+                                        
+                                        <div id="testimonialsContainer" class="sortable">
+                                            <!-- Testimonials will be added dynamically -->
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            
+                            <!-- Contact Section -->
+                            <div class="tab-pane fade" id="contact" role="tabpanel">
+                                <form id="contactForm" data-autosave>
+                                    <div class="form-section">
+                                        <h5 class="form-section-title">
+                                            <span><i class="fas fa-envelope me-2"></i>Contact Information</span>
+                                        </h5>
+                                        
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label fw-bold">Email Address</label>
+                                                <input type="email" class="form-control" id="contactEmail">
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label fw-bold">Phone Number</label>
+                                                <input type="tel" class="form-control" id="contactPhone">
+                                            </div>
+                                            <div class="col-12 mb-3">
+                                                <label class="form-label fw-bold">Address</label>
+                                                <textarea class="form-control" id="contactAddress" rows="2"></textarea>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">Google Maps Embed URL</label>
+                                            <input type="text" class="form-control" id="contactMapUrl">
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">Contact Form Email Recipient</label>
+                                            <input type="email" class="form-control" id="contactFormEmail">
+                                        </div>
+                                        
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="contactShowForm" checked>
+                                            <label class="form-check-label" for="contactShowForm">
+                                                Display contact form
+                                            </label>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-section">
+                                        <h5 class="form-section-title">
+                                            <span><i class="fas fa-clock me-2"></i>Business Hours</span>
+                                        </h5>
+                                        
+                                        <div id="businessHoursContainer">
+                                            <!-- Business hours will be added dynamically -->
+                                        </div>
                                     </div>
                                 </form>
                             </div>
                         </div>
                     </div>
-
-                    <!-- About Section -->
-                    <div class="tab-pane fade" id="about" role="tabpanel">
-                        <div class="card mt-3">
-                            <div class="card-header">
-                                <h5 class="mb-0"><i class="fas fa-user me-2"></i>About Section</h5>
-                            </div>
-                            <div class="card-body">
-                                <form id="aboutForm">
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <div class="mb-3">
-                                                <label class="form-label">Title</label>
-                                                <input type="text" class="form-control" id="aboutTitle" required>
-                                            </div>
-                                            <div class="mb-3">
-                                                <label class="form-label">About Image URL</label>
-                                                <input type="text" class="form-control" id="aboutImage" placeholder="/assets/img/about.jpg">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="mb-3">
-                                                <label class="form-label">Description</label>
-                                                <textarea class="form-control" id="aboutDescription" rows="6" required></textarea>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <h6 class="mt-4">Achievements</h6>
-                                    <div id="achievementsContainer">
-                                        <!-- Achievements will be added dynamically -->
-                                    </div>
-                                    <button type="button" class="btn btn-outline-primary btn-sm mt-2" onclick="addAchievement()">
-                                        <i class="fas fa-plus me-1"></i>Add Achievement
-                                    </button>
-                                    
-                                    <div class="text-end mt-4">
-                                        <button type="button" class="btn btn-primary" onclick="saveSection('about')">
-                                            <i class="fas fa-save me-2"></i>Save About Section
-                                        </button>
-                                        <button type="button" class="btn btn-secondary ms-2" onclick="resetSection('about')">
-                                            <i class="fas fa-undo me-2"></i>Reset to Default
-                                        </button>
-                                    </div>
-                                </form>
-                            </div>
+                </div>
+                
+                <div class="col-lg-4">
+                    <!-- Live Preview Panel -->
+                    <div class="preview-panel" id="previewPanel">
+                        <h5 class="mb-3">
+                            <i class="fas fa-eye me-2"></i>Live Preview
+                        </h5>
+                        
+                        <div class="preview-device-selector">
+                            <button class="preview-device-btn active" data-device="desktop">
+                                <i class="fas fa-desktop"></i>
+                            </button>
+                            <button class="preview-device-btn" data-device="tablet">
+                                <i class="fas fa-tablet-alt"></i>
+                            </button>
+                            <button class="preview-device-btn" data-device="mobile">
+                                <i class="fas fa-mobile-alt"></i>
+                            </button>
+                        </div>
+                        
+                        <iframe src="/" class="preview-iframe" id="previewFrame" style="height: 500px;"></iframe>
+                        
+                        <div class="mt-3">
+                            <button class="btn btn-outline-primary w-100" onclick="contentManager.refreshPreview()">
+                                <i class="fas fa-sync me-2"></i>Refresh Preview
+                            </button>
                         </div>
                     </div>
-
-                    <!-- Services Section -->
-                    <div class="tab-pane fade" id="services" role="tabpanel">
-                        <div class="card mt-3">
-                            <div class="card-header">
-                                <h5 class="mb-0"><i class="fas fa-cogs me-2"></i>Services</h5>
-                            </div>
-                            <div class="card-body">
-                                <div id="servicesContainer">
-                                    <!-- Services will be added dynamically -->
+                    
+                    <!-- Quick Stats -->
+                    <div class="dashboard-card mt-4">
+                        <div class="dashboard-card-body">
+                            <h6 class="mb-3">
+                                <i class="fas fa-info-circle me-2"></i>Content Stats
+                            </h6>
+                            <div class="small">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Last Modified:</span>
+                                    <span class="text-muted" id="lastModified">Never</span>
                                 </div>
-                                <button type="button" class="btn btn-outline-primary btn-sm mt-2" onclick="addService()">
-                                    <i class="fas fa-plus me-1"></i>Add Service
-                                </button>
-                                
-                                <div class="text-end mt-4">
-                                    <button type="button" class="btn btn-primary" onclick="saveSection('services')">
-                                        <i class="fas fa-save me-2"></i>Save Services
-                                    </button>
-                                    <button type="button" class="btn btn-secondary ms-2" onclick="resetSection('services')">
-                                        <i class="fas fa-undo me-2"></i>Reset to Default
-                                    </button>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Published Version:</span>
+                                    <span class="text-muted" id="publishedVersion">1.0</span>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Counter Section -->
-                    <div class="tab-pane fade" id="counter" role="tabpanel">
-                        <div class="card mt-3">
-                            <div class="card-header">
-                                <h5 class="mb-0"><i class="fas fa-chart-bar me-2"></i>Counter</h5>
-                            </div>
-                            <div class="card-body">
-                                <div id="counterContainer">
-                                    <!-- Counters will be added dynamically -->
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Total Sections:</span>
+                                    <span class="text-muted">8</span>
                                 </div>
-                                <button type="button" class="btn btn-outline-primary btn-sm mt-2" onclick="addCounter()">
-                                    <i class="fas fa-plus me-1"></i>Add Counter
-                                </button>
-                                
-                                <div class="text-end mt-4">
-                                    <button type="button" class="btn btn-primary" onclick="saveSection('counter')">
-                                        <i class="fas fa-save me-2"></i>Save Counter
-                                    </button>
-                                    <button type="button" class="btn btn-secondary ms-2" onclick="resetSection('counter')">
-                                        <i class="fas fa-undo me-2"></i>Reset to Default
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Skills Section -->
-                    <div class="tab-pane fade" id="skills" role="tabpanel">
-                        <div class="card mt-3">
-                            <div class="card-header">
-                                <h5 class="mb-0"><i class="fas fa-code me-2"></i>Skills</h5>
-                            </div>
-                            <div class="card-body">
-                                <div id="skillsContainer">
-                                    <!-- Skills will be added dynamically -->
-                                </div>
-                                <button type="button" class="btn btn-outline-primary btn-sm mt-2" onclick="addSkill()">
-                                    <i class="fas fa-plus me-1"></i>Add Skill
-                                </button>
-                                
-                                <div class="text-end mt-4">
-                                    <button type="button" class="btn btn-primary" onclick="saveSection('skills')">
-                                        <i class="fas fa-save me-2"></i>Save Skills
-                                    </button>
-                                    <button type="button" class="btn btn-secondary ms-2" onclick="resetSection('skills')">
-                                        <i class="fas fa-undo me-2"></i>Reset to Default
-                                    </button>
+                                <div class="d-flex justify-content-between">
+                                    <span>Auto-save:</span>
+                                    <span class="text-success">Enabled</span>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </main>
     </div>
-
-    <!-- Profile Modal -->
-    <div class="modal fade" id="profileModal" tabindex="-1">
-        <div class="modal-dialog">
+    
+    <!-- Auto-save Indicator -->
+    <div class="autosave-indicator" id="autosaveIndicator">
+        <i class="fas fa-save me-2"></i>
+        <span id="autosaveText">Saving...</span>
+    </div>
+    
+    <!-- Version History Modal -->
+    <div class="modal fade modal-modern" id="versionHistoryModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Admin Profile</h5>
+                    <h5 class="modal-title">
+                        <i class="fas fa-history me-2"></i>Version History
+                    </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="profileForm">
-                        <div class="mb-3">
-                            <label class="form-label">Username</label>
-                            <input type="text" class="form-control" id="profileUsername" readonly>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="list-group" id="versionList">
+                                <!-- Versions will be loaded here -->
+                            </div>
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label">Email</label>
-                            <input type="email" class="form-control" id="profileEmail">
+                        <div class="col-md-8">
+                            <div id="versionDetails">
+                                <div class="text-center text-muted">
+                                    Select a version to view details
+                                </div>
+                            </div>
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label">Full Name</label>
-                            <input type="text" class="form-control" id="profileFullName">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Role</label>
-                            <input type="text" class="form-control" id="profileRole" readonly>
-                        </div>
-                    </form>
+                    </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" id="updateProfileBtn">Update Profile</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="contentManager.restoreVersion()">
+                        <i class="fas fa-undo me-2"></i>Restore Selected
+                    </button>
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- Change Password Modal -->
-    <div class="modal fade" id="changePasswordModal" tabindex="-1">
+    
+    <!-- Publish Modal -->
+    <div class="modal fade modal-modern" id="publishModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Change Password</h5>
+                    <h5 class="modal-title">
+                        <i class="fas fa-rocket me-2"></i>Publish Changes
+                    </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="changePasswordForm">
-                        <div class="mb-3">
-                            <label class="form-label">Current Password</label>
-                            <input type="password" class="form-control" id="currentPassword" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">New Password</label>
-                            <input type="password" class="form-control" id="newPassword" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Confirm New Password</label>
-                            <input type="password" class="form-control" id="confirmNewPassword" required>
-                        </div>
-                    </form>
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Publishing will make your changes live on the website.
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Version Notes</label>
+                        <textarea class="form-control" id="publishNotes" rows="3" placeholder="Describe the changes..."></textarea>
+                    </div>
+                    
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="publishBackup">
+                        <label class="form-check-label" for="publishBackup">
+                            Create backup before publishing
+                        </label>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" id="changePasswordBtn">Change Password</button>
+                    <button type="button" class="btn btn-primary" onclick="contentManager.publishChanges()">
+                        <i class="fas fa-rocket me-2"></i>Publish Now
+                    </button>
                 </div>
             </div>
         </div>
     </div>
-
+    
+    <!-- Media Library Modal -->
+    <div class="modal fade modal-modern" id="mediaLibraryModal" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-photo-video me-2"></i>Media Library
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="import-zone" id="mediaDropZone">
+                                <i class="fas fa-cloud-upload-alt fa-3x mb-3"></i>
+                                <p>Drop files here or click to browse</p>
+                                <input type="file" id="mediaFileInput" multiple hidden accept="image/*,video/*">
+                            </div>
+                            
+                            <div class="mt-3">
+                                <h6>Filters</h6>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="filterImages" checked>
+                                    <label class="form-check-label" for="filterImages">Images</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="filterVideos">
+                                    <label class="form-check-label" for="filterVideos">Videos</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-9">
+                            <div class="row g-3" id="mediaGrid">
+                                <!-- Media items will be displayed here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="contentManager.selectMedia()">
+                        Select
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Icon Picker Modal -->
+    <div class="modal fade modal-modern" id="iconPickerModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-icons me-2"></i>Choose Icon
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <input type="text" class="form-control" placeholder="Search icons..." id="iconSearch">
+                    </div>
+                    <div class="icon-grid" id="iconGrid">
+                        <!-- Icons will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Toast Container -->
+    <div class="toast-container"></div>
+    
+    <!-- Context Menu -->
+    <div class="context-menu"></div>
+    
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/javascript/javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/css/css.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/htmlmixed/htmlmixed.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/pickr.min.js"></script>
     <script src="/assets/admin.js"></script>
+    
     <script>
+        // Content Management System
         class ContentManager {
             constructor() {
                 this.content = {};
+                this.originalContent = {};
+                this.currentSection = 'hero';
+                this.autoSaveTimer = null;
+                this.hasUnsavedChanges = false;
+                this.selectedVersion = null;
+                this.mediaTarget = null;
+                this.iconTarget = null;
+                this.sortables = {};
+                
                 this.init();
             }
-
+            
             async init() {
-                await this.checkAuth();
-                this.setupEventListeners();
                 await this.loadContent();
+                this.setupEventListeners();
+                this.setupSortable();
+                this.setupAutoSave();
+                this.setupPreview();
+                this.loadIcons();
+                this.checkUnsavedChanges();
             }
-
-            async checkAuth() {
-                const token = localStorage.getItem('adminToken');
-                if (!token) {
-                    window.location.href = '/admin/login';
-                    return;
-                }
-
-                try {
-                    const response = await fetch('/api/admin/auth/me', {
-                        headers: { 'Authorization': `Bearer ${token}` }
-                    });
-                    const result = await response.json();
-
-                    if (!result.success) {
-                        this.handleAuthError();
-                        return;
-                    }
-
-                    this.admin = result.data.admin;
-                    this.updateUI();
-                } catch (error) {
-                    this.handleAuthError();
-                }
-            }
-
-            handleAuthError() {
-                localStorage.removeItem('adminToken');
-                localStorage.removeItem('adminRefreshToken');
-                window.location.href = '/admin/login';
-            }
-
-            updateUI() {
-                document.getElementById('adminName').textContent = this.admin.fullName || this.admin.username;
-
-                document.getElementById('profileUsername').value = this.admin.username;
-                document.getElementById('profileEmail').value = this.admin.email;
-                document.getElementById('profileFullName').value = this.admin.fullName;
-                document.getElementById('profileRole').value = this.admin.role;
-            }
-
-            setupEventListeners() {
-                document.getElementById('logoutBtn').addEventListener('click', (e) => {
-                    e.preventDefault();
-                    this.logout();
-                });
-
-                document.getElementById('updateProfileBtn').addEventListener('click', () => {
-                    this.updateProfile();
-                });
-
-                document.getElementById('changePasswordBtn').addEventListener('click', () => {
-                    this.changePassword();
-                });
-
-                document.getElementById('saveAllBtn').addEventListener('click', () => {
-                    this.saveAllChanges();
-                });
-
-                document.getElementById('resetAllBtn').addEventListener('click', () => {
-                    this.resetAllSections();
-                });
-            }
-
+            
             async loadContent() {
                 try {
-                    const token = localStorage.getItem('adminToken');
-                    const response = await fetch('/api/admin/content/sections', {
-                        headers: { 'Authorization': `Bearer ${token}` }
-                    });
-
-                    const result = await response.json();
-
-                    if (result.success) {
-                        this.content = result.data.content || {};
+                    const response = await adminSystem.apiRequest('/content/sections');
+                    if (response.success) {
+                        this.content = response.data.content || {};
+                        this.originalContent = JSON.parse(JSON.stringify(this.content));
                         this.populateForms();
-                    } else {
-                        console.error('Failed to load content:', result.error);
-                        // Load default content for empty sections
-                        await this.loadDefaultContent();
+                        this.updateLastModified(response.data.lastModified);
                     }
                 } catch (error) {
-                    console.error('Error loading content:', error);
-                    AdminUtils.showAlert('Error loading content', 'danger');
+                    console.error('Failed to load content:', error);
+                    adminSystem.showToast('Failed to load content', 'error');
                 }
             }
-
-            async loadDefaultContent() {
-                // This will use the default content from the backend
-                this.content = {};
-                this.populateForms();
-            }
-
+            
             populateForms() {
-                this.populateHeroForm();
-                this.populateAboutForm();
-                this.populateServicesForm();
-                this.populateCounterForm();
-                this.populateSkillsForm();
+                // Populate Hero Section
+                if (this.content.hero) {
+                    const hero = this.content.hero;
+                    document.getElementById('heroTitle').value = hero.title || '';
+                    document.getElementById('heroSubtitle').value = hero.subtitle || '';
+                    document.getElementById('heroDescription').value = hero.description || '';
+                    document.getElementById('heroImage').value = hero.image || '';
+                    document.getElementById('heroBgImage').value = hero.bgImage || '';
+                    document.getElementById('heroCtaText').value = hero.ctaText || '';
+                    document.getElementById('heroCtaLink').value = hero.ctaLink || '';
+                    document.getElementById('heroTypedText').value = hero.typedText ? hero.typedText.join(', ') : '';
+                    document.getElementById('heroTypeSpeed').value = hero.typeSpeed || 100;
+                    document.getElementById('heroBackSpeed').value = hero.backSpeed || 50;
+                    
+                    // Populate social links
+                    this.populateSocialLinks(hero.socialLinks || []);
+                }
+                
+                // Populate About Section
+                if (this.content.about) {
+                    const about = this.content.about;
+                    document.getElementById('aboutTitle').value = about.title || '';
+                    document.getElementById('aboutBio').value = about.bio || '';
+                    document.getElementById('aboutImage').value = about.image || '';
+                    document.getElementById('aboutResume').value = about.resume || '';
+                    document.getElementById('aboutFullName').value = about.fullName || '';
+                    document.getElementById('aboutDob').value = about.dob || '';
+                    document.getElementById('aboutLocation').value = about.location || '';
+                    document.getElementById('aboutLanguages').value = about.languages || '';
+                    document.getElementById('aboutEmail').value = about.email || '';
+                    document.getElementById('aboutPhone').value = about.phone || '';
+                    
+                    // Populate achievements
+                    this.populateAchievements(about.achievements || []);
+                }
+                
+                // Populate other sections...
+                this.populateServices();
+                this.populateCounters();
+                this.populateSkills();
+                this.populateTestimonials();
+                this.populateContact();
             }
-
-            populateHeroForm() {
-                const hero = this.content.hero || {
-                    title: "Joshua Agbai",
-                    subtitle: "Data Analyst & Web Developer",
-                    description: "Transforming data into insights and building exceptional web experiences with modern technologies and innovative solutions.",
-                    image: "/assets/img/theacj.jpg",
-                    ctaText: "Explore My Work",
-                    ctaLink: "#work",
-                    socialLinks: [
-                        { platform: "GitHub", url: "https://github.com/TheACJ", icon: "fab fa-github" },
-                        { platform: "LinkedIn", url: "https://linkedin.com/in/joshuaagbai", icon: "fab fa-linkedin" },
-                        { platform: "Twitter", url: "https://twitter.com/realACJoshua", icon: "fab fa-twitter" }
-                    ]
-                };
-
-                document.getElementById('heroTitle').value = hero.title || '';
-                document.getElementById('heroSubtitle').value = hero.subtitle || '';
-                document.getElementById('heroDescription').value = hero.description || '';
-                document.getElementById('heroImage').value = hero.image || '';
-                document.getElementById('heroCtaText').value = hero.ctaText || '';
-                document.getElementById('heroCtaLink').value = hero.ctaLink || '';
-
-                this.populateSocialLinks(hero.socialLinks || []);
-            }
-
-            populateAboutForm() {
-                const about = this.content.about || {
-                    title: "About Me",
-                    description: "I'm a passionate Data Analyst and Web Developer with expertise in transforming complex data into actionable insights and creating responsive web applications.",
-                    image: "/assets/img/about.jpg",
-                    achievements: [
-                        "3+ Years of Data Analysis Experience",
-                        "50+ Projects Completed",
-                        "Multiple Technology Certifications",
-                        "Full-Stack Development Expertise"
-                    ]
-                };
-
-                document.getElementById('aboutTitle').value = about.title || '';
-                document.getElementById('aboutDescription').value = about.description || '';
-                document.getElementById('aboutImage').value = about.image || '';
-
-                this.populateAchievements(about.achievements || []);
-            }
-
-            populateServicesForm() {
-                const services = this.content.services || [
-                    {
-                        title: "Data Analysis",
-                        description: "Transform raw data into meaningful insights using Python, Pandas, NumPy, and visualization tools.",
-                        icon: "fas fa-chart-bar",
-                        order: 1
-                    },
-                    {
-                        title: "Web Development",
-                        description: "Build responsive, modern web applications using React, Node.js, and cutting-edge technologies.",
-                        icon: "fas fa-code",
-                        order: 2
-                    }
-                ];
-
-                const container = document.getElementById('servicesContainer');
-                container.innerHTML = '';
-                services.forEach((service, index) => {
-                    this.addServiceToForm(service, index);
-                });
-            }
-
-            populateCounterForm() {
-                const counter = this.content.counter || [
-                    { title: "Projects Completed", value: "50+", icon: "fas fa-project-diagram" },
-                    { title: "Happy Clients", value: "30+", icon: "fas fa-smile" },
-                    { title: "Years Experience", value: "3+", icon: "fas fa-calendar" },
-                    { title: "Technologies", value: "15+", icon: "fas fa-laptop-code" }
-                ];
-
-                const container = document.getElementById('counterContainer');
-                container.innerHTML = '';
-                counter.forEach((item, index) => {
-                    this.addCounterToForm(item, index);
-                });
-            }
-
-            populateSkillsForm() {
-                const skills = this.content.skills || [
-                    { name: "Python", level: 95, icon: "fab fa-python" },
-                    { name: "JavaScript", level: 90, icon: "fab fa-js" },
-                    { name: "React", level: 88, icon: "fab fa-react" }
-                ];
-
-                const container = document.getElementById('skillsContainer');
-                container.innerHTML = '';
-                skills.forEach((skill, index) => {
-                    this.addSkillToForm(skill, index);
-                });
-            }
-
-            populateSocialLinks(socialLinks) {
+            
+            populateSocialLinks(links) {
                 const container = document.getElementById('socialLinksContainer');
                 container.innerHTML = '';
-                socialLinks.forEach((link, index) => {
-                    this.addSocialLinkToForm(link, index);
+                
+                links.forEach(link => {
+                    this.addSocialLink(link);
                 });
+                
+                if (links.length === 0) {
+                    this.addSocialLink();
+                }
             }
-
+            
             populateAchievements(achievements) {
                 const container = document.getElementById('achievementsContainer');
                 container.innerHTML = '';
-                achievements.forEach((achievement, index) => {
-                    this.addAchievementToForm(achievement, index);
+                
+                achievements.forEach(achievement => {
+                    this.addAchievement(achievement);
                 });
+                
+                if (achievements.length === 0) {
+                    this.addAchievement();
+                }
             }
-
-            addSocialLink() {
-                const index = document.querySelectorAll('.social-link').length;
-                this.addSocialLinkToForm({ platform: "", url: "", icon: "" }, index);
-            }
-
-            addSocialLinkToForm(link, index) {
-                const container = document.getElementById('socialLinksContainer');
-                const div = document.createElement('div');
-                div.className = 'row social-link mb-2';
-                div.innerHTML = `
-                    <div class="col-md-3">
-                        <input type="text" class="form-control form-control-sm" placeholder="Platform" 
-                               value="${link.platform || ''}" data-field="platform" data-index="${index}">
-                    </div>
-                    <div class="col-md-4">
-                        <input type="text" class="form-control form-control-sm" placeholder="URL" 
-                               value="${link.url || ''}" data-field="url" data-index="${index}">
-                    </div>
-                    <div class="col-md-3">
-                        <input type="text" class="form-control form-control-sm" placeholder="Icon (FontAwesome)" 
-                               value="${link.icon || ''}" data-field="icon" data-index="${index}">
-                    </div>
-                    <div class="col-md-2">
-                        <button type="button" class="btn btn-danger btn-sm" onclick="removeSocialLink(${index})">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                `;
-                container.appendChild(div);
-            }
-
-            addAchievement() {
-                const index = document.querySelectorAll('.achievement').length;
-                this.addAchievementToForm("", index);
-            }
-
-            addAchievementToForm(achievement, index) {
-                const container = document.getElementById('achievementsContainer');
-                const div = document.createElement('div');
-                div.className = 'row achievement mb-2';
-                div.innerHTML = `
-                    <div class="col-md-10">
-                        <input type="text" class="form-control form-control-sm" placeholder="Achievement description" 
-                               value="${achievement || ''}" data-field="achievement" data-index="${index}">
-                    </div>
-                    <div class="col-md-2">
-                        <button type="button" class="btn btn-danger btn-sm" onclick="removeAchievement(${index})">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                `;
-                container.appendChild(div);
-            }
-
-            addService() {
-                const index = document.querySelectorAll('.service-item').length;
-                this.addServiceToForm({ title: "", description: "", icon: "", order: index + 1 }, index);
-            }
-
-            addServiceToForm(service, index) {
+            
+            populateServices() {
+                const services = this.content.services || [];
                 const container = document.getElementById('servicesContainer');
-                const div = document.createElement('div');
-                div.className = 'card mb-3 service-item';
-                div.innerHTML = `
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-4">
-                                <input type="text" class="form-control form-control-sm mb-2" placeholder="Service Title" 
-                                       value="${service.title || ''}" data-field="title" data-index="${index}">
-                                <input type="text" class="form-control form-control-sm" placeholder="Icon (FontAwesome)" 
-                                       value="${service.icon || ''}" data-field="icon" data-index="${index}">
-                            </div>
-                            <div class="col-md-6">
-                                <textarea class="form-control form-control-sm" rows="3" placeholder="Service Description" 
-                                          data-field="description" data-index="${index}">${service.description || ''}</textarea>
-                            </div>
-                            <div class="col-md-2">
-                                <input type="number" class="form-control form-control-sm mb-2" placeholder="Order" 
-                                       value="${service.order || index + 1}" data-field="order" data-index="${index}">
-                                <button type="button" class="btn btn-danger btn-sm" onclick="removeService(${index})">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                container.appendChild(div);
+                container.innerHTML = '';
+                
+                services.forEach(service => {
+                    this.addService(service);
+                });
+                
+                if (services.length === 0) {
+                    this.addService();
+                }
             }
-
-            addCounter() {
-                const index = document.querySelectorAll('.counter-item').length;
-                this.addCounterToForm({ title: "", value: "", icon: "" }, index);
-            }
-
-            addCounterToForm(counter, index) {
+            
+            populateCounters() {
+                const counters = this.content.counter || [];
                 const container = document.getElementById('counterContainer');
-                const div = document.createElement('div');
-                div.className = 'card mb-3 counter-item';
-                div.innerHTML = `
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-5">
-                                <input type="text" class="form-control form-control-sm mb-2" placeholder="Counter Title" 
-                                       value="${counter.title || ''}" data-field="title" data-index="${index}">
-                                <input type="text" class="form-control form-control-sm" placeholder="Icon (FontAwesome)" 
-                                       value="${counter.icon || ''}" data-field="icon" data-index="${index}">
-                            </div>
-                            <div class="col-md-5">
-                                <input type="text" class="form-control form-control-sm" placeholder="Counter Value" 
-                                       value="${counter.value || ''}" data-field="value" data-index="${index}">
-                            </div>
-                            <div class="col-md-2">
-                                <button type="button" class="btn btn-danger btn-sm" onclick="removeCounter(${index})">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                container.appendChild(div);
+                container.innerHTML = '';
+                
+                counters.forEach(counter => {
+                    this.addCounter(counter);
+                });
+                
+                if (counters.length === 0) {
+                    this.addCounter();
+                }
+                
+                // Counter settings
+                const settings = this.content.counterSettings || {};
+                document.getElementById('counterDuration').value = settings.duration || 2000;
+                document.getElementById('counterDelay').value = settings.delay || 100;
+                document.getElementById('counterAutoStart').checked = settings.autoStart !== false;
             }
-
-            addSkill() {
-                const index = document.querySelectorAll('.skill-item').length;
-                this.addSkillToForm({ name: "", level: 50, icon: "" }, index);
-            }
-
-            addSkillToForm(skill, index) {
+            
+            populateSkills() {
+                const skills = this.content.skills || [];
                 const container = document.getElementById('skillsContainer');
-                const div = document.createElement('div');
-                div.className = 'card mb-3 skill-item';
-                div.innerHTML = `
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-4">
-                                <input type="text" class="form-control form-control-sm mb-2" placeholder="Skill Name" 
-                                       value="${skill.name || ''}" data-field="name" data-index="${index}">
-                                <input type="text" class="form-control form-control-sm" placeholder="Icon (FontAwesome)" 
-                                       value="${skill.icon || ''}" data-field="icon" data-index="${index}">
+                container.innerHTML = '';
+                
+                skills.forEach(skill => {
+                    this.addSkill(skill);
+                });
+                
+                if (skills.length === 0) {
+                    this.addSkill();
+                }
+                
+                // Skill settings
+                const settings = this.content.skillSettings || {};
+                document.getElementById('skillDisplayType').value = settings.displayType || 'progress';
+                document.getElementById('skillAnimationStyle').value = settings.animationStyle || 'slide';
+            }
+            
+            populateTestimonials() {
+                const testimonials = this.content.testimonials || [];
+                const container = document.getElementById('testimonialsContainer');
+                container.innerHTML = '';
+                
+                testimonials.forEach(testimonial => {
+                    this.addTestimonial(testimonial);
+                });
+                
+                if (testimonials.length === 0) {
+                    this.addTestimonial();
+                }
+            }
+            
+            populateContact() {
+                const contact = this.content.contact || {};
+                document.getElementById('contactEmail').value = contact.email || '';
+                document.getElementById('contactPhone').value = contact.phone || '';
+                document.getElementById('contactAddress').value = contact.address || '';
+                document.getElementById('contactMapUrl').value = contact.mapUrl || '';
+                document.getElementById('contactFormEmail').value = contact.formEmail || '';
+                document.getElementById('contactShowForm').checked = contact.showForm !== false;
+                
+                // Business hours
+                this.populateBusinessHours(contact.businessHours || {});
+            }
+            
+            populateBusinessHours(hours) {
+                const container = document.getElementById('businessHoursContainer');
+                const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+                
+                container.innerHTML = days.map(day => {
+                    const dayHours = hours[day.toLowerCase()] || { open: '09:00', close: '17:00', closed: false };
+                    return `
+                        <div class="row mb-2">
+                            <div class="col-3">
+                                <label class="form-label">${day}</label>
                             </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Proficiency Level: <span id="skillLevel_${index}">${skill.level || 50}%</span></label>
-                                <input type="range" class="form-range" min="0" max="100" value="${skill.level || 50}" 
-                                       data-field="level" data-index="${index}" oninput="updateSkillLevel(${index}, this.value)">
+                            <div class="col-3">
+                                <input type="time" class="form-control form-control-sm" value="${dayHours.open}" data-day="${day.toLowerCase()}" data-type="open" ${dayHours.closed ? 'disabled' : ''}>
                             </div>
-                            <div class="col-md-2">
-                                <button type="button" class="btn btn-danger btn-sm" onclick="removeSkill(${index})">
-                                    <i class="fas fa-trash"></i>
-                                </button>
+                            <div class="col-3">
+                                <input type="time" class="form-control form-control-sm" value="${dayHours.close}" data-day="${day.toLowerCase()}" data-type="close" ${dayHours.closed ? 'disabled' : ''}>
                             </div>
+                            <div class="col-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="closed-${day.toLowerCase()}" data-day="${day.toLowerCase()}" ${dayHours.closed ? 'checked' : ''} onchange="contentManager.toggleDayClosed('${day.toLowerCase()}')">
+                                    <label class="form-check-label" for="closed-${day.toLowerCase()}">
+                                        Closed
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+            
+            toggleDayClosed(day) {
+                const checkbox = document.getElementById(`closed-${day}`);
+                const openInput = document.querySelector(`input[data-day="${day}"][data-type="open"]`);
+                const closeInput = document.querySelector(`input[data-day="${day}"][data-type="close"]`);
+                
+                openInput.disabled = checkbox.checked;
+                closeInput.disabled = checkbox.checked;
+            }
+            
+            addSocialLink(data = {}) {
+                const container = document.getElementById('socialLinksContainer');
+                const id = 'social-' + Date.now();
+                
+                const item = document.createElement('div');
+                item.className = 'dynamic-item';
+                item.dataset.id = id;
+                item.innerHTML = `
+                    <div class="row align-items-center">
+                        <div class="col-auto">
+                            <i class="fas fa-grip-vertical drag-handle"></i>
+                        </div>
+                        <div class="col">
+                            <div class="row g-2">
+                                <div class="col-md-4">
+                                    <input type="text" class="form-control form-control-sm" placeholder="Platform" value="${data.platform || ''}" data-field="platform">
+                                </div>
+                                <div class="col-md-4">
+                                    <input type="text" class="form-control form-control-sm" placeholder="URL" value="${data.url || ''}" data-field="url">
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="input-group input-group-sm">
+                                        <button class="btn btn-outline-secondary" type="button" onclick="contentManager.openIconPicker('${id}')">
+                                            <i class="${data.icon || 'fas fa-link'}"></i>
+                                        </button>
+                                        <input type="text" class="form-control" placeholder="Icon" value="${data.icon || ''}" data-field="icon" readonly>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <button class="btn btn-sm btn-danger" onclick="contentManager.removeItem('${id}')">
+                                <i class="fas fa-trash"></i>
+                            </button>
                         </div>
                     </div>
                 `;
-                container.appendChild(div);
+                
+                container.appendChild(item);
             }
-
-            async saveSection(sectionType) {
-                try {
-                    const token = localStorage.getItem('adminToken');
-                    const sectionData = this.getSectionData(sectionType);
-
-                    const response = await fetch(`/api/admin/content/sections/${sectionType}`, {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${token}`
-                        },
-                        body: JSON.stringify(sectionData)
-                    });
-
-                    const result = await response.json();
-
-                    if (result.success) {
-                        AdminUtils.showAlert(`${sectionType.charAt(0).toUpperCase() + sectionType.slice(1)} section saved successfully!`, 'success');
-                        this.content[sectionType] = result.data.content[sectionType];
-                    } else {
-                        AdminUtils.showAlert(result.error || `Failed to save ${sectionType} section`, 'danger');
-                    }
-                } catch (error) {
-                    console.error('Error saving section:', error);
-                    AdminUtils.showAlert(`Error saving ${sectionType} section`, 'danger');
+            
+            addAchievement(data = '') {
+                const container = document.getElementById('achievementsContainer');
+                const id = 'achievement-' + Date.now();
+                
+                const item = document.createElement('div');
+                item.className = 'dynamic-item';
+                item.dataset.id = id;
+                item.innerHTML = `
+                    <div class="row align-items-center">
+                        <div class="col-auto">
+                            <i class="fas fa-grip-vertical drag-handle"></i>
+                        </div>
+                        <div class="col">
+                            <input type="text" class="form-control" placeholder="Achievement description" value="${data}" data-field="achievement">
+                        </div>
+                        <div class="col-auto">
+                            <button class="btn btn-sm btn-danger" onclick="contentManager.removeItem('${id}')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                container.appendChild(item);
+            }
+            
+            addService(data = {}) {
+                const container = document.getElementById('servicesContainer');
+                const id = 'service-' + Date.now();
+                
+                const item = document.createElement('div');
+                item.className = 'dynamic-item';
+                item.dataset.id = id;
+                item.innerHTML = `
+                    <div class="row">
+                        <div class="col-auto">
+                            <i class="fas fa-grip-vertical drag-handle"></i>
+                        </div>
+                        <div class="col">
+                            <div class="row g-2 mb-2">
+                                <div class="col-md-6">
+                                    <input type="text" class="form-control" placeholder="Service Title" value="${data.title || ''}" data-field="title">
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="input-group">
+                                        <button class="btn btn-outline-secondary" type="button" onclick="contentManager.openIconPicker('${id}')">
+                                            <i class="${data.icon || 'fas fa-cog'}"></i>
+                                        </button>
+                                        <input type="text" class="form-control" placeholder="Icon" value="${data.icon || ''}" data-field="icon" readonly>
+                                    </div>
+                                </div>
+                            </div>
+                            <textarea class="form-control" rows="2" placeholder="Service Description" data-field="description">${data.description || ''}</textarea>
+                        </div>
+                        <div class="col-auto">
+                            <button class="btn btn-sm btn-danger" onclick="contentManager.removeItem('${id}')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                container.appendChild(item);
+            }
+            
+            addCounter(data = {}) {
+                const container = document.getElementById('counterContainer');
+                const id = 'counter-' + Date.now();
+                
+                const item = document.createElement('div');
+                item.className = 'dynamic-item';
+                item.dataset.id = id;
+                item.innerHTML = `
+                    <div class="row align-items-center">
+                        <div class="col-auto">
+                            <i class="fas fa-grip-vertical drag-handle"></i>
+                        </div>
+                        <div class="col">
+                            <div class="row g-2">
+                                <div class="col-md-4">
+                                    <input type="text" class="form-control" placeholder="Title" value="${data.title || ''}" data-field="title">
+                                </div>
+                                <div class="col-md-3">
+                                    <input type="text" class="form-control" placeholder="Value" value="${data.value || ''}" data-field="value">
+                                </div>
+                                <div class="col-md-2">
+                                    <input type="text" class="form-control" placeholder="Suffix" value="${data.suffix || ''}" data-field="suffix">
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="input-group">
+                                        <button class="btn btn-outline-secondary" type="button" onclick="contentManager.openIconPicker('${id}')">
+                                            <i class="${data.icon || 'fas fa-star'}"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <button class="btn btn-sm btn-danger" onclick="contentManager.removeItem('${id}')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                container.appendChild(item);
+            }
+            
+            addSkill(data = {}) {
+                const container = document.getElementById('skillsContainer');
+                const id = 'skill-' + Date.now();
+                const level = data.level || 50;
+                
+                const item = document.createElement('div');
+                item.className = 'dynamic-item';
+                item.dataset.id = id;
+                item.innerHTML = `
+                    <div class="row">
+                        <div class="col-auto">
+                            <i class="fas fa-grip-vertical drag-handle"></i>
+                        </div>
+                        <div class="col">
+                            <div class="row g-2 mb-2">
+                                <div class="col-md-6">
+                                    <input type="text" class="form-control" placeholder="Skill Name" value="${data.name || ''}" data-field="name">
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="input-group">
+                                        <button class="btn btn-outline-secondary" type="button" onclick="contentManager.openIconPicker('${id}')">
+                                            <i class="${data.icon || 'fas fa-code'}"></i>
+                                        </button>
+                                        <input type="text" class="form-control" placeholder="Category" value="${data.category || ''}" data-field="category">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-2">
+                                <label class="form-label small">Proficiency: <span id="level-${id}">${level}%</span></label>
+                                <input type="range" class="form-range" min="0" max="100" value="${level}" data-field="level" oninput="document.getElementById('level-${id}').textContent = this.value + '%'; contentManager.updateSkillPreview('${id}', this.value)">
+                            </div>
+                            <div class="skill-preview">
+                                <div class="skill-preview-bar" id="preview-${id}" style="width: ${level}%"></div>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <button class="btn btn-sm btn-danger" onclick="contentManager.removeItem('${id}')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                container.appendChild(item);
+            }
+            
+            addTestimonial(data = {}) {
+                const container = document.getElementById('testimonialsContainer');
+                const id = 'testimonial-' + Date.now();
+                
+                const item = document.createElement('div');
+                item.className = 'dynamic-item';
+                item.dataset.id = id;
+                item.innerHTML = `
+                    <div class="row">
+                        <div class="col-auto">
+                            <i class="fas fa-grip-vertical drag-handle"></i>
+                        </div>
+                        <div class="col">
+                            <div class="row g-2 mb-2">
+                                <div class="col-md-6">
+                                    <input type="text" class="form-control" placeholder="Client Name" value="${data.name || ''}" data-field="name">
+                                </div>
+                                <div class="col-md-6">
+                                    <input type="text" class="form-control" placeholder="Position/Company" value="${data.position || ''}" data-field="position">
+                                </div>
+                            </div>
+                            <textarea class="form-control mb-2" rows="3" placeholder="Testimonial text" data-field="text">${data.text || ''}</textarea>
+                            <div class="row g-2">
+                                <div class="col-md-6">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" placeholder="Client Photo URL" value="${data.photo || ''}" data-field="photo">
+                                        <button class="btn btn-outline-secondary" type="button" onclick="contentManager.openMediaLibrary('${id}')">
+                                            <i class="fas fa-image"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <select class="form-select" data-field="rating">
+                                        <option value="5" ${data.rating == 5 ? 'selected' : ''}>⭐⭐⭐⭐⭐ 5 Stars</option>
+                                        <option value="4" ${data.rating == 4 ? 'selected' : ''}>⭐⭐⭐⭐ 4 Stars</option>
+                                        <option value="3" ${data.rating == 3 ? 'selected' : ''}>⭐⭐⭐ 3 Stars</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <button class="btn btn-sm btn-danger" onclick="contentManager.removeItem('${id}')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                container.appendChild(item);
+            }
+            
+            updateSkillPreview(id, value) {
+                const preview = document.getElementById(`preview-${id}`);
+                if (preview) {
+                    preview.style.width = value + '%';
                 }
             }
-
-            async resetSection(sectionType) {
-                if (!confirm(`Are you sure you want to reset the ${sectionType} section to default values?`)) {
-                    return;
-                }
-
-                try {
-                    const token = localStorage.getItem('adminToken');
-                    const response = await fetch(`/api/admin/content/sections/reset/${sectionType}`, {
-                        method: 'POST',
-                        headers: { 'Authorization': `Bearer ${token}` }
-                    });
-
-                    const result = await response.json();
-
-                    if (result.success) {
-                        AdminUtils.showAlert(`${sectionType.charAt(0).toUpperCase() + sectionType.slice(1)} section reset to default!`, 'success');
-                        await this.loadContent();
-                    } else {
-                        AdminUtils.showAlert(result.error || `Failed to reset ${sectionType} section`, 'danger');
-                    }
-                } catch (error) {
-                    console.error('Error resetting section:', error);
-                    AdminUtils.showAlert(`Error resetting ${sectionType} section`, 'danger');
+            
+            removeItem(id) {
+                const item = document.querySelector(`[data-id="${id}"]`);
+                if (item && confirm('Are you sure you want to remove this item?')) {
+                    item.remove();
+                    this.markAsChanged();
                 }
             }
-
-            async saveAllChanges() {
-                if (!confirm('Save all changes? This will overwrite current content for all sections.')) {
-                    return;
-                }
-
-                const sections = ['hero', 'about', 'services', 'counter', 'skills'];
-                let successCount = 0;
-                let errorCount = 0;
-
-                for (const section of sections) {
-                    try {
-                        await this.saveSection(section);
-                        successCount++;
-                    } catch (error) {
-                        errorCount++;
-                    }
-                }
-
-                AdminUtils.showAlert(`Save completed: ${successCount} successful, ${errorCount} errors`, 
-                                    errorCount === 0 ? 'success' : 'warning');
-            }
-
-            async resetAllSections() {
-                if (!confirm('Are you sure you want to reset ALL sections to default values? This cannot be undone.')) {
-                    return;
-                }
-
-                const sections = ['hero', 'about', 'services', 'counter', 'skills'];
-                let successCount = 0;
-                let errorCount = 0;
-
-                for (const section of sections) {
-                    try {
-                        await this.resetSection(section);
-                        successCount++;
-                    } catch (error) {
-                        errorCount++;
-                    }
-                }
-
-                AdminUtils.showAlert(`Reset completed: ${successCount} successful, ${errorCount} errors`, 
-                                    errorCount === 0 ? 'success' : 'warning');
-            }
-
-            getSectionData(sectionType) {
-                switch (sectionType) {
-                    case 'hero':
-                        return this.getHeroData();
-                    case 'about':
-                        return this.getAboutData();
-                    case 'services':
-                        return this.getServicesData();
-                    case 'counter':
-                        return this.getCounterData();
-                    case 'skills':
-                        return this.getSkillsData();
-                    default:
-                        return {};
-                }
-            }
-
-            getHeroData() {
-                const socialLinks = [];
-                document.querySelectorAll('#socialLinksContainer .social-link').forEach((link, index) => {
-                    const platform = link.querySelector('[data-field="platform"]').value;
-                    const url = link.querySelector('[data-field="url"]').value;
-                    const icon = link.querySelector('[data-field="icon"]').value;
-                    
-                    if (platform || url || icon) {
-                        socialLinks.push({ platform, url, icon });
+            
+            setupSortable() {
+                const containers = [
+                    'socialLinksContainer',
+                    'achievementsContainer',
+                    'servicesContainer',
+                    'counterContainer',
+                    'skillsContainer',
+                    'testimonialsContainer'
+                ];
+                
+                containers.forEach(containerId => {
+                    const container = document.getElementById(containerId);
+                    if (container) {
+                        this.sortables[containerId] = Sortable.create(container, {
+                            handle: '.drag-handle',
+                            animation: 150,
+                            ghostClass: 'dragging',
+                            onEnd: () => this.markAsChanged()
+                        });
                     }
                 });
-
-                return {
+            }
+            
+            setupAutoSave() {
+                document.querySelectorAll('form[data-autosave]').forEach(form => {
+                    form.addEventListener('input', () => {
+                        this.markAsChanged();
+                        this.scheduleAutoSave();
+                    });
+                });
+            }
+            
+            scheduleAutoSave() {
+                clearTimeout(this.autoSaveTimer);
+                this.autoSaveTimer = setTimeout(() => {
+                    this.autoSave();
+                }, 3000);
+            }
+            
+            async autoSave() {
+                const indicator = document.getElementById('autosaveIndicator');
+                indicator.classList.add('show', 'saving');
+                document.getElementById('autosaveText').textContent = 'Saving...';
+                
+                try {
+                    await this.saveAll(true);
+                    
+                    indicator.classList.remove('saving');
+                    indicator.classList.add('saved');
+                    document.getElementById('autosaveText').textContent = 'Saved';
+                    
+                    setTimeout(() => {
+                        indicator.classList.remove('show', 'saved');
+                    }, 2000);
+                } catch (error) {
+                    indicator.classList.remove('saving');
+                    indicator.classList.add('error');
+                    document.getElementById('autosaveText').textContent = 'Save failed';
+                    
+                    setTimeout(() => {
+                        indicator.classList.remove('show', 'error');
+                    }, 3000);
+                }
+            }
+            
+            markAsChanged() {
+                this.hasUnsavedChanges = true;
+            }
+            
+            checkUnsavedChanges() {
+                window.addEventListener('beforeunload', (e) => {
+                    if (this.hasUnsavedChanges) {
+                        e.preventDefault();
+                        e.returnValue = '';
+                    }
+                });
+            }
+            
+            async saveAll(silent = false) {
+                const content = this.collectAllData();
+                
+                try {
+                    const response = await adminSystem.apiRequest('/content/sections', {
+                        method: 'PUT',
+                        body: JSON.stringify({ content })
+                    });
+                    
+                    if (response.success) {
+                        this.hasUnsavedChanges = false;
+                        this.originalContent = JSON.parse(JSON.stringify(content));
+                        this.updateLastModified(new Date().toISOString());
+                        
+                        if (!silent) {
+                            adminSystem.showToast('Content saved successfully', 'success');
+                        }
+                    } else {
+                        throw new Error(response.error || 'Save failed');
+                    }
+                } catch (error) {
+                    console.error('Save error:', error);
+                    if (!silent) {
+                        adminSystem.showToast('Failed to save content', 'error');
+                    }
+                    throw error;
+                }
+            }
+            
+            collectAllData() {
+                const content = {};
+                
+                // Collect Hero data
+                content.hero = {
                     title: document.getElementById('heroTitle').value,
                     subtitle: document.getElementById('heroSubtitle').value,
                     description: document.getElementById('heroDescription').value,
                     image: document.getElementById('heroImage').value,
+                    bgImage: document.getElementById('heroBgImage').value,
                     ctaText: document.getElementById('heroCtaText').value,
                     ctaLink: document.getElementById('heroCtaLink').value,
-                    socialLinks
+                    typedText: document.getElementById('heroTypedText').value.split(',').map(t => t.trim()).filter(t => t),
+                    typeSpeed: parseInt(document.getElementById('heroTypeSpeed').value),
+                    backSpeed: parseInt(document.getElementById('heroBackSpeed').value),
+                    socialLinks: this.collectSocialLinks()
                 };
-            }
-
-            getAboutData() {
-                const achievements = [];
-                document.querySelectorAll('#achievementsContainer .achievement').forEach((item) => {
-                    const achievement = item.querySelector('[data-field="achievement"]').value;
-                    if (achievement) {
-                        achievements.push(achievement);
-                    }
-                });
-
-                return {
+                
+                // Collect About data
+                content.about = {
                     title: document.getElementById('aboutTitle').value,
-                    description: document.getElementById('aboutDescription').value,
+                    bio: document.getElementById('aboutBio').value,
                     image: document.getElementById('aboutImage').value,
-                    achievements
+                    resume: document.getElementById('aboutResume').value,
+                    fullName: document.getElementById('aboutFullName').value,
+                    dob: document.getElementById('aboutDob').value,
+                    location: document.getElementById('aboutLocation').value,
+                    languages: document.getElementById('aboutLanguages').value,
+                    email: document.getElementById('aboutEmail').value,
+                    phone: document.getElementById('aboutPhone').value,
+                    achievements: this.collectAchievements()
                 };
+                
+                // Collect Services
+                content.services = this.collectServices();
+                
+                // Collect Counter
+                content.counter = this.collectCounters();
+                content.counterSettings = {
+                    duration: parseInt(document.getElementById('counterDuration').value),
+                    delay: parseInt(document.getElementById('counterDelay').value),
+                    autoStart: document.getElementById('counterAutoStart').checked
+                };
+                
+                // Collect Skills
+                content.skills = this.collectSkills();
+                content.skillSettings = {
+                    displayType: document.getElementById('skillDisplayType').value,
+                    animationStyle: document.getElementById('skillAnimationStyle').value
+                };
+                
+                // Collect Testimonials
+                content.testimonials = this.collectTestimonials();
+                
+                // Collect Contact
+                content.contact = {
+                    email: document.getElementById('contactEmail').value,
+                    phone: document.getElementById('contactPhone').value,
+                    address: document.getElementById('contactAddress').value,
+                    mapUrl: document.getElementById('contactMapUrl').value,
+                    formEmail: document.getElementById('contactFormEmail').value,
+                    showForm: document.getElementById('contactShowForm').checked,
+                    businessHours: this.collectBusinessHours()
+                };
+                
+                return content;
             }
-
-            getServicesData() {
+            
+            collectSocialLinks() {
+                const links = [];
+                document.querySelectorAll('#socialLinksContainer .dynamic-item').forEach(item => {
+                    links.push({
+                        platform: item.querySelector('[data-field="platform"]').value,
+                        url: item.querySelector('[data-field="url"]').value,
+                        icon: item.querySelector('[data-field="icon"]').value
+                    });
+                });
+                return links.filter(link => link.platform || link.url);
+            }
+            
+            collectAchievements() {
+                const achievements = [];
+                document.querySelectorAll('#achievementsContainer .dynamic-item').forEach(item => {
+                    const value = item.querySelector('[data-field="achievement"]').value;
+                    if (value) achievements.push(value);
+                });
+                return achievements;
+            }
+            
+            collectServices() {
                 const services = [];
-                document.querySelectorAll('#servicesContainer .service-item').forEach((item, index) => {
-                    const title = item.querySelector('[data-field="title"]').value;
-                    const description = item.querySelector('[data-field="description"]').value;
-                    const icon = item.querySelector('[data-field="icon"]').value;
-                    const order = parseInt(item.querySelector('[data-field="order"]').value) || index + 1;
-                    
-                    if (title) {
-                        services.push({ title, description, icon, order });
-                    }
+                document.querySelectorAll('#servicesContainer .dynamic-item').forEach(item => {
+                    services.push({
+                        title: item.querySelector('[data-field="title"]').value,
+                        description: item.querySelector('[data-field="description"]').value,
+                        icon: item.querySelector('[data-field="icon"]').value
+                    });
                 });
-
-                return services;
+                return services.filter(service => service.title);
             }
-
-            getCounterData() {
-                const counter = [];
-                document.querySelectorAll('#counterContainer .counter-item').forEach((item) => {
-                    const title = item.querySelector('[data-field="title"]').value;
-                    const value = item.querySelector('[data-field="value"]').value;
-                    const icon = item.querySelector('[data-field="icon"]').value;
-                    
-                    if (title && value) {
-                        counter.push({ title, value, icon });
-                    }
+            
+            collectCounters() {
+                const counters = [];
+                document.querySelectorAll('#counterContainer .dynamic-item').forEach(item => {
+                    counters.push({
+                        title: item.querySelector('[data-field="title"]').value,
+                        value: item.querySelector('[data-field="value"]').value,
+                        suffix: item.querySelector('[data-field="suffix"]')?.value || '',
+                        icon: item.querySelector('.btn i').className
+                    });
                 });
-
-                return counter;
+                return counters.filter(counter => counter.title && counter.value);
             }
-
-            getSkillsData() {
+            
+            collectSkills() {
                 const skills = [];
-                document.querySelectorAll('#skillsContainer .skill-item').forEach((item) => {
-                    const name = item.querySelector('[data-field="name"]').value;
-                    const level = parseInt(item.querySelector('[data-field="level"]').value) || 0;
-                    const icon = item.querySelector('[data-field="icon"]').value;
-                    
-                    if (name) {
-                        skills.push({ name, level, icon });
-                    }
+                document.querySelectorAll('#skillsContainer .dynamic-item').forEach(item => {
+                    skills.push({
+                        name: item.querySelector('[data-field="name"]').value,
+                        level: parseInt(item.querySelector('[data-field="level"]').value),
+                        category: item.querySelector('[data-field="category"]').value,
+                        icon: item.querySelector('.btn i').className
+                    });
                 });
-
-                return skills;
+                return skills.filter(skill => skill.name);
             }
-
-            async logout() {
-                try {
-                    const token = localStorage.getItem('adminToken');
-                    await fetch('/api/admin/auth/logout', {
-                        method: 'POST',
-                        headers: { 'Authorization': `Bearer ${token}` }
+            
+            collectTestimonials() {
+                const testimonials = [];
+                document.querySelectorAll('#testimonialsContainer .dynamic-item').forEach(item => {
+                    testimonials.push({
+                        name: item.querySelector('[data-field="name"]').value,
+                        position: item.querySelector('[data-field="position"]').value,
+                        text: item.querySelector('[data-field="text"]').value,
+                        photo: item.querySelector('[data-field="photo"]').value,
+                        rating: parseInt(item.querySelector('[data-field="rating"]').value)
                     });
-                } catch (error) {
-                    console.error('Logout error:', error);
-                } finally {
-                    localStorage.removeItem('adminToken');
-                    localStorage.removeItem('adminRefreshToken');
-                    window.location.href = '/admin/login';
-                }
+                });
+                return testimonials.filter(t => t.name && t.text);
             }
-
-            async updateProfile() {
-                const formData = {
-                    email: document.getElementById('profileEmail').value,
-                    fullName: document.getElementById('profileFullName').value
-                };
-
-                try {
-                    const token = localStorage.getItem('adminToken');
-                    const response = await fetch('/api/admin/auth/profile', {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${token}`
-                        },
-                        body: JSON.stringify(formData)
+            
+            collectBusinessHours() {
+                const hours = {};
+                const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+                
+                days.forEach(day => {
+                    const closed = document.getElementById(`closed-${day}`).checked;
+                    hours[day] = {
+                        open: document.querySelector(`input[data-day="${day}"][data-type="open"]`).value,
+                        close: document.querySelector(`input[data-day="${day}"][data-type="close"]`).value,
+                        closed: closed
+                    };
+                });
+                
+                return hours;
+            }
+            
+            setupPreview() {
+                // Device selector
+                document.querySelectorAll('.preview-device-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        document.querySelectorAll('.preview-device-btn').forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                        
+                        const device = btn.dataset.device;
+                        const iframe = document.getElementById('previewFrame');
+                        
+                        iframe.className = 'preview-iframe';
+                        if (device === 'mobile') iframe.classList.add('mobile');
+                        if (device === 'tablet') iframe.classList.add('tablet');
                     });
-
-                    const result = await response.json();
-
-                    if (result.success) {
-                        AdminUtils.showAlert('Profile updated successfully!', 'success');
-                        bootstrap.Modal.getInstance(document.getElementById('profileModal')).hide();
-                        this.admin = result.data.admin;
-                        this.updateUI();
-                    } else {
-                        AdminUtils.showAlert(result.error || 'Failed to update profile', 'danger');
-                    }
-                } catch (error) {
-                    AdminUtils.showAlert('An error occurred while updating profile', 'danger');
-                }
+                });
+                
+                // Auto-refresh preview on changes
+                document.querySelectorAll('input, textarea, select').forEach(input => {
+                    input.addEventListener('input', () => {
+                        clearTimeout(this.previewRefreshTimer);
+                        this.previewRefreshTimer = setTimeout(() => {
+                            this.updatePreview();
+                        }, 1000);
+                    });
+                });
             }
-
-            async changePassword() {
-                const currentPassword = document.getElementById('currentPassword').value;
-                const newPassword = document.getElementById('newPassword').value;
-                const confirmPassword = document.getElementById('confirmNewPassword').value;
-
-                if (newPassword !== confirmPassword) {
-                    AdminUtils.showAlert('New passwords do not match', 'danger');
-                    return;
-                }
-
+            
+            updatePreview() {
+                const iframe = document.getElementById('previewFrame');
+                // Send message to iframe to update content
+                iframe.contentWindow.postMessage({
+                    type: 'updateContent',
+                    content: this.collectAllData()
+                }, '*');
+            }
+            
+            refreshPreview() {
+                const iframe = document.getElementById('previewFrame');
+                iframe.src = iframe.src;
+            }
+            
+            async previewChanges() {
+                await this.saveAll(true);
+                window.open('/?preview=true', '_blank');
+            }
+            
+            togglePreview() {
+                const panel = document.getElementById('previewPanel');
+                panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+            }
+            
+            async publishChanges() {
+                const notes = document.getElementById('publishNotes').value;
+                const createBackup = document.getElementById('publishBackup').checked;
+                
                 try {
-                    const token = localStorage.getItem('adminToken');
-                    const response = await fetch('/api/admin/auth/change-password', {
+                    const response = await adminSystem.apiRequest('/content/publish', {
                         method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${token}`
-                        },
                         body: JSON.stringify({
-                            currentPassword,
-                            newPassword
+                            content: this.collectAllData(),
+                            notes,
+                            createBackup
                         })
                     });
-
-                    const result = await response.json();
-
-                    if (result.success) {
-                        AdminUtils.showAlert('Password changed successfully!', 'success');
-                        bootstrap.Modal.getInstance(document.getElementById('changePasswordModal')).hide();
-                        document.getElementById('changePasswordForm').reset();
+                    
+                    if (response.success) {
+                        adminSystem.showToast('Content published successfully!', 'success');
+                        bootstrap.Modal.getInstance(document.getElementById('publishModal')).hide();
+                        document.getElementById('publishedVersion').textContent = response.data.version;
                     } else {
-                        AdminUtils.showAlert(result.error || 'Failed to change password', 'danger');
+                        adminSystem.showToast(response.error || 'Publish failed', 'error');
                     }
                 } catch (error) {
-                    AdminUtils.showAlert('An error occurred while changing password', 'danger');
+                    adminSystem.showToast('Failed to publish content', 'error');
                 }
             }
+            
+            async resetToDefaults() {
+                if (!confirm('Are you sure you want to reset all content to default values? This cannot be undone.')) {
+                    return;
+                }
+                
+                try {
+                    const response = await adminSystem.apiRequest('/content/reset', {
+                        method: 'POST'
+                    });
+                    
+                    if (response.success) {
+                        adminSystem.showToast('Content reset to defaults', 'success');
+                        await this.loadContent();
+                    }
+                } catch (error) {
+                    adminSystem.showToast('Failed to reset content', 'error');
+                }
+            }
+            
+            async resetSection(section) {
+                if (!confirm(`Reset ${section} section to default values?`)) {
+                    return;
+                }
+                
+                try {
+                    const response = await adminSystem.apiRequest(`/content/reset/${section}`, {
+                        method: 'POST'
+                    });
+                    
+                    if (response.success) {
+                        adminSystem.showToast(`${section} section reset to defaults`, 'success');
+                        await this.loadContent();
+                    }
+                } catch (error) {
+                    adminSystem.showToast('Failed to reset section', 'error');
+                }
+            }
+            
+            async importContent() {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = '.json';
+                
+                input.onchange = async (e) => {
+                    const file = e.target.files[0];
+                    if (!file) return;
+                    
+                    const reader = new FileReader();
+                    reader.onload = async (event) => {
+                        try {
+                            const content = JSON.parse(event.target.result);
+                            
+                            const response = await adminSystem.apiRequest('/content/import', {
+                                method: 'POST',
+                                body: JSON.stringify({ content })
+                            });
+                            
+                            if (response.success) {
+                                adminSystem.showToast('Content imported successfully', 'success');
+                                await this.loadContent();
+                            }
+                        } catch (error) {
+                            adminSystem.showToast('Invalid import file', 'error');
+                        }
+                    };
+                    
+                    reader.readAsText(file);
+                };
+                
+                input.click();
+            }
+            
+            exportContent() {
+                const content = this.collectAllData();
+                const blob = new Blob([JSON.stringify(content, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `content-export-${new Date().toISOString().split('T')[0]}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+                
+                adminSystem.showToast('Content exported successfully', 'success');
+            }
+            
+            openMediaLibrary(targetField) {
+                this.mediaTarget = targetField;
+                const modal = new bootstrap.Modal(document.getElementById('mediaLibraryModal'));
+                modal.show();
+                this.loadMediaLibrary();
+            }
+            
+            async loadMediaLibrary() {
+                try {
+                    const response = await adminSystem.apiRequest('/media');
+                    if (response.success) {
+                        this.displayMediaItems(response.data);
+                    }
+                } catch (error) {
+                    console.error('Failed to load media:', error);
+                }
+            }
+            
+            displayMediaItems(items) {
+                const grid = document.getElementById('mediaGrid');
+                grid.innerHTML = items.map(item => `
+                    <div class="col-md-3">
+                        <div class="card" onclick="contentManager.selectMediaItem('${item.url}')"                             style="cursor: pointer;">
+                            <img src="${item.url}" class="card-img-top" alt="${item.name}">
+                            <div class="card-body p-2">
+                                <small class="text-truncate d-block">${item.name}</small>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
+            selectMediaItem(url) {
+                if (this.mediaTarget) {
+                    if (typeof this.mediaTarget === 'string') {
+                        document.getElementById(this.mediaTarget).value = url;
+                    } else {
+                        const item = document.querySelector(`[data-id="${this.mediaTarget}"]`);
+                        if (item) {
+                            item.querySelector('[data-field="photo"]').value = url;
+                        }
+                    }
+                    this.markAsChanged();
+                }
+                bootstrap.Modal.getInstance(document.getElementById('mediaLibraryModal')).hide();
+            }
+            
+            selectMedia() {
+                // Handle multiple selection if needed
+                const selected = document.querySelectorAll('#mediaGrid .card.selected');
+                if (selected.length > 0) {
+                    // Process selected items
+                    bootstrap.Modal.getInstance(document.getElementById('mediaLibraryModal')).hide();
+                }
+            }
+            
+            uploadFile(targetField) {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = '*';
+                
+                input.onchange = async (e) => {
+                    const file = e.target.files[0];
+                    if (!file) return;
+                    
+                    const formData = new FormData();
+                    formData.append('file', file);
+                    
+                    try {
+                        const response = await fetch('/api/admin/upload', {
+                            method: 'POST',
+                            headers: {
+                                'Authorization': `Bearer ${localStorage.getItem('adminToken')}`
+                            },
+                            body: formData
+                        });
+                        
+                        const result = await response.json();
+                        
+                        if (result.success) {
+                            document.getElementById(targetField).value = result.data.url;
+                            this.markAsChanged();
+                            adminSystem.showToast('File uploaded successfully', 'success');
+                        }
+                    } catch (error) {
+                        adminSystem.showToast('Upload failed', 'error');
+                    }
+                };
+                
+                input.click();
+            }
+            
+            openIconPicker(targetId) {
+                this.iconTarget = targetId;
+                const modal = new bootstrap.Modal(document.getElementById('iconPickerModal'));
+                modal.show();
+            }
+            
+            loadIcons() {
+                const icons = [
+                    // Social Icons
+                    'fab fa-facebook', 'fab fa-twitter', 'fab fa-instagram', 'fab fa-linkedin',
+                    'fab fa-github', 'fab fa-youtube', 'fab fa-tiktok', 'fab fa-pinterest',
+                    'fab fa-whatsapp', 'fab fa-telegram', 'fab fa-discord', 'fab fa-slack',
+                    
+                    // Service Icons
+                    'fas fa-code', 'fas fa-laptop-code', 'fas fa-mobile-alt', 'fas fa-database',
+                    'fas fa-cloud', 'fas fa-server', 'fas fa-shield-alt', 'fas fa-chart-line',
+                    'fas fa-paint-brush', 'fas fa-pencil-ruler', 'fas fa-palette', 'fas fa-camera',
+                    
+                    // Business Icons
+                    'fas fa-briefcase', 'fas fa-chart-bar', 'fas fa-bullseye', 'fas fa-rocket',
+                    'fas fa-lightbulb', 'fas fa-cogs', 'fas fa-handshake', 'fas fa-users',
+                    'fas fa-globe', 'fas fa-building', 'fas fa-store', 'fas fa-shopping-cart',
+                    
+                    // Technology Icons
+                    'fab fa-html5', 'fab fa-css3', 'fab fa-js', 'fab fa-react',
+                    'fab fa-vuejs', 'fab fa-angular', 'fab fa-node', 'fab fa-python',
+                    'fab fa-php', 'fab fa-wordpress', 'fab fa-shopify', 'fab fa-docker',
+                    
+                    // General Icons
+                    'fas fa-star', 'fas fa-heart', 'fas fa-check', 'fas fa-award',
+                    'fas fa-trophy', 'fas fa-medal', 'fas fa-crown', 'fas fa-gem',
+                    'fas fa-fire', 'fas fa-bolt', 'fas fa-magic', 'fas fa-sparkles',
+                    
+                    // Communication Icons
+                    'fas fa-envelope', 'fas fa-phone', 'fas fa-comment', 'fas fa-comments',
+                    'fas fa-video', 'fas fa-microphone', 'fas fa-bell', 'fas fa-bullhorn'
+                ];
+                
+                const grid = document.getElementById('iconGrid');
+                grid.innerHTML = icons.map(icon => `
+                    <div class="icon-option" onclick="contentManager.selectIcon('${icon}')">
+                        <i class="${icon}"></i>
+                    </div>
+                `).join('');
+                
+                // Setup icon search
+                document.getElementById('iconSearch').addEventListener('input', (e) => {
+                    const search = e.target.value.toLowerCase();
+                    grid.querySelectorAll('.icon-option').forEach(option => {
+                        const iconClass = option.querySelector('i').className;
+                        option.style.display = iconClass.toLowerCase().includes(search) ? '' : 'none';
+                    });
+                });
+            }
+            
+            selectIcon(iconClass) {
+                if (this.iconTarget) {
+                    const item = document.querySelector(`[data-id="${this.iconTarget}"]`);
+                    if (item) {
+                        const iconField = item.querySelector('[data-field="icon"]');
+                        if (iconField) {
+                            iconField.value = iconClass;
+                        }
+                        const iconButton = item.querySelector('.btn i');
+                        if (iconButton) {
+                            iconButton.className = iconClass;
+                        }
+                        this.markAsChanged();
+                    }
+                }
+                bootstrap.Modal.getInstance(document.getElementById('iconPickerModal')).hide();
+            }
+            
+            switchTab(tab) {
+                const tabButton = document.querySelector(`#${tab}-tab`);
+                if (tabButton) {
+                    tabButton.click();
+                }
+            }
+            
+            updateLastModified(date) {
+                const element = document.getElementById('lastModified');
+                if (element && date) {
+                    element.textContent = adminSystem.formatDate(date);
+                }
+            }
+            
+            setupEventListeners() {
+                // Save all button
+                window.addEventListener('keydown', (e) => {
+                    if (e.ctrlKey && e.key === 's') {
+                        e.preventDefault();
+                        this.saveAll();
+                    }
+                });
+                
+                // Media library drag and drop
+                const dropZone = document.getElementById('mediaDropZone');
+                if (dropZone) {
+                    dropZone.addEventListener('click', () => {
+                        document.getElementById('mediaFileInput').click();
+                    });
+                    
+                    dropZone.addEventListener('dragover', (e) => {
+                        e.preventDefault();
+                        dropZone.classList.add('dragover');
+                    });
+                    
+                    dropZone.addEventListener('dragleave', () => {
+                        dropZone.classList.remove('dragover');
+                    });
+                    
+                    dropZone.addEventListener('drop', async (e) => {
+                        e.preventDefault();
+                        dropZone.classList.remove('dragover');
+                        
+                        const files = Array.from(e.dataTransfer.files);
+                        for (const file of files) {
+                            await this.uploadMediaFile(file);
+                        }
+                    });
+                    
+                    document.getElementById('mediaFileInput').addEventListener('change', async (e) => {
+                        const files = Array.from(e.target.files);
+                        for (const file of files) {
+                            await this.uploadMediaFile(file);
+                        }
+                    });
+                }
+            }
+            
+            async uploadMediaFile(file) {
+                const formData = new FormData();
+                formData.append('file', file);
+                
+                try {
+                    const response = await fetch('/api/admin/media/upload', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${localStorage.getItem('adminToken')}`
+                        },
+                        body: formData
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        adminSystem.showToast(`${file.name} uploaded successfully`, 'success');
+                        await this.loadMediaLibrary();
+                    }
+                } catch (error) {
+                    adminSystem.showToast(`Failed to upload ${file.name}`, 'error');
+                }
+            }
+            
+            async loadVersionHistory() {
+                try {
+                    const response = await adminSystem.apiRequest('/content/versions');
+                    if (response.success) {
+                        this.displayVersionHistory(response.data);
+                    }
+                } catch (error) {
+                    console.error('Failed to load version history:', error);
+                }
+            }
+            
+            displayVersionHistory(versions) {
+                const list = document.getElementById('versionList');
+                list.innerHTML = versions.map((version, index) => `
+                    <a href="#" class="list-group-item list-group-item-action ${index === 0 ? 'active' : ''}"
+                       onclick="contentManager.selectVersion('${version.id}')">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h6 class="mb-1">Version ${version.number}</h6>
+                            <small>${adminSystem.formatDate(version.createdAt)}</small>
+                        </div>
+                        <p class="mb-1 small">${version.notes || 'No notes'}</p>
+                        <small>${version.author}</small>
+                    </a>
+                `).join('');
+                
+                if (versions.length > 0) {
+                    this.selectVersion(versions[0].id);
+                }
+            }
+            
+            async selectVersion(versionId) {
+                this.selectedVersion = versionId;
+                
+                // Update UI
+                document.querySelectorAll('#versionList .list-group-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                event.target.closest('.list-group-item').classList.add('active');
+                
+                // Load version details
+                try {
+                    const response = await adminSystem.apiRequest(`/content/versions/${versionId}`);
+                    if (response.success) {
+                        this.displayVersionDetails(response.data);
+                    }
+                } catch (error) {
+                    console.error('Failed to load version details:', error);
+                }
+            }
+            
+            displayVersionDetails(version) {
+                const details = document.getElementById('versionDetails');
+                details.innerHTML = `
+                    <h5>Version ${version.number}</h5>
+                    <p class="text-muted">Created ${adminSystem.formatDate(version.createdAt)} by ${version.author}</p>
+                    ${version.notes ? `<p>${version.notes}</p>` : ''}
+                    <div class="mb-3">
+                        <h6>Changes:</h6>
+                        <ul class="small">
+                            ${version.changes.map(change => `<li>${change}</li>`).join('')}
+                        </ul>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-sm btn-outline-primary" onclick="contentManager.previewVersion('${version.id}')">
+                            <i class="fas fa-eye me-1"></i>Preview
+                        </button>
+                        <button class="btn btn-sm btn-outline-info" onclick="contentManager.compareVersion('${version.id}')">
+                            <i class="fas fa-exchange-alt me-1"></i>Compare
+                        </button>
+                    </div>
+                `;
+            }
+            
+            async restoreVersion() {
+                if (!this.selectedVersion) {
+                    adminSystem.showToast('Please select a version to restore', 'warning');
+                    return;
+                }
+                
+                if (!confirm('Are you sure you want to restore this version? Current changes will be lost.')) {
+                    return;
+                }
+                
+                try {
+                    const response = await adminSystem.apiRequest(`/content/versions/${this.selectedVersion}/restore`, {
+                        method: 'POST'
+                    });
+                    
+                    if (response.success) {
+                        adminSystem.showToast('Version restored successfully', 'success');
+                        bootstrap.Modal.getInstance(document.getElementById('versionHistoryModal')).hide();
+                        await this.loadContent();
+                    }
+                } catch (error) {
+                    adminSystem.showToast('Failed to restore version', 'error');
+                }
+            }
+            
+            async previewVersion(versionId) {
+                window.open(`/?preview=version&id=${versionId}`, '_blank');
+            }
+            
+            async compareVersion(versionId) {
+                // Open comparison view
+                window.open(`/admin/content/compare?version=${versionId}`, '_blank');
+            }
         }
-
-        // Global functions for form interactions
-        function addSocialLink() {
-            contentManager.addSocialLink();
-        }
-
-        function removeSocialLink(index) {
-            const link = document.querySelector(`#socialLinksContainer .social-link:nth-child(${index + 1})`);
-            if (link) link.remove();
-        }
-
-        function addAchievement() {
-            contentManager.addAchievement();
-        }
-
-        function removeAchievement(index) {
-            const achievement = document.querySelector(`#achievementsContainer .achievement:nth-child(${index + 1})`);
-            if (achievement) achievement.remove();
-        }
-
-        function addService() {
-            contentManager.addService();
-        }
-
-        function removeService(index) {
-            const service = document.querySelector(`#servicesContainer .service-item:nth-child(${index + 1})`);
-            if (service) service.remove();
-        }
-
-        function addCounter() {
-            contentManager.addCounter();
-        }
-
-        function removeCounter(index) {
-            const counter = document.querySelector(`#counterContainer .counter-item:nth-child(${index + 1})`);
-            if (counter) counter.remove();
-        }
-
-        function addSkill() {
-            contentManager.addSkill();
-        }
-
-        function removeSkill(index) {
-            const skill = document.querySelector(`#skillsContainer .skill-item:nth-child(${index + 1})`);
-            if (skill) skill.remove();
-        }
-
-        function updateSkillLevel(index, value) {
-            document.getElementById(`skillLevel_${index}`).textContent = value + '%';
-        }
-
-        function saveSection(sectionType) {
-            contentManager.saveSection(sectionType);
-        }
-
-        function resetSection(sectionType) {
-            contentManager.resetSection(sectionType);
-        }
-
-        // Initialize content manager when page loads
+        
+        // Initialize Content Manager
         let contentManager;
         document.addEventListener('DOMContentLoaded', () => {
             contentManager = new ContentManager();
+            
+            // Handle version history modal
+            document.getElementById('versionHistoryModal').addEventListener('shown.bs.modal', () => {
+                contentManager.loadVersionHistory();
+            });
         });
+        
+        // Make functions globally available for inline onclick handlers
+        window.contentManager = {
+            addSocialLink: () => contentManager.addSocialLink(),
+            addAchievement: () => contentManager.addAchievement(),
+            addService: () => contentManager.addService(),
+            addCounter: () => contentManager.addCounter(),
+            addSkill: () => contentManager.addSkill(),
+            addTestimonial: () => contentManager.addTestimonial(),
+            removeItem: (id) => contentManager.removeItem(id),
+            openIconPicker: (id) => contentManager.openIconPicker(id),
+            openMediaLibrary: (field) => contentManager.openMediaLibrary(field),
+            uploadFile: (field) => contentManager.uploadFile(field),
+            updateSkillPreview: (id, value) => contentManager.updateSkillPreview(id, value),
+            toggleDayClosed: (day) => contentManager.toggleDayClosed(day),
+            selectIcon: (icon) => contentManager.selectIcon(icon),
+            selectMediaItem: (url) => contentManager.selectMediaItem(url),
+            selectMedia: () => contentManager.selectMedia(),
+            selectVersion: (id) => contentManager.selectVersion(id),
+            restoreVersion: () => contentManager.restoreVersion(),
+            previewVersion: (id) => contentManager.previewVersion(id),
+            compareVersion: (id) => contentManager.compareVersion(id),
+            switchTab: (tab) => contentManager.switchTab(tab),
+            saveAll: () => contentManager.saveAll(),
+            previewChanges: () => contentManager.previewChanges(),
+            publishChanges: () => contentManager.publishChanges(),
+            resetToDefaults: () => contentManager.resetToDefaults(),
+            resetSection: (section) => contentManager.resetSection(section),
+            importContent: () => contentManager.importContent(),
+            exportContent: () => contentManager.exportContent(),
+            togglePreview: () => contentManager.togglePreview(),
+            refreshPreview: () => contentManager.refreshPreview()
+        };
     </script>
 </body>
 </html>

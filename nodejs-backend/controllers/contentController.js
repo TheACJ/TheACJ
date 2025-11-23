@@ -3,12 +3,44 @@ const ContentSection = require('../models/ContentSection');
 // Default content data for when backend data is not available
 const DEFAULT_CONTENT = {
   hero: {
-    title: "Joshua Agbai",
-    subtitle: "Data Analyst & Web Developer",
-    description: "Transforming data into insights and building exceptional web experiences with modern technologies and innovative solutions.",
-    image: "/assets/img/theacj.jpg",
-    ctaText: "Explore My Work",
-    ctaLink: "#work",
+    slides: [
+      {
+        title: "Hi!",
+        subtitle: "The ACJ",
+        description: "With us Tech Emancipation is achievable",
+        bgImage: "/assets/img/theacj.jpg",
+        buttonText: "View CV",
+        buttonIcon: "icon-download",
+        buttonLink: "/assets/JoshuaAgbai.pdf"
+      },
+      {
+        title: "I am a",
+        subtitle: "Data Analyst",
+        description: "Where there is Data, The ACJ will make sense of it",
+        bgImage: "/assets/img/data_analytics.jpg",
+        buttonText: "View Portfolio",
+        buttonIcon: "icon-briefcase",
+        buttonLink: "#work"
+      },
+      {
+        title: "I am a",
+        subtitle: "Web2 Developer",
+        description: "Imagine it, The ACJ will make it real",
+        bgImage: "/assets/img/web2.jpg",
+        buttonText: "View Portfolio",
+        buttonIcon: "icon-briefcase",
+        buttonLink: "#work"
+      },
+      {
+        title: "I am a",
+        subtitle: "Web3 Developer",
+        description: "Building worldclass solution using Blockchain Technology",
+        bgImage: "/assets/img/Web3.webp",
+        buttonText: "View Portfolio",
+        buttonIcon: "icon-briefcase",
+        buttonLink: "#work"
+      }
+    ],
     socialLinks: [
       { platform: "GitHub", url: "https://github.com/TheACJ", icon: "fab fa-github" },
       { platform: "LinkedIn", url: "https://linkedin.com/in/joshuaagbai", icon: "fab fa-linkedin" },

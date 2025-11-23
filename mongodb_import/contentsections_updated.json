@@ -1,0 +1,152 @@
+[
+  {
+    "_id": { "$oid": "507f1f77bcf86cd799439011" },
+    "sectionType": "hero",
+    "hero": {
+      "slides": [
+        {
+          "title": "Hi!",
+          "subtitle": "The ACJ",
+          "description": "With us Tech Emancipation is achievable",
+          "bgImage": "https://ivory-late-coyote-159.mypinata.cloud/ipfs/bafybeienkmbz74o4t3qjge3scn67ihyrrgipymfaf5yyr24weykgcsogka",
+          "buttonText": "View CV",
+          "buttonIcon": "icon-download",
+          "buttonLink": "/assets/JoshuaAgbai.pdf"
+        },
+        {
+          "title": "I am a",
+          "subtitle": "Software Engineer",
+          "description": "Crafting Reliable Software from concept to production readiness",
+          "bgImage": "https://ivory-late-coyote-159.mypinata.cloud/ipfs/bafkreigj6pcrqnrpeo22hbhyebbrmmmy4lw3nqcatlznonythv2xy2mjmm",
+          "buttonText": "View Portfolio",
+          "buttonIcon": "icon-briefcase",
+          "buttonLink": "#work"
+        },
+        {
+          "title": "I am a",
+          "subtitle": "Full-Stack Developer",
+          "description": "Imagine it, The ACJ will make it real",
+          "bgImage": "https://ivory-late-coyote-159.mypinata.cloud/ipfs/bafkreicmzmnst7kmub6wrbghbnfbztandytncayqoxl4aecq4pmlxjhfoi",
+          "buttonText": "View Portfolio",
+          "buttonIcon": "icon-briefcase",
+          "buttonLink": "#work"
+        },
+        {
+          "title": "I am a",
+          "subtitle": "Web3 Developer",
+          "description": "Building worldclass solution using Blockchain Technology",
+          "bgImage": "https://ivory-late-coyote-159.mypinata.cloud/ipfs/bafkreiexgkmtvfcix7zguvfilbihtamjoijbwciko6cy67pzd3d6ob3m5i",
+          "buttonText": "View Portfolio",
+          "buttonIcon": "icon-briefcase",
+          "buttonLink": "#work"
+        }
+      ],
+      "socialLinks": [
+        { "platform": "GitHub", "url": "https://github.com/TheACJ", "icon": "fab fa-github" },
+        { "platform": "LinkedIn", "url": "https://linkedin.com/in/joshuaagbai", "icon": "fab fa-linkedin" },
+        { "platform": "Twitter", "url": "https://twitter.com/realACJoshua", "icon": "fab fa-twitter" }
+      ]
+    },
+    "isActive": true,
+    "updatedAt": { "$date": "2025-11-22T23:00:00.000Z" }
+  },
+  {
+    "_id": { "$oid": "507f1f77bcf86cd799439012" },
+    "sectionType": "about",
+    "about": {
+      "title": "About Me",
+      "description": "I'm a passionate Data Analyst and Web Developer with expertise in transforming complex data into actionable insights and creating responsive web applications. With experience in Python, JavaScript, and modern frameworks, I bridge the gap between data science and web development.",
+      "image": "https://ivory-late-coyote-159.mypinata.cloud/ipfs/bafybeifyjsp37vei3snwbeici7kp26th32apjvwjtbwjuqe5tbykn4eccy",
+      "achievements": [
+        "5+ Years of Data Analysis Experience",
+        "10+ Projects Completed",
+        "Multiple Technology Certifications",
+        "Full-Stack Development Expertise"
+      ]
+    },
+    "isActive": true,
+    "updatedAt": { "$date": "2025-11-22T23:00:00.000Z" }
+  },
+  {
+    "_id": { "$oid": "507f1f77bcf86cd799439013" },
+    "sectionType": "services",
+    "services": [
+      {
+        "title": "Software Engineering",
+        "description": "Transform concept into production ready applications and utilities",
+        "icon": "fas fa-chart-bar",
+        "order": 1
+      },
+      {
+        "title": "Full-Stack Web Development",
+        "description": "Build responsive, modern web applications using React, Node.js, Django, MongoDB and other cutting-edge technologies.",
+        "icon": "fas fa-code",
+        "order": 2
+      },
+      {
+        "title": "Blockchain Development",
+        "description": "Develop decentralized applications and smart contracts using Solidity and Web3 technologies.",
+        "icon": "fas fa-link",
+        "order": 3
+      },
+      {
+        "title": "API and MicroService Development",
+        "description": "Create robust and scalable RESTful APIs, GraphQL and micro services for modern solutions and applications.",
+        "icon": "fas fa-cogs",
+        "order": 4
+      }
+    ],
+    "isActive": true,
+    "updatedAt": { "$date": "2025-11-22T23:00:00.000Z" }
+  },
+  {
+    "_id": { "$oid": "507f1f77bcf86cd799439014" },
+    "sectionType": "skills",
+    "skills": [
+      { "name": "Python", "level": 95, "icon": "fab fa-python" },
+      { "name": "JavaScript", "level": 90, "icon": "fab fa-js" },
+      { "name": "React", "level": 88, "icon": "fab fa-react" },
+      { "name": "TypeScript", "level": 88, "icon": "fab fa-js-square" },
+      { "name": "HTML5", "level": 92, "icon": "fab fa-html5" },
+      { "name": "CSS3", "level": 90, "icon": "fab fa-css3-alt" },
+      { "name": "Git", "level": 92, "icon": "fab fa-git-alt" },
+      { "name": "Node.js", "level": 85, "icon": "fab fa-node-js" },
+      { "name": "Django", "level": 80, "icon": "fab fa-django" },
+      { "name": "Fast API", "level": 80, "icon": "fab fa-python" },
+      { "name": "MongoDB", "level": 80, "icon": "fas fa-database" },
+      { "name": "Express.js", "level": 82, "icon": "fab fa-node-js" },
+      { "name": "API Development", "level": 85, "icon": "fas fa-cogs" },
+      { "name": "SQL", "level": 85, "icon": "fas fa-database" },
+      { "name": "Tailwind CSS", "level": 85, "icon": "fab fa-tailwind" },
+      
+      { "name": "GitHub", "level": 90, "icon": "fab fa-github" },
+      { "name": "PostgreSQL", "level": 78, "icon": "fas fa-database" },
+      { "name": "Bootstrap", "level": 75, "icon": "fab fa-bootstrap" },
+      { "name": "GraphQL", "level": 75, "icon": "fas fa-project-diagram" },
+      { "name": "MySQL", "level": 75, "icon": "fas fa-database" },
+      { "name": "R", "level": 70, "icon": "fas fa-chart-line" },
+      { "name": "Redis", "level": 70, "icon": "fas fa-database" },
+      { "name": "Solidity", "level": 65, "icon": "fab fa-ethereum" },
+      { "name": "AWS", "level": 65, "icon": "fab fa-aws" },
+      { "name": "Docker", "level": 68, "icon": "fab fa-docker" },
+      { "name": "Web3", "level": 65, "icon": "fas fa-link" },
+      { "name": "Rust", "level": 70, "icon": "fas fa-link" },
+      
+    ],
+    "isActive": true,
+    "updatedAt": { "$date": "2025-11-22T23:36:00.000Z" }
+  },
+
+  {
+    "_id": { "$oid": "507f1f77bcf86cd799439015" },
+    "sectionType": "counter",
+    "counter": [
+      { "title": "Projects Completed", "value": "10+", "icon": "fas fa-project-diagram" },
+      { "title": "Happy Clients", "value": "7+", "icon": "fas fa-smile" },
+      { "title": "Years Experience", "value": "5+", "icon": "fas fa-calendar" },
+      { "title": "Technologies", "value": "15+", "icon": "fas fa-laptop-code" }
+    ],
+    "isActive": true,
+    "updatedAt": { "$date": "2025-11-22T23:00:00.000Z" }
+  }
+]

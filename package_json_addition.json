@@ -1,0 +1,1 @@
+{"scripts": {"test-content-api": "node test_content_api.js", "verify-mongodb-content": "npm run test-content-api && echo 'Run this in your backend directory: cd nodejs-backend && npm start'", "check-content-fetch": "echo '🔍 Testing content fetch...' && node test_content_api.js && echo '' && echo '✅ If API test passed, your frontend should now fetch content from MongoDB!'"}}

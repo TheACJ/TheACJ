@@ -1,656 +1,1137 @@
+<!-- views/admin/dashboard.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Admin Dashboard - The ACJ Portfolio">
     <title>Admin Dashboard - The ACJ Portfolio</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Icons & Libraries -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/apexcharts@3.35.0/dist/apexcharts.min.css">
+    
+    <!-- Custom CSS -->
     <link href="/assets/admin.css" rel="stylesheet">
+    
+    <style>
+        /* Dashboard Specific Styles */
+        .welcome-banner {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 1rem;
+            padding: 2rem;
+            color: white;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .welcome-banner::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: float 20s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            50% { transform: translate(30px, -30px) rotate(180deg); }
+        }
+        
+        .quick-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .activity-feed {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 350px;
+        }
+        
+        .performance-metric {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            background: var(--gray-50);
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        [data-theme="dark"] .performance-metric {
+            background: var(--gray-800);
+        }
+    </style>
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <!-- Loading Bar -->
+    <div class="loading-bar"></div>
+    
+    <!-- Main Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light admin-navbar">
         <div class="container-fluid">
+            <button class="btn btn-link text-decoration-none p-2" id="sidebarToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            
             <a class="navbar-brand" href="/admin/dashboard">
-                <i class="fas fa-tachometer-alt me-2"></i>Admin Panel
+                <i class="fas fa-shield-alt"></i>
+                Admin Portal
             </a>
+            
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
+            
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link active" href="/admin/dashboard">
-                            <i class="fas fa-chart-bar me-1"></i>Dashboard
-                        </a>
+                <ul class="navbar-nav ms-auto">
+                    <!-- Search -->
+                    <li class="nav-item me-3">
+                        <div class="search-box" style="width: 300px;">
+                            <i class="fas fa-search search-icon"></i>
+                            <input type="text" class="form-control" placeholder="Search..." data-search>
+                        </div>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/admin/blog-posts">
-                            <i class="fas fa-blog me-1"></i>Blog Posts
+                    
+                    <!-- Notifications -->
+                    <li class="nav-item dropdown me-3">
+                        <a class="nav-link position-relative" href="#" id="notificationDropdown" data-bs-toggle="dropdown">
+                            <i class="fas fa-bell"></i>
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="notificationCount">3</span>
                         </a>
+                        <div class="dropdown-menu dropdown-menu-end" style="width: 350px;">
+                            <div class="dropdown-header d-flex justify-content-between align-items-center">
+                                <span>Notifications</span>
+                                <a href="#" class="text-decoration-none small">Mark all as read</a>
+                            </div>
+                            <div class="dropdown-divider"></div>
+                            <div id="notificationList" style="max-height: 400px; overflow-y: auto;">
+                                <!-- Notifications will be loaded here -->
+                            </div>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item text-center small" href="/admin/notifications">View all notifications</a>
+                        </div>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/admin/work-items">
-                            <i class="fas fa-briefcase me-1"></i>Work Items
+                    
+                    <!-- Quick Actions -->
+                    <li class="nav-item dropdown me-3">
+                        <a class="nav-link" href="#" data-bs-toggle="dropdown">
+                            <i class="fas fa-plus-circle"></i>
                         </a>
+                        <div class="dropdown-menu dropdown-menu-end">
+                            <h6 class="dropdown-header">Quick Actions</h6>
+                            <a class="dropdown-item" href="/admin/blog-posts/new">
+                                <i class="fas fa-blog me-2"></i>New Blog Post
+                            </a>
+                            <a class="dropdown-item" href="/admin/work-items/new">
+                                <i class="fas fa-briefcase me-2"></i>New Work Item
+                            </a>
+                            <a class="dropdown-item" href="/admin/categories/new">
+                                <i class="fas fa-tag me-2"></i>New Category
+                            </a>
+                        </div>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/admin/contacts">
-                            <i class="fas fa-envelope me-1"></i>Contacts
-                        </a>
+                    
+                    <!-- Theme Toggle -->
+                    <li class="nav-item me-3">
+                        <button class="btn btn-link nav-link" id="themeToggle">
+                            <i class="fas fa-moon"></i>
+                        </button>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/admin/categories">
-                            <i class="fas fa-tags me-1"></i>Categories
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/admin/content">
-                            <i class="fas fa-edit me-1"></i>Content
-                        </a>
-                    </li>
-                    <li class="nav-item" id="usersNav" style="display: none;">
-                        <a class="nav-link" href="/admin/users">
-                            <i class="fas fa-users me-1"></i>Users
-                        </a>
-                    </li>
-                    <li class="nav-item" id="settingsNav" style="display: none;">
-                        <a class="nav-link" href="/admin/settings">
-                            <i class="fas fa-cog me-1"></i>Settings
-                        </a>
-                    </li>
-                </ul>
-                <ul class="navbar-nav">
+                    
+                    <!-- User Menu -->
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown">
-                            <i class="fas fa-user-shield me-1"></i><span id="adminName">Admin</span>
+                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" data-bs-toggle="dropdown">
+                            <img src="/assets/img/default-avatar.png" alt="Avatar" class="rounded-circle me-2" width="32" height="32" data-user-avatar>
+                            <span data-user-name>Admin</span>
                         </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#profileModal">
+                        <div class="dropdown-menu dropdown-menu-end">
+                            <div class="dropdown-item-text">
+                                <div class="d-flex align-items-center">
+                                    <img src="/assets/img/default-avatar.png" alt="Avatar" class="rounded-circle me-3" width="48" height="48" data-user-avatar>
+                                    <div>
+                                        <div class="fw-bold" data-user-name>Admin</div>
+                                        <div class="small text-muted" data-user-email>admin@example.com</div>
+                                        <div class="small text-muted" data-user-role>Administrator</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#profileModal">
                                 <i class="fas fa-user me-2"></i>Profile
-                            </a></li>
-                            <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
+                            </a>
+                            <a class="dropdown-item" href="/admin/settings">
+                                <i class="fas fa-cog me-2"></i>Settings
+                            </a>
+                            <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
                                 <i class="fas fa-key me-2"></i>Change Password
-                            </a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="#" id="logoutBtn">
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="#" id="logoutBtn">
                                 <i class="fas fa-sign-out-alt me-2"></i>Logout
-                            </a></li>
-                        </ul>
+                            </a>
+                        </div>
                     </li>
                 </ul>
             </div>
         </div>
     </nav>
-
-    <div class="container-fluid mt-4">
-        <!-- Welcome Section -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="card bg-primary text-white">
-                    <div class="card-body">
-                        <h4 class="card-title">
+    
+    <div class="d-flex">
+        <!-- Sidebar -->
+        <nav class="admin-sidebar">
+            <div class="p-3">
+                <h6 class="text-muted text-uppercase small fw-bold mb-3">Main Navigation</h6>
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/admin/dashboard">
                             <i class="fas fa-tachometer-alt me-2"></i>Dashboard
-                        </h4>
-                        <p class="card-text">Welcome back, <span id="welcomeAdminName">Admin</span>!</p>
-                        <small id="lastLogin">Last login: Loading...</small>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/blog-posts">
+                            <i class="fas fa-blog me-2"></i>Blog Posts
+                            <span class="badge bg-primary float-end">12</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/work-items">
+                            <i class="fas fa-briefcase me-2"></i>Work Items
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/contacts">
+                            <i class="fas fa-envelope me-2"></i>Contacts
+                            <span class="badge bg-warning float-end">5</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/categories">
+                            <i class="fas fa-tags me-2"></i>Categories
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/content">
+                            <i class="fas fa-edit me-2"></i>Content
+                        </a>
+                    </li>
+                </ul>
+                
+                <h6 class="text-muted text-uppercase small fw-bold mb-3 mt-4">Analytics</h6>
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/analytics">
+                            <i class="fas fa-chart-line me-2"></i>Analytics
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/reports">
+                            <i class="fas fa-file-alt me-2"></i>Reports
+                        </a>
+                    </li>
+                </ul>
+                
+                <h6 class="text-muted text-uppercase small fw-bold mb-3 mt-4">System</h6>
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/users" data-role="super_admin">
+                            <i class="fas fa-users me-2"></i>Users
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/settings">
+                            <i class="fas fa-cog me-2"></i>Settings
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/backup">
+                            <i class="fas fa-database me-2"></i>Backup
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- Sidebar Footer -->
+            <div class="position-absolute bottom-0 w-100 p-3 border-top">
+                <div class="d-flex align-items-center">
+                    <div class="flex-grow-1">
+                        <div class="small text-muted">Server Status</div>
+                        <div class="small">
+                            <i class="fas fa-circle text-success me-1"></i>Online
+                        </div>
+                    </div>
+                    <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#helpModal">
+                        <i class="fas fa-question-circle"></i>
+                    </button>
+                </div>
+            </div>
+        </nav>
+        
+        <!-- Main Content -->
+        <main class="admin-content">
+            <!-- Welcome Banner -->
+            <div class="welcome-banner">
+                <div class="position-relative">
+                    <h1 class="h3 mb-3">
+                        Welcome back, <span data-user-name>Admin</span>! 👋
+                    </h1>
+                    <p class="mb-4">Here's what's happening with your portfolio today.</p>
+                    <div class="row g-4">
+                        <div class="col-auto">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-clock me-2"></i>
+                                <span id="currentDateTime">Loading...</span>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-user-clock me-2"></i>
+                                <span>Last login: <span id="lastLogin">Loading...</span></span>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-shield-alt me-2"></i>
+                                <span>Security: <strong>Good</strong></span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-
-        <!-- Statistics Cards -->
-        <div class="row mb-4" id="statsCards">
-            <div class="col-xl-3 col-md-6 mb-4">
-                <div class="card border-left-primary shadow h-100 py-2">
-                    <div class="card-body">
-                        <div class="row no-gutters align-items-center">
-                            <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                    Total Users
+            
+            <!-- Quick Stats -->
+            <div class="quick-stats-grid">
+                <div class="stat-card" data-context-menu="card">
+                    <div class="stat-icon bg-primary bg-gradient">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-value" data-stat="total-users">0</div>
+                    <div class="stat-label">Total Users</div>
+                    <div class="stat-change positive">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>12% from last month</span>
+                    </div>
+                </div>
+                
+                <div class="stat-card success" data-context-menu="card">
+                    <div class="stat-icon bg-success bg-gradient">
+                        <i class="fas fa-blog"></i>
+                    </div>
+                    <div class="stat-value" data-stat="total-posts">0</div>
+                    <div class="stat-label">Blog Posts</div>
+                    <div class="stat-change positive">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>8 new this month</span>
+                    </div>
+                </div>
+                
+                <div class="stat-card info" data-context-menu="card">
+                    <div class="stat-icon bg-info bg-gradient">
+                        <i class="fas fa-briefcase"></i>
+                    </div>
+                    <div class="stat-value" data-stat="total-work">0</div>
+                    <div class="stat-label">Work Items</div>
+                    <div class="stat-change positive">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>3 new projects</span>
+                    </div>
+                </div>
+                
+                <div class="stat-card warning" data-context-menu="card">
+                    <div class="stat-icon bg-warning bg-gradient">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <div class="stat-value" data-stat="unread-contacts">0</div>
+                    <div class="stat-label">Unread Contacts</div>
+                    <div class="stat-change negative">
+                        <i class="fas fa-arrow-down"></i>
+                        <span>5 pending replies</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Charts Row -->
+            <div class="row mb-4">
+                <div class="col-lg-8">
+                    <div class="dashboard-card">
+                        <div class="dashboard-card-header">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-chart-line me-2"></i>Traffic Overview
+                                </h5>
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <button type="button" class="btn btn-outline-primary active" data-period="week">Week</button>
+                                    <button type="button" class="btn btn-outline-primary" data-period="month">Month</button>
+                                    <button type="button" class="btn btn-outline-primary" data-period="year">Year</button>
                                 </div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800" id="totalUsers">0</div>
                             </div>
-                            <div class="col-auto">
-                                <i class="fas fa-users fa-2x text-gray-300"></i>
-                            </div>
+                        </div>
+                        <div class="dashboard-card-body">
+                            <div id="trafficChart" class="chart-container"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4">
+                    <div class="dashboard-card">
+                        <div class="dashboard-card-header">
+                            <h5 class="mb-0">
+                                <i class="fas fa-chart-pie me-2"></i>Content Distribution
+                            </h5>
+                        </div>
+                        <div class="dashboard-card-body">
+                            <div id="contentChart" class="chart-container"></div>
                         </div>
                     </div>
                 </div>
             </div>
-
-            <div class="col-xl-3 col-md-6 mb-4">
-                <div class="card border-left-success shadow h-100 py-2">
-                    <div class="card-body">
-                        <div class="row no-gutters align-items-center">
-                            <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                    Blog Posts
+            
+            <!-- Activity and Tasks Row -->
+            <div class="row mb-4">
+                <div class="col-lg-8">
+                    <div class="dashboard-card">
+                        <div class="dashboard-card-header">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-history me-2"></i>Recent Activity
+                                </h5>
+                                <a href="/admin/activity" class="btn btn-sm btn-outline-primary">View All</a>
+                            </div>
+                        </div>
+                        <div class="dashboard-card-body">
+                            <div class="timeline activity-feed" id="activityFeed">
+                                <!-- Activity items will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4">
+                    <div class="dashboard-card">
+                        <div class="dashboard-card-header">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-tasks me-2"></i>Quick Tasks
+                                </h5>
+                                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#newTaskModal">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="dashboard-card-body">
+                            <div id="tasksList">
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="checkbox" id="task1">
+                                    <label class="form-check-label" for="task1">
+                                        Review pending blog comments
+                                    </label>
                                 </div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800" id="totalBlogPosts">0</div>
-                            </div>
-                            <div class="col-auto">
-                                <i class="fas fa-blog fa-2x text-gray-300"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-xl-3 col-md-6 mb-4">
-                <div class="card border-left-info shadow h-100 py-2">
-                    <div class="card-body">
-                        <div class="row no-gutters align-items-center">
-                            <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
-                                    Work Items
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="checkbox" id="task2">
+                                    <label class="form-check-label" for="task2">
+                                        Update portfolio showcase
+                                    </label>
                                 </div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800" id="totalWorkItems">0</div>
-                            </div>
-                            <div class="col-auto">
-                                <i class="fas fa-briefcase fa-2x text-gray-300"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-xl-3 col-md-6 mb-4">
-                <div class="card border-left-warning shadow h-100 py-2">
-                    <div class="card-body">
-                        <div class="row no-gutters align-items-center">
-                            <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                    Unread Contacts
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="checkbox" id="task3">
+                                    <label class="form-check-label" for="task3">
+                                        Respond to contact inquiries
+                                    </label>
                                 </div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800" id="unreadContacts">0</div>
-                            </div>
-                            <div class="col-auto">
-                                <i class="fas fa-envelope fa-2x text-gray-300"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Charts and Recent Activity -->
-        <div class="row">
-            <!-- Monthly Activity Chart -->
-            <div class="col-xl-8 col-lg-7">
-                <div class="card shadow mb-4">
-                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                        <h6 class="m-0 font-weight-bold text-primary">
-                            <i class="fas fa-chart-line me-2"></i>Monthly Activity
-                        </h6>
-                    </div>
-                    <div class="card-body">
-                        <div class="chart-area">
-                            <canvas id="monthlyChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Recent Activity -->
-            <div class="col-xl-4 col-lg-5">
-                <div class="card shadow mb-4">
-                    <div class="card-header py-3">
-                        <h6 class="m-0 font-weight-bold text-primary">
-                            <i class="fas fa-clock me-2"></i>Recent Activity
-                        </h6>
-                    </div>
-                    <div class="card-body">
-                        <div id="recentActivity">
-                            <div class="text-center text-muted">
-                                <i class="fas fa-spinner fa-spin"></i> Loading...
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="checkbox" id="task4">
+                                    <label class="form-check-label" for="task4">
+                                        Backup database
+                                    </label>
+                                </div>
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="checkbox" id="task5">
+                                    <label class="form-check-label" for="task5">
+                                        Check system updates
+                                    </label>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-
-        <!-- Quick Actions -->
-        <div class="row">
-            <div class="col-12">
-                <div class="card shadow mb-4">
-                    <div class="card-header py-3">
-                        <h6 class="m-0 font-weight-bold text-primary">
-                            <i class="fas fa-bolt me-2"></i>Quick Actions
-                        </h6>
+            
+            <!-- Performance Metrics -->
+            <div class="row mb-4">
+                <div class="col-lg-6">
+                    <div class="dashboard-card">
+                        <div class="dashboard-card-header">
+                            <h5 class="mb-0">
+                                <i class="fas fa-tachometer-alt me-2"></i>System Performance
+                            </h5>
+                        </div>
+                        <div class="dashboard-card-body">
+                            <div class="performance-metric">
+                                <div>
+                                    <div class="fw-bold">CPU Usage</div>
+                                    <div class="small text-muted">Server processor load</div>
+                                </div>
+                                <div class="text-end">
+                                    <div class="h4 mb-0">23%</div>
+                                    <div class="progress" style="width: 100px; height: 4px;">
+                                        <div class="progress-bar bg-success" style="width: 23%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="performance-metric">
+                                <div>
+                                    <div class="fw-bold">Memory Usage</div>
+                                    <div class="small text-muted">RAM consumption</div>
+                                </div>
+                                <div class="text-end">
+                                    <div class="h4 mb-0">47%</div>
+                                    <div class="progress" style="width: 100px; height: 4px;">
+                                        <div class="progress-bar bg-warning" style="width: 47%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="performance-metric">
+                                <div>
+                                    <div class="fw-bold">Disk Usage</div>
+                                    <div class="small text-muted">Storage space</div>
+                                </div>
+                                <div class="text-end">
+                                    <div class="h4 mb-0">68%</div>
+                                    <div class="progress" style="width: 100px; height: 4px;">
+                                        <div class="progress-bar bg-danger" style="width: 68%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="performance-metric">
+                                <div>
+                                    <div class="fw-bold">Network I/O</div>
+                                    <div class="small text-muted">Bandwidth usage</div>
+                                </div>
+                                <div class="text-end">
+                                    <div class="h4 mb-0">12 MB/s</div>
+                                    <div class="progress" style="width: 100px; height: 4px;">
+                                        <div class="progress-bar bg-info" style="width: 35%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-3 mb-3">
-                                <a href="/admin/blog-posts?action=create" class="btn btn-outline-primary w-100">
-                                    <i class="fas fa-plus me-2"></i>New Blog Post
-                                </a>
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <a href="/admin/work-items?action=create" class="btn btn-outline-success w-100">
-                                    <i class="fas fa-plus me-2"></i>New Work Item
-                                </a>
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <a href="/admin/categories?action=create" class="btn btn-outline-info w-100">
-                                    <i class="fas fa-plus me-2"></i>New Category
-                                </a>
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <a href="/admin/contacts" class="btn btn-outline-warning w-100">
-                                    <i class="fas fa-envelope me-2"></i>View Contacts
-                                </a>
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <a href="/admin/content" class="btn btn-outline-secondary w-100">
-                                    <i class="fas fa-edit me-2"></i>Edit Content
-                                </a>
+                </div>
+                
+                <div class="col-lg-6">
+                    <div class="dashboard-card">
+                        <div class="dashboard-card-header">
+                            <h5 class="mb-0">
+                                <i class="fas fa-globe me-2"></i>Top Referrers
+                            </h5>
+                        </div>
+                        <div class="dashboard-card-body">
+                            <div class="data-table">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Source</th>
+                                            <th>Visitors</th>
+                                            <th>Bounce Rate</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <i class="fab fa-google me-2"></i>Google
+                                            </td>
+                                            <td>1,234</td>
+                                            <td><span class="badge bg-success">23%</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <i class="fab fa-twitter me-2"></i>Twitter
+                                            </td>
+                                            <td>892</td>
+                                            <td><span class="badge bg-warning">45%</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <i class="fab fa-linkedin me-2"></i>LinkedIn
+                                            </td>
+                                            <td>756</td>
+                                            <td><span class="badge bg-success">31%</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <i class="fab fa-github me-2"></i>GitHub
+                                            </td>
+                                            <td>543</td>
+                                            <td><span class="badge bg-success">28%</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <i class="fas fa-link me-2"></i>Direct
+                                            </td>
+                                            <td>432</td>
+                                            <td><span class="badge bg-danger">52%</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+            
+            <!-- Quick Actions Grid -->
+            <div class="dashboard-card mb-4">
+                <div class="dashboard-card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-bolt me-2"></i>Quick Actions
+                    </h5>
+                </div>
+                <div class="dashboard-card-body">
+                    <div class="row g-3">
+                        <div class="col-md-3 col-sm-6">
+                            <a href="/admin/blog-posts/new" class="btn btn-outline-primary w-100 p-3">
+                                <i class="fas fa-plus-circle fa-2x mb-2"></i>
+                                <div>New Blog Post</div>
+                            </a>
+                        </div>
+                        <div class="col-md-3 col-sm-6">
+                            <a href="/admin/work-items/new" class="btn btn-outline-success w-100 p-3">
+                                <i class="fas fa-briefcase fa-2x mb-2"></i>
+                                <div>Add Work Item</div>
+                            </a>
+                        </div>
+                        <div class="col-md-3 col-sm-6">
+                            <a href="/admin/contacts" class="btn btn-outline-warning w-100 p-3">
+                                <i class="fas fa-envelope fa-2x mb-2"></i>
+                                <div>View Messages</div>
+                            </a>
+                        </div>
+                        <div class="col-md-3 col-sm-6">
+                            <a href="/admin/analytics" class="btn btn-outline-info w-100 p-3">
+                                <i class="fas fa-chart-bar fa-2x mb-2"></i>
+                                <div>View Analytics</div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
     </div>
-
+    
     <!-- Profile Modal -->
-    <div class="modal fade" id="profileModal" tabindex="-1">
-        <div class="modal-dialog">
+    <div class="modal fade modal-modern" id="profileModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Admin Profile</h5>
+                    <h5 class="modal-title">
+                        <i class="fas fa-user me-2"></i>My Profile
+                    </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="profileForm">
-                        <div class="mb-3">
-                            <label class="form-label">Username</label>
-                            <input type="text" class="form-control" id="profileUsername" readonly>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Email</label>
-                            <input type="email" class="form-control" id="profileEmail">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Full Name</label>
-                            <input type="text" class="form-control" id="profileFullName">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Role</label>
-                            <input type="text" class="form-control" id="profileRole" readonly>
+                    <form id="profileForm" data-ajax data-endpoint="/auth/profile" data-method="PUT">
+                        <div class="row">
+                            <div class="col-md-4 text-center">
+                                <img src="/assets/img/default-avatar.png" alt="Avatar" class="rounded-circle mb-3" width="150" height="150" data-user-avatar>
+                                <div class="mb-3">
+                                    <label class="btn btn-outline-primary btn-sm">
+                                        <i class="fas fa-camera me-2"></i>Change Photo
+                                        <input type="file" hidden accept="image/*" id="avatarInput">
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-8">
+                                <div class="mb-3">
+                                    <label class="form-label">Username</label>
+                                    <input type="text" class="form-control" id="profileUsername" readonly>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Full Name</label>
+                                    <input type="text" class="form-control" id="profileFullName" name="fullName">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Email</label>
+                                    <input type="email" class="form-control" id="profileEmail" name="email">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Phone</label>
+                                    <input type="tel" class="form-control" id="profilePhone" name="phone">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Bio</label>
+                                    <textarea class="form-control" id="profileBio" name="bio" rows="3"></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Role</label>
+                                    <input type="text" class="form-control" id="profileRole" readonly>
+                                </div>
+                            </div>
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" id="updateProfileBtn">Update Profile</button>
+                    <button type="submit" form="profileForm" class="btn btn-primary">
+                        <i class="fas fa-save me-2"></i>Save Changes
+                    </button>
                 </div>
             </div>
         </div>
     </div>
-
+    
     <!-- Change Password Modal -->
-    <div class="modal fade" id="changePasswordModal" tabindex="-1">
+    <div class="modal fade modal-modern" id="changePasswordModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Change Password</h5>
+                    <h5 class="modal-title">
+                        <i class="fas fa-key me-2"></i>Change Password
+                    </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="changePasswordForm">
+                    <form id="changePasswordForm" data-ajax data-endpoint="/auth/change-password" data-method="POST">
                         <div class="mb-3">
                             <label class="form-label">Current Password</label>
-                            <input type="password" class="form-control" id="currentPassword" required>
+                            <div class="input-group">
+                                <input type="password" class="form-control" id="currentPassword" name="currentPassword" required>
+                                <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('currentPassword')">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">New Password</label>
-                            <input type="password" class="form-control" id="newPassword" required>
+                            <div class="input-group">
+                                <input type="password" class="form-control" id="newPassword" name="newPassword" required>
+                                <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('newPassword')">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            <div class="form-text">Password must be at least 8 characters long.</div>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Confirm New Password</label>
-                            <input type="password" class="form-control" id="confirmNewPassword" required>
+                            <div class="input-group">
+                                <input type="password" class="form-control" id="confirmNewPassword" required>
+                                <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('confirmNewPassword')">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Make sure your password is strong and unique.
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" id="changePasswordBtn">Change Password</button>
+                    <button type="submit" form="changePasswordForm" class="btn btn-primary">
+                        <i class="fas fa-lock me-2"></i>Update Password
+                    </button>
                 </div>
             </div>
         </div>
     </div>
-
+    
+    <!-- New Task Modal -->
+    <div class="modal fade modal-modern" id="newTaskModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-plus-circle me-2"></i>New Task
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="newTaskForm">
+                        <div class="mb-3">
+                            <label class="form-label">Task Title</label>
+                            <input type="text" class="form-control" id="taskTitle" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Description</label>
+                            <textarea class="form-control" id="taskDescription" rows="3"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Priority</label>
+                            <select class="form-select" id="taskPriority">
+                                <option value="low">Low</option>
+                                <option value="medium" selected>Medium</option>
+                                <option value="high">High</option>
+                                <option value="urgent">Urgent</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Due Date</label>
+                            <input type="datetime-local" class="form-control" id="taskDueDate">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="addNewTask()">
+                        <i class="fas fa-plus me-2"></i>Add Task
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Help Modal -->
+    <div class="modal fade modal-modern" id="helpModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-question-circle me-2"></i>Help & Documentation
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="accordion" id="helpAccordion">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#help1">
+                                    Getting Started
+                                </button>
+                            </h2>
+                            <div id="help1" class="accordion-collapse collapse show" data-bs-parent="#helpAccordion">
+                                <div class="accordion-body">
+                                    Welcome to the Admin Dashboard! Here you can manage all aspects of your portfolio website.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#help2">
+                                    Keyboard Shortcuts
+                                </button>
+                            </h2>
+                            <div id="help2" class="accordion-collapse collapse" data-bs-parent="#helpAccordion">
+                                <div class="accordion-body">
+                                    <table class="table">
+                                        <tr><td><kbd>Ctrl + S</kbd></td><td>Save current form</td></tr>
+                                        <tr><td><kbd>Ctrl + N</kbd></td><td>Create new item</td></tr>
+                                        <tr><td><kbd>Ctrl + K</kbd></td><td>Open command palette</td></tr>
+                                        <tr><td><kbd>Alt + T</kbd></td><td>Toggle theme</td></tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Context Menu -->
+    <div class="context-menu"></div>
+    
+    <!-- Toast Container -->
+    <div class="toast-container"></div>
+    
+    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.35.0/dist/apexcharts.min.js"></script>
     <script src="/assets/admin.js"></script>
+    
     <script>
         // Dashboard specific functionality
-        class Dashboard {
+        class DashboardManager {
             constructor() {
+                this.charts = {};
                 this.init();
             }
-
+            
             async init() {
-                console.log('Dashboard: Initializing...');
-                await this.checkAuth();
-                this.setupEventListeners();
                 await this.loadDashboardData();
+                this.initializeCharts();
+                this.setupRealtimeUpdates();
+                this.updateDateTime();
+                this.loadNotifications();
+                this.loadActivityFeed();
             }
-
-            async checkAuth() {
-                const token = localStorage.getItem('adminToken');
-                if (!token) {
-                    window.location.href = 'login.html';
-                    return;
-                }
-
-                // Verify token
-                try {
-                    const response = await fetch('/api/admin/auth/me', {
-                        headers: { 'Authorization': `Bearer ${token}` }
-                    });
-                    const result = await response.json();
-
-                    if (!result.success) {
-                        this.handleAuthError();
-                        return;
-                    }
-
-                    this.admin = result.data.admin;
-                    this.updateUI();
-                } catch (error) {
-                    this.handleAuthError();
-                }
-            }
-
-            handleAuthError() {
-                localStorage.removeItem('adminToken');
-                localStorage.removeItem('adminRefreshToken');
-                window.location.href = 'login.html';
-            }
-
-            updateUI() {
-                document.getElementById('adminName').textContent = this.admin.fullName || this.admin.username;
-                document.getElementById('welcomeAdminName').textContent = this.admin.fullName || this.admin.username;
-
-                // Show/hide navigation items based on role
-                if (this.admin.role === 'super_admin') {
-                    document.getElementById('usersNav').style.display = 'block';
-                    document.getElementById('settingsNav').style.display = 'block';
-                }
-
-                // Update profile modal
-                document.getElementById('profileUsername').value = this.admin.username;
-                document.getElementById('profileEmail').value = this.admin.email;
-                document.getElementById('profileFullName').value = this.admin.fullName;
-                document.getElementById('profileRole').value = this.admin.role;
-
-                // Show last login if available
-                if (this.admin.lastLogin) {
-                    const lastLogin = new Date(this.admin.lastLogin).toLocaleString();
-                    document.getElementById('lastLogin').textContent = `Last login: ${lastLogin}`;
-                }
-            }
-
-            setupEventListeners() {
-                document.getElementById('logoutBtn').addEventListener('click', (e) => {
-                    e.preventDefault();
-                    this.logout();
-                });
-
-                document.getElementById('updateProfileBtn').addEventListener('click', () => {
-                    this.updateProfile();
-                });
-
-                document.getElementById('changePasswordBtn').addEventListener('click', () => {
-                    this.changePassword();
-                });
-            }
-
+            
             async loadDashboardData() {
                 try {
-                    const token = localStorage.getItem('adminToken');
-                    console.log('Loading dashboard data, token exists:', !!token);
-                    
-                    if (!token) {
-                        console.error('No admin token found');
-                        return;
-                    }
-                    
-                    const response = await fetch('/api/admin/dashboard/stats', {
-                        headers: { 'Authorization': `Bearer ${token}` }
-                    });
-                    
-                    console.log('Dashboard API response status:', response.status);
-                    const result = await response.json();
-                    console.log('Dashboard API result:', result);
-
-                    if (result.success) {
-                        console.log('Updating stats cards with data:', result.data);
-                        this.updateStatsCards(result.data);
-                        this.updateRecentActivity(result.data.recent);
-                        this.updateMonthlyChart(result.data.monthly);
-                    } else {
-                        console.error('Dashboard API failed:', result.error);
+                    const response = await adminSystem.apiRequest('/dashboard/stats');
+                    if (response.success) {
+                        this.updateStats(response.data);
                     }
                 } catch (error) {
                     console.error('Failed to load dashboard data:', error);
                 }
             }
-
-            updateStatsCards(data) {
-                console.log('Updating stats cards with:', data);
-                document.getElementById('totalUsers').textContent = data.total.users;
-                document.getElementById('totalBlogPosts').textContent = data.total.blogPosts;
-                document.getElementById('totalWorkItems').textContent = data.total.workItems;
-                document.getElementById('unreadContacts').textContent = data.active.unreadContacts;
+            
+            updateStats(data) {
+                // Update stat cards
+                document.querySelector('[data-stat="total-users"]').textContent = data.totalUsers || 0;
+                document.querySelector('[data-stat="total-posts"]').textContent = data.totalPosts || 0;
+                document.querySelector('[data-stat="total-work"]').textContent = data.totalWork || 0;
+                document.querySelector('[data-stat="unread-contacts"]').textContent = data.unreadContacts || 0;
                 
-                console.log('Stats updated - Users:', data.total.users, 'Posts:', data.total.blogPosts);
-            }
-
-            updateRecentActivity(recentData) {
-                const container = document.getElementById('recentActivity');
+                // Update notification count
+                document.getElementById('notificationCount').textContent = data.notifications || 0;
                 
-                if (recentData.blogPosts.length === 0 && recentData.contacts.length === 0) {
-                    container.innerHTML = '<p class="text-muted">No recent activity</p>';
-                    return;
+                // Update last login
+                if (data.lastLogin) {
+                    document.getElementById('lastLogin').textContent = adminSystem.formatDate(data.lastLogin);
                 }
-
-                let html = '';
-                
-                recentData.blogPosts.forEach(post => {
-                    html += `
-                        <div class="d-flex align-items-center mb-3">
-                            <div class="me-3">
-                                <div class="icon-circle bg-primary">
-                                    <i class="fas fa-blog text-white"></i>
-                                </div>
-                            </div>
-                            <div>
-                                <div class="small text-gray-500">${new Date(post.createdAt).toLocaleDateString()}</div>
-                                <strong>New blog post: ${post.title}</strong>
-                            </div>
-                        </div>
-                    `;
-                });
-
-                recentData.contacts.forEach(contact => {
-                    html += `
-                        <div class="d-flex align-items-center mb-3">
-                            <div class="me-3">
-                                <div class="icon-circle ${contact.isRead ? 'bg-success' : 'bg-warning'}">
-                                    <i class="fas fa-envelope text-white"></i>
-                                </div>
-                            </div>
-                            <div>
-                                <div class="small text-gray-500">${new Date(contact.createdAt).toLocaleDateString()}</div>
-                                <strong>${contact.name} - ${contact.subject}</strong>
-                            </div>
-                        </div>
-                    `;
-                });
-
-                container.innerHTML = html;
             }
-
-            updateMonthlyChart(monthlyData) {
-                const ctx = document.getElementById('monthlyChart').getContext('2d');
-                
-                new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: ['This Month'],
-                        datasets: [{
-                            label: 'Blog Posts',
-                            data: [monthlyData.posts],
-                            borderColor: 'rgb(75, 192, 192)',
-                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                            tension: 0.1
-                        }, {
-                            label: 'Contacts',
-                            data: [monthlyData.contacts],
-                            borderColor: 'rgb(255, 205, 86)',
-                            backgroundColor: 'rgba(255, 205, 86, 0.2)',
-                            tension: 0.1
-                        }, {
-                            label: 'New Users',
-                            data: [monthlyData.users],
-                            borderColor: 'rgb(54, 162, 235)',
-                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                            tension: 0.1
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        plugins: {
-                            legend: {
-                                position: 'top',
-                            }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true
-                            }
+            
+            initializeCharts() {
+                // Traffic Chart
+                const trafficOptions = {
+                    series: [{
+                        name: 'Page Views',
+                        data: [31, 40, 28, 51, 42, 82, 56]
+                    }, {
+                        name: 'Unique Visitors',
+                        data: [11, 32, 45, 32, 34, 52, 41]
+                    }],
+                    chart: {
+                        height: 350,
+                        type: 'area',
+                        toolbar: {
+                            show: false
                         }
-                    }
-                });
-            }
-
-            async logout() {
-                try {
-                    const token = localStorage.getItem('adminToken');
-                    await fetch('/api/admin/auth/logout', {
-                        method: 'POST',
-                        headers: { 'Authorization': `Bearer ${token}` }
-                    });
-                } catch (error) {
-                    console.error('Logout error:', error);
-                } finally {
-                    localStorage.removeItem('adminToken');
-                    localStorage.removeItem('adminRefreshToken');
-                    window.location.href = 'login.html';
-                }
-            }
-
-            async updateProfile() {
-                const formData = {
-                    email: document.getElementById('profileEmail').value,
-                    fullName: document.getElementById('profileFullName').value
+                    },
+                    dataLabels: {
+                        enabled: false
+                    },
+                    stroke: {
+                        curve: 'smooth',
+                        width: 2
+                    },
+                    fill: {
+                        type: 'gradient',
+                        gradient: {
+                            opacityFrom: 0.6,
+                            opacityTo: 0.1
+                        }
+                    },
+                    xaxis: {
+                        categories: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+                    },
+                    colors: ['#6366f1', '#22d3ee']
                 };
-
+                
+                this.charts.traffic = new ApexCharts(document.querySelector("#trafficChart"), trafficOptions);
+                this.charts.traffic.render();
+                
+                // Content Distribution Chart
+                const contentOptions = {
+                    series: [44, 55, 13, 43],
+                    chart: {
+                        height: 350,
+                        type: 'donut'
+                    },
+                    labels: ['Blog Posts', 'Work Items', 'Categories', 'Pages'],
+                    colors: ['#6366f1', '#10b981', '#f59e0b', '#ef4444'],
+                    legend: {
+                        position: 'bottom'
+                    }
+                };
+                
+                this.charts.content = new ApexCharts(document.querySelector("#contentChart"), contentOptions);
+                this.charts.content.render();
+            }
+            
+            setupRealtimeUpdates() {
+                // Update every 30 seconds
+                setInterval(() => {
+                    this.loadDashboardData();
+                }, 30000);
+            }
+            
+            updateDateTime() {
+                const updateTime = () => {
+                    const now = new Date();
+                    const options = {
+                        weekday: 'long',
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    };
+                    document.getElementById('currentDateTime').textContent = now.toLocaleDateString('en-US', options);
+                };
+                
+                updateTime();
+                setInterval(updateTime, 60000); // Update every minute
+            }
+            
+            async loadNotifications() {
                 try {
-                    const token = localStorage.getItem('adminToken');
-                    const response = await fetch('/api/admin/auth/profile', {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${token}`
-                        },
-                        body: JSON.stringify(formData)
-                    });
-
-                    const result = await response.json();
-
-                    if (result.success) {
-                        this.showAlert('Profile updated successfully!', 'success');
-                        bootstrap.Modal.getInstance(document.getElementById('profileModal')).hide();
-                        this.admin = result.data.admin;
-                        this.updateUI();
-                    } else {
-                        this.showAlert(result.error || 'Failed to update profile', 'danger');
+                    const response = await adminSystem.apiRequest('/notifications?limit=5');
+                    if (response.success) {
+                        this.displayNotifications(response.data);
                     }
                 } catch (error) {
-                    this.showAlert('An error occurred while updating profile', 'danger');
+                    console.error('Failed to load notifications:', error);
                 }
             }
-
-            async changePassword() {
-                const currentPassword = document.getElementById('currentPassword').value;
-                const newPassword = document.getElementById('newPassword').value;
-                const confirmPassword = document.getElementById('confirmNewPassword').value;
-
-                if (newPassword !== confirmPassword) {
-                    this.showAlert('New passwords do not match', 'danger');
+            
+            displayNotifications(notifications) {
+                const container = document.getElementById('notificationList');
+                
+                if (notifications.length === 0) {
+                    container.innerHTML = '<div class="p-3 text-center text-muted">No new notifications</div>';
                     return;
                 }
-
+                
+                container.innerHTML = notifications.map(notif => `
+                    <a href="#" class="dropdown-item ${!notif.read ? 'bg-light' : ''}">
+                        <div class="d-flex">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-${this.getNotificationIcon(notif.type)} text-${this.getNotificationColor(notif.type)}"></i>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <p class="mb-1">${notif.message}</p>
+                                <small class="text-muted">${this.formatTimeAgo(notif.createdAt)}</small>
+                            </div>
+                        </div>
+                    </a>
+                `).join('');
+            }
+            
+            async loadActivityFeed() {
                 try {
-                    const token = localStorage.getItem('adminToken');
-                    const response = await fetch('/api/admin/auth/change-password', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${token}`
-                        },
-                        body: JSON.stringify({
-                            currentPassword,
-                            newPassword
-                        })
-                    });
-
-                    const result = await response.json();
-
-                    if (result.success) {
-                        this.showAlert('Password changed successfully!', 'success');
-                        bootstrap.Modal.getInstance(document.getElementById('changePasswordModal')).hide();
-                        document.getElementById('changePasswordForm').reset();
-                    } else {
-                        this.showAlert(result.error || 'Failed to change password', 'danger');
+                    const response = await adminSystem.apiRequest('/activity?limit=10');
+                    if (response.success) {
+                        this.displayActivity(response.data);
                     }
                 } catch (error) {
-                    this.showAlert('An error occurred while changing password', 'danger');
+                    console.error('Failed to load activity:', error);
                 }
             }
-
-            showAlert(message, type) {
-                const alertContainer = document.getElementById('alertContainer') || this.createAlertContainer();
-                alertContainer.innerHTML = `
-                    <div class="alert alert-${type} alert-dismissible fade show" role="alert">
-                        ${message}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            
+            displayActivity(activities) {
+                const container = document.getElementById('activityFeed');
+                
+                if (activities.length === 0) {
+                    container.innerHTML = '<div class="text-center text-muted">No recent activity</div>';
+                    return;
+                }
+                
+                container.innerHTML = activities.map(activity => `
+                    <div class="timeline-item">
+                        <div class="timeline-content">
+                            <div class="timeline-time">${this.formatTimeAgo(activity.createdAt)}</div>
+                            <div class="timeline-title">${activity.title}</div>
+                            <div class="timeline-description">${activity.description}</div>
+                        </div>
                     </div>
-                `;
+                `).join('');
             }
-
-            createAlertContainer() {
-                const container = document.createElement('div');
-                container.id = 'alertContainer';
-                container.style.position = 'fixed';
-                container.style.top = '20px';
-                container.style.right = '20px';
-                container.style.zIndex = '9999';
-                document.body.appendChild(container);
-                return container;
+            
+            getNotificationIcon(type) {
+                const icons = {
+                    'info': 'info-circle',
+                    'success': 'check-circle',
+                    'warning': 'exclamation-triangle',
+                    'error': 'exclamation-circle',
+                    'message': 'envelope',
+                    'user': 'user'
+                };
+                return icons[type] || 'bell';
+            }
+            
+            getNotificationColor(type) {
+                const colors = {
+                    'info': 'info',
+                    'success': 'success',
+                    'warning': 'warning',
+                    'error': 'danger',
+                    'message': 'primary',
+                    'user': 'secondary'
+                };
+                return colors[type] || 'primary';
+            }
+            
+            formatTimeAgo(date) {
+                const seconds = Math.floor((new Date() - new Date(date)) / 1000);
+                
+                let interval = Math.floor(seconds / 31536000);
+                if (interval > 1) return interval + " years ago";
+                
+                interval = Math.floor(seconds / 2592000);
+                if (interval > 1) return interval + " months ago";
+                
+                interval = Math.floor(seconds / 86400);
+                if (interval > 1) return interval + " days ago";
+                
+                interval = Math.floor(seconds / 3600);
+                if (interval > 1) return interval + " hours ago";
+                
+                interval = Math.floor(seconds / 60);
+                if (interval > 1) return interval + " minutes ago";
+                
+                return "Just now";
             }
         }
-
-        // Initialize dashboard when page loads
+        
+        // Initialize Dashboard Manager
         document.addEventListener('DOMContentLoaded', () => {
-            new Dashboard();
+            window.dashboardManager = new DashboardManager();
         });
+        
+        // Helper functions
+        function togglePassword(fieldId) {
+            const field = document.getElementById(fieldId);
+            const button = field.nextElementSibling;
+            const icon = button.querySelector('i');
+            
+            if (field.type === 'password') {
+                field.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                field.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+        
+        function addNewTask() {
+            const title = document.getElementById('taskTitle').value;
+            const description = document.getElementById('taskDescription').value;
+            const priority = document.getElementById('taskPriority').value;
+            const dueDate = document.getElementById('taskDueDate').value;
+            
+            // Add task logic here
+            adminSystem.showToast('Task added successfully', 'success');
+            
+            // Close modal
+            bootstrap.Modal.getInstance(document.getElementById('newTaskModal')).hide();
+            
+            // Reset form
+            document.getElementById('newTaskForm').reset();
+        }
     </script>
 </body>
 </html>

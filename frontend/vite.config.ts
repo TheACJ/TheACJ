@@ -10,7 +10,7 @@ export default defineConfig(({ mode }) => ({
   },
   server: {
     host: true, // Listen on all local IPs
-    port: 5174, // Specify default port (optional)
+    port: 5175, // Specify default port (optional)
     proxy: {
       '/api': {
         target: 'https://theacj.alwaysdata.net/',

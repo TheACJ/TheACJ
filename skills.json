@@ -1,0 +1,306 @@
+[
+  {
+    "name": "Python",
+    "level": 95,
+    "icon": "fab fa-python",
+    "category": "Programming Languages",
+    "description": "Data analysis, Django web development, automation, and scripting",
+    "experience": "3+ years"
+  },
+  {
+    "name": "JavaScript",
+    "level": 90,
+    "icon": "fab fa-js",
+    "category": "Programming Languages",
+    "description": "Modern ES6+, React, Node.js, and front-end development",
+    "experience": "3+ years"
+  },
+  {
+    "name": "TypeScript",
+    "level": 88,
+    "icon": "fab fa-js-square",
+    "category": "Programming Languages",
+    "description": "Type-safe JavaScript development, React, and Node.js applications",
+    "experience": "2+ years"
+  },
+  {
+    "name": "React",
+    "level": 88,
+    "icon": "fab fa-react",
+    "category": "Frontend Frameworks",
+    "description": "Modern React with hooks, context API, and component-based architecture",
+    "experience": "2+ years"
+  },
+  {
+    "name": "Node.js",
+    "level": 85,
+    "icon": "fab fa-node-js",
+    "category": "Backend Technologies",
+    "description": "Server-side JavaScript, Express.js, and API development",
+    "experience": "2+ years"
+  },
+  {
+    "name": "Django",
+    "level": 80,
+    "icon": "fab fa-django",
+    "category": "Backend Technologies",
+    "description": "Python web framework for rapid development and clean design",
+    "experience": "2+ years"
+  },
+  {
+    "name": "MongoDB",
+    "level": 80,
+    "icon": "fas fa-database",
+    "category": "Databases",
+    "description": "NoSQL database design, aggregation pipelines, and MongoDB Atlas",
+    "experience": "2+ years"
+  },
+  {
+    "name": "HTML5",
+    "level": 92,
+    "icon": "fab fa-html5",
+    "category": "Frontend Technologies",
+    "description": "Semantic HTML5, accessibility, and modern markup practices",
+    "experience": "3+ years"
+  },
+  {
+    "name": "CSS3",
+    "level": 90,
+    "icon": "fab fa-css3-alt",
+    "category": "Frontend Technologies",
+    "description": "Modern CSS3, flexbox, grid, animations, and responsive design",
+    "experience": "3+ years"
+  },
+  {
+    "name": "Tailwind CSS",
+    "level": 85,
+    "icon": "fab fa-tailwind",
+    "category": "Frontend Technologies",
+    "description": "Utility-first CSS framework for rapid UI development",
+    "experience": "2+ years"
+  },
+  {
+    "name": "Bootstrap",
+    "level": 75,
+    "icon": "fab fa-bootstrap",
+    "category": "Frontend Technologies",
+    "description": "CSS framework for responsive web design and components",
+    "experience": "2+ years"
+  },
+  {
+    "name": "Git",
+    "level": 92,
+    "icon": "fab fa-git-alt",
+    "category": "Version Control",
+    "description": "Git version control, branching strategies, and collaboration workflows",
+    "experience": "3+ years"
+  },
+  {
+    "name": "GitHub",
+    "level": 90,
+    "icon": "fab fa-github",
+    "category": "Version Control",
+    "description": "GitHub workflows, repositories, and collaborative development",
+    "experience": "3+ years"
+  },
+  {
+    "name": "Express.js",
+    "level": 82,
+    "icon": "fab fa-node-js",
+    "category": "Backend Technologies",
+    "description": "Node.js web application framework for RESTful APIs",
+    "experience": "2+ years"
+  },
+  {
+    "name": "RESTful APIs",
+    "level": 85,
+    "icon": "fas fa-server",
+    "category": "Backend Technologies",
+    "description": "API design, implementation, and documentation best practices",
+    "experience": "2+ years"
+  },
+  {
+    "name": "GraphQL",
+    "level": 75,
+    "icon": "fas fa-project-diagram",
+    "category": "Backend Technologies",
+    "description": "Query language and runtime for APIs with GraphQL Apollo",
+    "experience": "1+ years"
+  },
+  {
+    "name": "PostgreSQL",
+    "level": 78,
+    "icon": "fas fa-database",
+    "category": "Databases",
+    "description": "Relational database design, queries, and optimization",
+    "experience": "2+ years"
+  },
+  {
+    "name": "MySQL",
+    "level": 75,
+    "icon": "fas fa-database",
+    "category": "Databases",
+    "description": "Database management and SQL query optimization",
+    "experience": "2+ years"
+  },
+  {
+    "name": "Redis",
+    "level": 70,
+    "icon": "fas fa-database",
+    "category": "Databases",
+    "description": "In-memory data structure store for caching and sessions",
+    "experience": "1+ years"
+  },
+  {
+    "name": "Docker",
+    "level": 68,
+    "icon": "fab fa-docker",
+    "category": "DevOps",
+    "description": "Containerization and Docker for application deployment",
+    "experience": "1+ years"
+  },
+  {
+    "name": "AWS",
+    "level": 65,
+    "icon": "fab fa-aws",
+    "category": "Cloud Services",
+    "description": "Amazon Web Services for deployment and cloud infrastructure",
+    "experience": "1+ years"
+  },
+  {
+    "name": "Pandas",
+    "level": 85,
+    "icon": "fas fa-chart-line",
+    "category": "Data Science",
+    "description": "Python library for data manipulation and analysis",
+    "experience": "2+ years"
+  },
+  {
+    "name": "NumPy",
+    "level": 82,
+    "icon": "fas fa-calculator",
+    "category": "Data Science",
+    "description": "Python library for numerical computing and array operations",
+    "experience": "2+ years"
+  },
+  {
+    "name": "Matplotlib",
+    "level": 78,
+    "icon": "fas fa-chart-bar",
+    "category": "Data Science",
+    "description": "Python plotting library for data visualization",
+    "experience": "2+ years"
+  },
+  {
+    "name": "Jupyter",
+    "level": 80,
+    "icon": "fas fa-code",
+    "category": "Data Science",
+    "description": "Interactive data analysis and notebook development",
+    "experience": "2+ years"
+  },
+  {
+    "name": "Excel",
+    "level": 88,
+    "icon": "fas fa-file-excel",
+    "category": "Data Analysis",
+    "description": "Advanced Excel for data analysis, pivot tables, and visualization",
+    "experience": "3+ years"
+  },
+  {
+    "name": "R",
+    "level": 70,
+    "icon": "fas fa-chart-line",
+    "category": "Data Science",
+    "description": "Statistical computing and graphics programming language",
+    "experience": "1+ years"
+  },
+  {
+    "name": "SQL",
+    "level": 85,
+    "icon": "fas fa-database",
+    "category": "Databases",
+    "description": "Structured Query Language for database management",
+    "experience": "3+ years"
+  },
+  {
+    "name": "Solidity",
+    "level": 65,
+    "icon": "fab fa-ethereum",
+    "category": "Blockchain",
+    "description": "Smart contract development for Ethereum blockchain",
+    "experience": "1+ years"
+  },
+  {
+    "name": "Web3",
+    "level": 60,
+    "icon": "fas fa-link",
+    "category": "Blockchain",
+    "description": "Decentralized web technologies and DApp development",
+    "experience": "1+ years"
+  },
+  {
+    "name": "Progressive Web Apps",
+    "level": 75,
+    "icon": "fas fa-mobile-alt",
+    "category": "Frontend Technologies",
+    "description": "PWAs, service workers, and offline functionality",
+    "experience": "1+ years"
+  },
+  {
+    "name": "Responsive Design",
+    "level": 90,
+    "icon": "fas fa-mobile-alt",
+    "category": "Frontend Technologies",
+    "description": "Mobile-first responsive web design principles",
+    "experience": "3+ years"
+  },
+  {
+    "name": "API Development",
+    "level": 85,
+    "icon": "fas fa-cogs",
+    "category": "Backend Technologies",
+    "description": "RESTful API design, implementation, and testing",
+    "experience": "2+ years"
+  },
+  {
+    "name": "Full-Stack Development",
+    "level": 85,
+    "icon": "fas fa-code",
+    "category": "Full-Stack",
+    "description": "End-to-end application development from frontend to backend",
+    "experience": "3+ years"
+  },
+  {
+    "name": "Data Visualization",
+    "level": 82,
+    "icon": "fas fa-chart-pie",
+    "category": "Data Science",
+    "description": "Creating interactive charts and dashboards for data insights",
+    "experience": "2+ years"
+  },
+  {
+    "name": "Problem Solving",
+    "level": 90,
+    "icon": "fas fa-lightbulb",
+    "category": "Soft Skills",
+    "description": "Analytical thinking and creative problem-solving approaches",
+    "experience": "3+ years"
+  },
+  {
+    "name": "Project Management",
+    "level": 78,
+    "icon": "fas fa-tasks",
+    "category": "Soft Skills",
+    "description": "Agile methodologies and project coordination",
+    "experience": "2+ years"
+  },
+  {
+    "name": "Team Collaboration",
+    "level": 85,
+    "icon": "fas fa-users",
+    "category": "Soft Skills",
+    "description": "Working effectively in team environments and code reviews",
+    "experience": "3+ years"
+  }
+]

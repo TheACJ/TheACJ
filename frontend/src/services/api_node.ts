@@ -85,13 +85,18 @@ export interface ResetPasswordRequest {
 // ========================================
 
 // Hero Section
-export interface HeroSection {
+export interface HeroSlide {
   title: string;
   subtitle: string;
   description: string;
-  image: string;
-  ctaText: string;
-  ctaLink: string;
+  bgImage: string;
+  buttonText: string;
+  buttonIcon: string;
+  buttonLink: string;
+}
+
+export interface HeroSection {
+  slides: HeroSlide[];
   socialLinks: SocialLink[];
 }
 

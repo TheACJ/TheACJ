@@ -1,59 +1,51 @@
-// The Flip - 3D rotation transition effect
+// The Flip - 3D rotation transition effect using MongoDB data
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import slider1 from '../assets/img/theacj.jpg';
-import slider2 from '../assets/img/data_analytics.jpg';
-import slider3 from '../assets/img/web2.jpg';
-import slider4 from '../assets/img/Web3.webp';
+import { useContent } from '../hooks/useContent';
 import mycv from '../assets/JoshuaAgbai.pdf'
 import "../assets/style.css"
 
 const Hero = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const { content, loading } = useContent();
   
-  const slides = [
-    {
-      title: "Hi!",
-      subtitle: "The ACJ",
-      description: "With us Tech Emancipation is achievable",
-      bgImage: slider1,
-      buttonText: <a href={mycv} download="TheACJ.pdf">View CV</a>,
-      buttonIcon: "icon-download"
-    },
-    {
-      title: "I am a",
-      subtitle: "Data Analyst",
-      description: "Where there is Data, The ACJ will make sense of it",
-      bgImage: slider2,
-      buttonText: <a href='#work'>View Portfolio</a>,
-      buttonIcon: "icon-briefcase"
-    },
-    {
-      title: "I am a",
-      subtitle: "Web2 Developer",
-      description: "Imagine it, The ACJ will make it real",
-      bgImage: slider3,
-      buttonText: <a href='#work'>View Portfolio</a>,
-      buttonIcon: "icon-briefcase"
-    },
-    {
-      title: "I am a",
-      subtitle: "Web3 Developer",
-      description: "Building worldclass solution using Blockchain Technology",
-      bgImage: slider4,
-      buttonText: <a href='#work'>View Portfolio</a>,
-      buttonIcon: "icon-briefcase"
-    }
-  ];
+  // Use slides from MongoDB, fallback to empty array if loading or no data
+  const slides = content.hero.slides || [];
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % slides.length);
-    }, 5000);
+    if (slides.length > 0) {
+      const timer = setInterval(() => {
+        setCurrentSlide((prev) => (prev + 1) % slides.length);
+      }, 5000);
 
-    return () => clearInterval(timer);
-  }, []);
+      return () => clearInterval(timer);
+    }
+  }, [slides.length]);
+
+  // Show loading state while content is being fetched
+  if (loading) {
+    return (
+      <section id="home" className="relative h-screen overflow-hidden dark:bg-gray-900 dark:text-[#b9b8b8] flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
+        <span className="ml-4 text-white">Loading hero content from MongoDB...</span>
+      </section>
+    );
+  }
+
+  // Show error state if no slides available
+  if (slides.length === 0) {
+    return (
+      <section id="home" className="relative h-screen overflow-hidden dark:bg-gray-900 dark:text-[#b9b8b8] flex items-center justify-center">
+        <div className="text-center text-white">
+          <h2 className="text-2xl mb-4">No Hero Slides Available</h2>
+          <p className="text-lg">Please check your MongoDB content sections.</p>
+        </div>
+      </section>
+    );
+  }
+
+  const currentSlideData = slides[currentSlide];
 
   return (
     <section id="home" className="relative h-screen overflow-hidden dark:bg-gray-900 dark:text-[#b9b8b8]" style={{ perspective: '1000px' }}>
@@ -65,7 +57,7 @@ const Hero = () => {
             initial={{ rotateY: 90, opacity: 0 }}
             animate={{ rotateY: 0, opacity: 1 }}
             exit={{ rotateY: -90, opacity: 0 }}
-            transition={{ 
+            transition={{
               type: "tween",
               duration: 0.8,
               ease: "easeInOut"
@@ -75,8 +67,8 @@ const Hero = () => {
           >
             <div
               className="absolute inset-0 bg-cover bg-center"
-              style={{ 
-                backgroundImage: `url(${slides[currentSlide].bgImage})`,
+              style={{
+                backgroundImage: `url(${currentSlideData.bgImage})`,
                 backfaceVisibility: 'hidden'
               }}
             >
@@ -94,7 +86,7 @@ const Hero = () => {
             initial={{ rotateX: 90, opacity: 0, y: 50 }}
             animate={{ rotateX: 0, opacity: 1, y: 0 }}
             exit={{ rotateX: -90, opacity: 0, y: -50 }}
-            transition={{ 
+            transition={{
               duration: 0.6,
               delay: 0.2,
               ease: "easeOut"
@@ -108,8 +100,8 @@ const Hero = () => {
               transition={{ delay: 0.3, duration: 0.5 }}
             >
               <h1 className="text-5xl md:text-6xl font-bold text-white mb-4">
-                {slides[currentSlide].title} <br />
-                <span>{slides[currentSlide].subtitle}</span>
+                {currentSlideData.title} <br />
+                <span>{currentSlideData.subtitle}</span>
               </h1>
             </motion.div>
 
@@ -119,16 +111,16 @@ const Hero = () => {
               transition={{ delay: 0.4, duration: 0.5 }}
             >
               <h2 className="text-xl md:text-2xl text-white/90 mb-8">
-                {slides[currentSlide].description}
+                {currentSlideData.description}
               </h2>
             </motion.div>
 
-            <motion.button 
+            <motion.button
               initial={{ rotateX: 45, opacity: 0 }}
               animate={{ rotateX: 0, opacity: 1 }}
               transition={{ delay: 0.5, duration: 0.5 }}
               className="px-6 py-3 border-2 border-transparent text-white bg-gradient-to-r from-primary to-secondary hover:scale-105 relative overflow-hidden"
-              whileHover={{ 
+              whileHover={{
                 scale: 1.05,
                 transition: { duration: 0.2 }
               }}
@@ -139,8 +131,17 @@ const Hero = () => {
                 transformStyle: 'preserve-3d'
               }}
             >
-              {slides[currentSlide].buttonText}&nbsp;
-              <span className={slides[currentSlide].buttonIcon}></span>
+              {/* Handle different button types from MongoDB */}
+              {currentSlideData.buttonLink?.includes('.pdf') ? (
+                <a href={currentSlideData.buttonLink} download="TheACJ.pdf" className="block">
+                  {currentSlideData.buttonText || 'View CV'}
+                </a>
+              ) : (
+                <>
+                  {currentSlideData.buttonText || 'View Portfolio'}
+                  {currentSlideData.buttonIcon && <span className={currentSlideData.buttonIcon}></span>}
+                </>
+              )}
             </motion.button>
           </motion.div>
         </AnimatePresence>

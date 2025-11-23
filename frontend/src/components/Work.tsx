@@ -5,7 +5,7 @@ import WorkModal from './WorkModal';
 import toast from 'react-hot-toast';
 
 const Work = () => {
-  const categories = ['Web App', 'Data Science / Analytics', 'Web3 Dev'];
+  const categories = ['Web App', 'Smart Contracts', 'Mobile App'];
   
   const [works, setWorks] = useState<WorkItem[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>(categories[0]);

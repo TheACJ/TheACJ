@@ -1,74 +1,13 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { contentService, type ContentSections } from '../services/api_node';
 
-// Default content values (preserving existing content)
-const DEFAULT_CONTENT: ContentSections = {
-  hero: {
-    title: "Joshua Agbai",
-    subtitle: "Data Analyst & Web Developer",
-    description: "Transforming data into insights and building exceptional web experiences with modern technologies and innovative solutions.",
-    image: "/assets/img/theacj.jpg",
-    ctaText: "Explore My Work",
-    ctaLink: "#work",
-    socialLinks: [
-      { platform: "GitHub", url: "https://github.com/TheACJ", icon: "fab fa-github" },
-      { platform: "LinkedIn", url: "https://linkedin.com/in/joshuaagbai", icon: "fab fa-linkedin" },
-      { platform: "Twitter", url: "https://twitter.com/realACJoshua", icon: "fab fa-twitter" }
-    ]
-  },
-  about: {
-    title: "About Me",
-    description: "I'm a passionate Data Analyst and Web Developer with expertise in transforming complex data into actionable insights and creating responsive web applications. With experience in Python, JavaScript, and modern frameworks, I bridge the gap between data science and web development.",
-    image: "/assets/img/about.jpg",
-    achievements: [
-      "3+ Years of Data Analysis Experience",
-      "50+ Projects Completed",
-      "Multiple Technology Certifications",
-      "Full-Stack Development Expertise"
-    ]
-  },
-  services: [
-    {
-      title: "Data Analysis",
-      description: "Transform raw data into meaningful insights using Python, Pandas, NumPy, and visualization tools.",
-      icon: "fas fa-chart-bar",
-      order: 1
-    },
-    {
-      title: "Web Development",
-      description: "Build responsive, modern web applications using React, Node.js, and cutting-edge technologies.",
-      icon: "fas fa-code",
-      order: 2
-    },
-    {
-      title: "Blockchain Development",
-      description: "Develop decentralized applications and smart contracts using Solidity and Web3 technologies.",
-      icon: "fas fa-link",
-      order: 3
-    },
-    {
-      title: "API Development",
-      description: "Create robust and scalable RESTful APIs and GraphQL services for modern applications.",
-      icon: "fas fa-cogs",
-      order: 4
-    }
-  ],
-  counter: [
-    { title: "Projects Completed", value: "50+", icon: "fas fa-project-diagram" },
-    { title: "Happy Clients", value: "30+", icon: "fas fa-smile" },
-    { title: "Years Experience", value: "3+", icon: "fas fa-calendar" },
-    { title: "Technologies", value: "15+", icon: "fas fa-laptop-code" }
-  ],
-  skills: [
-    { name: "Python", level: 95, icon: "fab fa-python" },
-    { name: "JavaScript", level: 90, icon: "fab fa-js" },
-    { name: "React", level: 88, icon: "fab fa-react" },
-    { name: "Node.js", level: 85, icon: "fab fa-node-js" },
-    { name: "MongoDB", level: 80, icon: "fas fa-database" },
-    { name: "Django", level: 75, icon: "fab fa-django" },
-    { name: "TypeScript", level: 82, icon: "fab fa-js-square" },
-    { name: "Git", level: 92, icon: "fab fa-git-alt" }
-  ]
+// Empty content structure for when MongoDB is unavailable
+const EMPTY_CONTENT: ContentSections = {
+  hero: { slides: [], socialLinks: [] },
+  about: { title: '', description: '', image: '', achievements: [] },
+  services: [],
+  counter: [],
+  skills: []
 };
 
 interface ContentContextType {
@@ -85,7 +24,7 @@ interface ContentProviderProps {
 }
 
 export const ContentProvider: React.FC<ContentProviderProps> = ({ children }) => {
-  const [content, setContent] = useState<ContentSections>(DEFAULT_CONTENT);
+  const [content, setContent] = useState<ContentSections>(EMPTY_CONTENT);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -94,30 +33,59 @@ export const ContentProvider: React.FC<ContentProviderProps> = ({ children }) =>
       setLoading(true);
       setError(null);
 
+      console.log('🔍 [useContent] Loading content from MongoDB API...');
+      console.log('🔍 [useContent] API URL:', import.meta.env.VITE_API_URL || 'http://localhost:5000/api');
+      
       const response = await contentService.getPublicContent();
+      
+      console.log('📡 [useContent] API Response received:', response);
 
       if (response.success && response.data) {
-        // Merge with defaults to ensure all sections are present
-        const mergedContent: ContentSections = {
-          hero: { ...DEFAULT_CONTENT.hero, ...response.data.hero },
-          about: { ...DEFAULT_CONTENT.about, ...response.data.about },
-          services: response.data.services?.length ? response.data.services : DEFAULT_CONTENT.services,
-          counter: response.data.counter?.length ? response.data.counter : DEFAULT_CONTENT.counter,
-          skills: response.data.skills?.length ? response.data.skills : DEFAULT_CONTENT.skills
-        };
+        console.log('✅ [useContent] Content loaded successfully from MongoDB!');
+        
+        // Log the content structure
+        console.log('🎯 [useContent] MongoDB Content structure:');
+        console.log('  - Hero slides:', response.data.hero?.slides?.length || 0);
+        console.log('  - About section:', response.data.about?.title ? '✅' : '❌');
+        console.log('  - Services:', response.data.services?.length || 0);
+        console.log('  - Skills:', response.data.skills?.length || 0);
+        console.log('  - Counter items:', response.data.counter?.length || 0);
+        
+        // Validate that we have essential content sections
+        if (!response.data.hero?.slides || response.data.hero.slides.length === 0) {
+          throw new Error('No hero slides found in MongoDB');
+        }
+        
+        if (!response.data.skills || response.data.skills.length === 0) {
+          throw new Error('No skills found in MongoDB');
+        }
 
-        setContent(mergedContent);
+        console.log('📦 [useContent] Using MongoDB content exclusively');
+        setContent(response.data);
+        
+        // Log successful load
+        console.log('🎉 [useContent] MongoDB content state updated successfully!');
+        
       } else {
-        // Use defaults if API fails
-        setContent(DEFAULT_CONTENT);
+        const errorMsg = response.error || 'API response missing data';
+        console.error('❌ [useContent] Invalid API response:', errorMsg);
+        throw new Error(errorMsg);
       }
     } catch (err) {
-      console.warn('Failed to load content from API, using defaults:', err);
-      setError(err instanceof Error ? err.message : 'Failed to load content');
-      // Keep defaults on error
-      setContent(DEFAULT_CONTENT);
+      console.error('❌ [useContent] Failed to load content from MongoDB:', err);
+      console.error('❌ [useContent] Error details:', {
+        message: err instanceof Error ? err.message : 'Unknown error',
+        stack: err instanceof Error ? err.stack : undefined
+      });
+      setError(err instanceof Error ? err.message : 'Failed to load content from MongoDB');
+      
+      // Set empty content instead of fallback defaults
+      setContent(EMPTY_CONTENT);
+      
+      console.warn('⚠️ [useContent] Using empty content - MongoDB data required for frontend to display properly');
     } finally {
       setLoading(false);
+      console.log('🏁 [useContent] Content loading finished');
     }
   };
 
