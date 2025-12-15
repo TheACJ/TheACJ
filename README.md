@@ -36,15 +36,7 @@ To build solutions that **inspire, educate, and create lasting impact**, whether
 
 ## **Featured Projects** 📂  
 
-### **DacSwap Dapp**  
-A **multi-chain cryptocurrency swap platform** with eNaira-USDT conversion.  
-- **Swap Logic**: EVM cryptocurrency swaps to USDT.  
-- **eNaira Conversion**: Bridging local and global currencies.  
-- **Wallet Integration**: Seamless connectivity for users.  
-- **Transaction History**: Comprehensive activity logs.  
-- **Tech Stack**: React, TypeScript, Tailwind CSS, Django, Web3, Axios, Ethers.js.  
-
-🔗 **[GitHub Repository](https://github.com/TheACJ/DacSwap)**  
+ 
 
 ### **Web Development & Education Initiatives**  
 - Built a **website for a Nigerian rural area school**.  
