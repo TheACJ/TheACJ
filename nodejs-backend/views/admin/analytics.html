@@ -1,0 +1,936 @@
+<!-- views/admin/analytics.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Traffic Analytics - The ACJ Portfolio Admin">
+    <title>Traffic Analytics - The ACJ Portfolio Admin</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Icons & Libraries -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/apexcharts@3.35.0/dist/apexcharts.min.css">
+    
+    <!-- Custom CSS -->
+    <link href="/assets/admin.css" rel="stylesheet">
+    
+    <style>
+        /* Analytics Specific Styles */
+        .analytics-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 1rem;
+            padding: 2rem;
+            color: white;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+            border-left: 4px solid;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+        
+        .stat-card.primary { border-left-color: #667eea; }
+        .stat-card.success { border-left-color: #10b981; }
+        .stat-card.warning { border-left-color: #f59e0b; }
+        .stat-card.info { border-left-color: #3b82f6; }
+        .stat-card.danger { border-left-color: #ef4444; }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 0.5rem 0;
+        }
+        
+        .stat-label {
+            color: #6b7280;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .stat-change {
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+        
+        .stat-change.positive { color: #10b981; }
+        .stat-change.negative { color: #ef4444; }
+        
+        .chart-container {
+            background: white;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .visitor-table {
+            background: white;
+            border-radius: 0.75rem;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .visitor-table table {
+            margin: 0;
+        }
+        
+        .visitor-table thead {
+            background: #f9fafb;
+        }
+        
+        .visitor-table th {
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+            color: #6b7280;
+            padding: 1rem;
+            border-bottom: 2px solid #e5e7eb;
+        }
+        
+        .visitor-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+            vertical-align: middle;
+        }
+        
+        .visitor-table tbody tr:hover {
+            background: #f9fafb;
+        }
+        
+        .badge-custom {
+            padding: 0.375rem 0.75rem;
+            border-radius: 0.375rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .ip-address {
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+            color: #1f2937;
+        }
+        
+        .device-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        
+        .filter-controls {
+            background: white;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(0,0,0,0.1);
+            border-radius: 50%;
+            border-top-color: #667eea;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #6b7280;
+        }
+        
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/admin/dashboard">
+                <i class="fas fa-chart-line me-2"></i>
+                Analytics Dashboard
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/dashboard">
+                            <i class="fas fa-home me-1"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/admin/analytics">
+                            <i class="fas fa-chart-line me-1"></i> Analytics
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/logout" onclick="logout()">
+                            <i class="fas fa-sign-out-alt me-1"></i> Logout
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid mt-4">
+        <!-- Header -->
+        <div class="analytics-header">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="mb-2">
+                        <i class="fas fa-chart-line me-2"></i>
+                        Traffic Analytics
+                    </h1>
+                    <p class="mb-0 opacity-75">Comprehensive traffic overview and visitor insights</p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <button class="btn btn-light" onclick="refreshData()">
+                        <i class="fas fa-sync-alt me-2"></i> Refresh
+                    </button>
+                    <button class="btn btn-light ms-2" onclick="exportData()">
+                        <i class="fas fa-download me-2"></i> Export
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter Controls -->
+        <div class="filter-controls">
+            <div class="row g-3 align-items-end">
+                <div class="col-md-3">
+                    <label class="form-label">Time Period</label>
+                    <select class="form-select" id="periodSelect" onchange="loadData()">
+                        <option value="24h">Last 24 Hours</option>
+                        <option value="7d" selected>Last 7 Days</option>
+                        <option value="30d">Last 30 Days</option>
+                        <option value="90d">Last 90 Days</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Search IP Address</label>
+                    <input type="text" class="form-control" id="ipSearch" placeholder="Enter IP address..." onkeyup="debounceSearch()">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Items Per Page</label>
+                    <select class="form-select" id="limitSelect" onchange="loadVisitors()">
+                        <option value="25">25</option>
+                        <option value="50" selected>50</option>
+                        <option value="100">100</option>
+                    </select>
+                </div>
+                <div class="col-md-4 text-end">
+                    <button class="btn btn-primary" onclick="loadData()">
+                        <i class="fas fa-filter me-2"></i> Apply Filters
+                    </button>
+                    <button class="btn btn-outline-secondary ms-2" onclick="resetFilters()">
+                        <i class="fas fa-redo me-2"></i> Reset
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Summary Stats -->
+        <div class="row g-4 mb-4" id="summaryStats">
+            <div class="col-md-3">
+                <div class="stat-card primary">
+                    <div class="stat-label">Total Page Views</div>
+                    <div class="stat-value" id="totalPageViews">-</div>
+                    <div class="stat-change">
+                        <i class="fas fa-chart-line me-1"></i>
+                        <span id="pageViewsChange">-</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card success">
+                    <div class="stat-label">Unique Visitors</div>
+                    <div class="stat-value" id="uniqueVisitors">-</div>
+                    <div class="stat-change">
+                        <i class="fas fa-users me-1"></i>
+                        <span id="visitorsChange">-</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card info">
+                    <div class="stat-label">Unique Sessions</div>
+                    <div class="stat-value" id="uniqueSessions">-</div>
+                    <div class="stat-change">
+                        <i class="fas fa-clock me-1"></i>
+                        <span id="sessionsChange">-</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card warning">
+                    <div class="stat-label">Bounce Rate</div>
+                    <div class="stat-value" id="bounceRate">-</div>
+                    <div class="stat-change">
+                        <i class="fas fa-percentage me-1"></i>
+                        <span id="bounceRateChange">-</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-6">
+                <div class="chart-container">
+                    <h5 class="mb-3">
+                        <i class="fas fa-chart-area me-2"></i>
+                        Traffic Over Time
+                    </h5>
+                    <div id="trafficChart"></div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="chart-container">
+                    <h5 class="mb-3">
+                        <i class="fas fa-clock me-2"></i>
+                        Hourly Distribution
+                    </h5>
+                    <div id="hourlyChart"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Breakdown Charts -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-4">
+                <div class="chart-container">
+                    <h5 class="mb-3">
+                        <i class="fas fa-mobile-alt me-2"></i>
+                        Device Types
+                    </h5>
+                    <div id="deviceChart"></div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="chart-container">
+                    <h5 class="mb-3">
+                        <i class="fas fa-globe me-2"></i>
+                        Browsers
+                    </h5>
+                    <div id="browserChart"></div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="chart-container">
+                    <h5 class="mb-3">
+                        <i class="fas fa-laptop me-2"></i>
+                        Operating Systems
+                    </h5>
+                    <div id="osChart"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Top Pages and Referrers -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-6">
+                <div class="chart-container">
+                    <h5 class="mb-3">
+                        <i class="fas fa-file-alt me-2"></i>
+                        Top Pages
+                    </h5>
+                    <div id="topPagesList"></div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="chart-container">
+                    <h5 class="mb-3">
+                        <i class="fas fa-external-link-alt me-2"></i>
+                        Top Referrers
+                    </h5>
+                    <div id="topReferrersList"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Visitors by IP Address -->
+        <div class="visitor-table">
+            <div class="p-3 border-bottom bg-light">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <h5 class="mb-0">
+                            <i class="fas fa-list me-2"></i>
+                            Visitors by IP Address
+                        </h5>
+                    </div>
+                    <div class="col-md-6 text-end">
+                        <span class="text-muted" id="visitorCount">Loading...</span>
+                    </div>
+                </div>
+            </div>
+            <div id="visitorsTableContainer">
+                <div class="text-center p-5">
+                    <div class="loading-spinner"></div>
+                    <p class="mt-3 text-muted">Loading visitors...</p>
+                </div>
+            </div>
+            <div class="p-3 border-top bg-light" id="paginationContainer"></div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3"></div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.35.0/dist/apexcharts.min.js"></script>
+    <script src="/assets/admin.js"></script>
+    
+    <script>
+        // Analytics Dashboard
+        class AnalyticsDashboard {
+            constructor() {
+                this.currentPeriod = '7d';
+                this.currentPage = 1;
+                this.currentLimit = 50;
+                this.searchQuery = '';
+                this.charts = {};
+                this.debounceTimer = null;
+                
+                this.init();
+            }
+            
+            async init() {
+                await this.checkAuth();
+                this.setupEventListeners();
+                await this.loadData();
+            }
+            
+            async checkAuth() {
+                const token = localStorage.getItem('adminToken');
+                if (!token) {
+                    window.location.href = '/admin/login';
+                    return;
+                }
+            }
+            
+            setupEventListeners() {
+                // Period selector
+                document.getElementById('periodSelect').addEventListener('change', (e) => {
+                    this.currentPeriod = e.target.value;
+                    this.loadData();
+                });
+                
+                // Limit selector
+                document.getElementById('limitSelect').addEventListener('change', (e) => {
+                    this.currentLimit = parseInt(e.target.value);
+                    this.currentPage = 1;
+                    this.loadVisitors();
+                });
+            }
+            
+            async loadData() {
+                try {
+                    this.showLoading();
+                    
+                    const token = localStorage.getItem('adminToken');
+                    if (!token) {
+                        window.location.href = '/admin/login';
+                        return;
+                    }
+                    
+                    const period = this.currentPeriod;
+                    const headers = {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    };
+                    
+                    // Load traffic overview
+                    const overviewResponse = await fetch(`/api/admin/dashboard/traffic-overview?period=${period}`, {
+                        headers,
+                        credentials: 'include'
+                    });
+                    
+                    if (!overviewResponse.ok) {
+                        if (overviewResponse.status === 401) {
+                            window.location.href = '/admin/login';
+                            return;
+                        }
+                        throw new Error('Failed to load traffic overview');
+                    }
+                    
+                    const overviewData = await overviewResponse.json();
+                    
+                    if (overviewData.success) {
+                        this.updateSummaryStats(overviewData.data);
+                        this.updateCharts(overviewData.data);
+                        this.updateTopPages(overviewData.data.topPages);
+                    }
+                    
+                    // Load referrers
+                    const referrersResponse = await fetch(`/api/admin/dashboard/analytics/referrers?period=${period}`, {
+                        headers,
+                        credentials: 'include'
+                    });
+                    
+                    if (referrersResponse.ok) {
+                        const referrersData = await referrersResponse.json();
+                        if (referrersData.success) {
+                            this.updateTopReferrers(referrersData.data.referrers);
+                        }
+                    }
+                    
+                    // Load visitors
+                    await this.loadVisitors();
+                    
+                } catch (error) {
+                    console.error('Error loading data:', error);
+                    this.showToast('Error loading analytics data', 'error');
+                }
+            }
+            
+            updateSummaryStats(data) {
+                const summary = data.summary;
+                
+                document.getElementById('totalPageViews').textContent = this.formatNumber(summary.totalPageViews);
+                document.getElementById('uniqueVisitors').textContent = this.formatNumber(summary.uniqueVisitors);
+                document.getElementById('uniqueSessions').textContent = this.formatNumber(summary.uniqueSessions);
+                document.getElementById('bounceRate').textContent = summary.bounceRate + '%';
+                
+                // Update changes (mock for now)
+                document.getElementById('pageViewsChange').textContent = 'Active';
+                document.getElementById('visitorsChange').textContent = 'Active';
+                document.getElementById('sessionsChange').textContent = 'Active';
+                document.getElementById('bounceRateChange').textContent = 'Active';
+            }
+            
+            updateCharts(data) {
+                // Traffic over time chart
+                if (data.hourlyDistribution && data.hourlyDistribution.length > 0) {
+                    const trafficOptions = {
+                        series: [{
+                            name: 'Page Views',
+                            data: data.hourlyDistribution.map(h => h.count)
+                        }],
+                        chart: {
+                            type: 'area',
+                            height: 300,
+                            toolbar: { show: false }
+                        },
+                        xaxis: {
+                            categories: data.hourlyDistribution.map(h => h.hour + ':00'),
+                            labels: { rotate: -45 }
+                        },
+                        colors: ['#667eea'],
+                        fill: {
+                            type: 'gradient',
+                            gradient: {
+                                shadeIntensity: 1,
+                                opacityFrom: 0.7,
+                                opacityTo: 0.3
+                            }
+                        }
+                    };
+                    
+                    if (this.charts.traffic) {
+                        this.charts.traffic.updateOptions(trafficOptions);
+                    } else {
+                        this.charts.traffic = new ApexCharts(document.querySelector("#trafficChart"), trafficOptions);
+                        this.charts.traffic.render();
+                    }
+                }
+                
+                // Hourly distribution chart
+                if (data.hourlyDistribution && data.hourlyDistribution.length > 0) {
+                    const hourlyOptions = {
+                        series: [{
+                            name: 'Visits',
+                            data: data.hourlyDistribution.map(h => h.count)
+                        }],
+                        chart: {
+                            type: 'bar',
+                            height: 300,
+                            toolbar: { show: false }
+                        },
+                        xaxis: {
+                            categories: data.hourlyDistribution.map(h => h.hour + ':00')
+                        },
+                        colors: ['#10b981']
+                    };
+                    
+                    if (this.charts.hourly) {
+                        this.charts.hourly.updateOptions(hourlyOptions);
+                    } else {
+                        this.charts.hourly = new ApexCharts(document.querySelector("#hourlyChart"), hourlyOptions);
+                        this.charts.hourly.render();
+                    }
+                }
+                
+                // Device breakdown
+                if (data.breakdowns && data.breakdowns.devices) {
+                    const deviceOptions = {
+                        series: data.breakdowns.devices.map(d => d.count),
+                        labels: data.breakdowns.devices.map(d => d.type),
+                        chart: {
+                            type: 'donut',
+                            height: 250
+                        },
+                        colors: ['#667eea', '#10b981', '#f59e0b']
+                    };
+                    
+                    if (this.charts.device) {
+                        this.charts.device.updateOptions(deviceOptions);
+                    } else {
+                        this.charts.device = new ApexCharts(document.querySelector("#deviceChart"), deviceOptions);
+                        this.charts.device.render();
+                    }
+                }
+                
+                // Browser breakdown
+                if (data.breakdowns && data.breakdowns.browsers) {
+                    const browserOptions = {
+                        series: data.breakdowns.browsers.map(b => b.count),
+                        labels: data.breakdowns.browsers.map(b => b.browser),
+                        chart: {
+                            type: 'donut',
+                            height: 250
+                        },
+                        colors: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6']
+                    };
+                    
+                    if (this.charts.browser) {
+                        this.charts.browser.updateOptions(browserOptions);
+                    } else {
+                        this.charts.browser = new ApexCharts(document.querySelector("#browserChart"), browserOptions);
+                        this.charts.browser.render();
+                    }
+                }
+                
+                // OS breakdown
+                if (data.breakdowns && data.breakdowns.operatingSystems) {
+                    const osOptions = {
+                        series: data.breakdowns.operatingSystems.map(o => o.count),
+                        labels: data.breakdowns.operatingSystems.map(o => o.os),
+                        chart: {
+                            type: 'donut',
+                            height: 250
+                        },
+                        colors: ['#667eea', '#10b981', '#f59e0b', '#ef4444']
+                    };
+                    
+                    if (this.charts.os) {
+                        this.charts.os.updateOptions(osOptions);
+                    } else {
+                        this.charts.os = new ApexCharts(document.querySelector("#osChart"), osOptions);
+                        this.charts.os.render();
+                    }
+                }
+            }
+            
+            updateTopPages(pages) {
+                const container = document.getElementById('topPagesList');
+                if (!pages || pages.length === 0) {
+                    container.innerHTML = '<div class="empty-state"><i class="fas fa-file-alt"></i><p>No page data available</p></div>';
+                    return;
+                }
+                
+                container.innerHTML = pages.map((page, index) => `
+                    <div class="d-flex justify-content-between align-items-center p-2 border-bottom">
+                        <div>
+                            <span class="badge bg-primary me-2">${index + 1}</span>
+                            <span>${page.page}</span>
+                        </div>
+                        <div class="text-end">
+                            <div class="fw-bold">${this.formatNumber(page.views)}</div>
+                            <small class="text-muted">${this.formatNumber(page.uniqueVisitors)} unique</small>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
+            updateTopReferrers(referrers) {
+                const container = document.getElementById('topReferrersList');
+                if (!referrers || referrers.length === 0) {
+                    container.innerHTML = '<div class="empty-state"><i class="fas fa-external-link-alt"></i><p>No referrer data available</p></div>';
+                    return;
+                }
+                
+                container.innerHTML = referrers.map((ref, index) => `
+                    <div class="d-flex justify-content-between align-items-center p-2 border-bottom">
+                        <div>
+                            <i class="${ref.icon} me-2"></i>
+                            <span>${ref.source}</span>
+                        </div>
+                        <div class="text-end">
+                            <div class="fw-bold">${this.formatNumber(ref.visitors)}</div>
+                            <small class="text-muted">${ref.bounceRate}% bounce</small>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
+            async loadVisitors() {
+                try {
+                    const token = localStorage.getItem('adminToken');
+                    if (!token) {
+                        window.location.href = '/admin/login';
+                        return;
+                    }
+                    
+                    const params = new URLSearchParams({
+                        period: this.currentPeriod,
+                        page: this.currentPage,
+                        limit: this.currentLimit
+                    });
+                    
+                    if (this.searchQuery) {
+                        params.append('search', this.searchQuery);
+                    }
+                    
+                    const response = await fetch(`/api/admin/dashboard/visitors?${params}`, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        credentials: 'include'
+                    });
+                    
+                    if (!response.ok) {
+                        if (response.status === 401) {
+                            window.location.href = '/admin/login';
+                            return;
+                        }
+                        throw new Error('Failed to load visitors');
+                    }
+                    
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        this.renderVisitorsTable(data.data.visitors);
+                        this.renderPagination(data.data.pagination);
+                        document.getElementById('visitorCount').textContent = 
+                            `Showing ${data.data.visitors.length} of ${data.data.pagination.total} visitors`;
+                    }
+                    
+                } catch (error) {
+                    console.error('Error loading visitors:', error);
+                    document.getElementById('visitorsTableContainer').innerHTML = 
+                        '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>Error loading visitors</p></div>';
+                }
+            }
+            
+            renderVisitorsTable(visitors) {
+                const container = document.getElementById('visitorsTableContainer');
+                
+                if (!visitors || visitors.length === 0) {
+                    container.innerHTML = '<div class="empty-state"><i class="fas fa-users"></i><p>No visitors found</p></div>';
+                    return;
+                }
+                
+                container.innerHTML = `
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>IP Address</th>
+                                <th>Page Views</th>
+                                <th>Sessions</th>
+                                <th>Pages Viewed</th>
+                                <th>Device</th>
+                                <th>Browser</th>
+                                <th>OS</th>
+                                <th>First Visit</th>
+                                <th>Last Visit</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${visitors.map(visitor => `
+                                <tr>
+                                    <td>
+                                        <span class="ip-address">${visitor.ipAddress}</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-primary badge-custom">${this.formatNumber(visitor.totalPageViews)}</span>
+                                    </td>
+                                    <td>${this.formatNumber(visitor.uniqueSessions)}</td>
+                                    <td>${visitor.pagesViewed}</td>
+                                    <td>
+                                        ${visitor.devices && visitor.devices.length > 0 ? 
+                                            visitor.devices.map(d => `<span class="badge bg-secondary me-1">${d || 'Unknown'}</span>`).join('') : 
+                                            '<span class="text-muted">-</span>'
+                                        }
+                                    </td>
+                                    <td>
+                                        ${visitor.browsers && visitor.browsers.length > 0 ? 
+                                            visitor.browsers.slice(0, 2).map(b => `<span class="badge bg-info me-1">${b || 'Unknown'}</span>`).join('') : 
+                                            '<span class="text-muted">-</span>'
+                                        }
+                                    </td>
+                                    <td>
+                                        ${visitor.os && visitor.os.length > 0 ? 
+                                            visitor.os.slice(0, 2).map(o => `<span class="badge bg-success me-1">${o || 'Unknown'}</span>`).join('') : 
+                                            '<span class="text-muted">-</span>'
+                                        }
+                                    </td>
+                                    <td>
+                                        <small>${this.formatDate(visitor.firstVisit)}</small>
+                                    </td>
+                                    <td>
+                                        <small>${this.formatDate(visitor.lastVisit)}</small>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `;
+            }
+            
+            renderPagination(pagination) {
+                const container = document.getElementById('paginationContainer');
+                
+                if (pagination.pages <= 1) {
+                    container.innerHTML = '';
+                    return;
+                }
+                
+                let paginationHTML = '<nav><ul class="pagination justify-content-center mb-0">';
+                
+                // Previous button
+                paginationHTML += `
+                    <li class="page-item ${pagination.current === 1 ? 'disabled' : ''}">
+                        <a class="page-link" href="#" onclick="dashboard.goToPage(${pagination.current - 1}); return false;">Previous</a>
+                    </li>
+                `;
+                
+                // Page numbers
+                for (let i = 1; i <= pagination.pages; i++) {
+                    if (i === 1 || i === pagination.pages || (i >= pagination.current - 2 && i <= pagination.current + 2)) {
+                        paginationHTML += `
+                            <li class="page-item ${i === pagination.current ? 'active' : ''}">
+                                <a class="page-link" href="#" onclick="dashboard.goToPage(${i}); return false;">${i}</a>
+                            </li>
+                        `;
+                    } else if (i === pagination.current - 3 || i === pagination.current + 3) {
+                        paginationHTML += '<li class="page-item disabled"><span class="page-link">...</span></li>';
+                    }
+                }
+                
+                // Next button
+                paginationHTML += `
+                    <li class="page-item ${pagination.current === pagination.pages ? 'disabled' : ''}">
+                        <a class="page-link" href="#" onclick="dashboard.goToPage(${pagination.current + 1}); return false;">Next</a>
+                    </li>
+                `;
+                
+                paginationHTML += '</ul></nav>';
+                container.innerHTML = paginationHTML;
+            }
+            
+            goToPage(page) {
+                this.currentPage = page;
+                this.loadVisitors();
+            }
+            
+            showLoading() {
+                document.getElementById('totalPageViews').textContent = '-';
+                document.getElementById('uniqueVisitors').textContent = '-';
+                document.getElementById('uniqueSessions').textContent = '-';
+                document.getElementById('bounceRate').textContent = '-';
+            }
+            
+            formatNumber(num) {
+                if (num === null || num === undefined) return '0';
+                return new Intl.NumberFormat().format(num);
+            }
+            
+            formatDate(dateString) {
+                if (!dateString) return '-';
+                const date = new Date(dateString);
+                return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            }
+            
+            showToast(message, type = 'info') {
+                const toastContainer = document.querySelector('.toast-container');
+                const toast = document.createElement('div');
+                toast.className = `toast align-items-center text-white bg-${type === 'error' ? 'danger' : type} border-0`;
+                toast.setAttribute('role', 'alert');
+                toast.innerHTML = `
+                    <div class="d-flex">
+                        <div class="toast-body">${message}</div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                    </div>
+                `;
+                toastContainer.appendChild(toast);
+                const bsToast = new bootstrap.Toast(toast);
+                bsToast.show();
+                toast.addEventListener('hidden.bs.toast', () => toast.remove());
+            }
+        }
+        
+        // Global functions
+        let dashboard;
+        
+        function refreshData() {
+            dashboard.loadData();
+        }
+        
+        function resetFilters() {
+            document.getElementById('periodSelect').value = '7d';
+            document.getElementById('ipSearch').value = '';
+            document.getElementById('limitSelect').value = '50';
+            dashboard.currentPeriod = '7d';
+            dashboard.currentPage = 1;
+            dashboard.currentLimit = 50;
+            dashboard.searchQuery = '';
+            dashboard.loadData();
+        }
+        
+        function debounceSearch() {
+            clearTimeout(dashboard.debounceTimer);
+            dashboard.debounceTimer = setTimeout(() => {
+                dashboard.searchQuery = document.getElementById('ipSearch').value;
+                dashboard.currentPage = 1;
+                dashboard.loadVisitors();
+            }, 500);
+        }
+        
+        function exportData() {
+            dashboard.showToast('Export feature coming soon!', 'info');
+        }
+        
+        function logout() {
+            localStorage.removeItem('adminToken');
+            window.location.href = '/admin/login';
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            dashboard = new AnalyticsDashboard();
+        });
+    </script>
+</body>
+</html>
+

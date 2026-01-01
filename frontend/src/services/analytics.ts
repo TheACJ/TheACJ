@@ -192,24 +192,41 @@ class AnalyticsService {
       this.trackClick(event);
     });
 
-    // Track scroll depth
+    // Track scroll depth with throttling
     let maxScrollDepth = 0;
+    let scrollThrottleTimer: NodeJS.Timeout | null = null;
+    let lastScrollDepth = 0;
+    
     window.addEventListener('scroll', () => {
-      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-      const windowHeight = window.innerHeight;
-      const documentHeight = Math.max(
-        document.body.scrollHeight,
-        document.body.offsetHeight,
-        document.documentElement.clientHeight,
-        document.documentElement.scrollHeight,
-        document.documentElement.offsetHeight
-      );
+      // Throttle scroll events to avoid too many requests
+      if (scrollThrottleTimer) return;
+      
+      scrollThrottleTimer = setTimeout(() => {
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        const windowHeight = window.innerHeight;
+        const documentHeight = Math.max(
+          document.body.scrollHeight,
+          document.body.offsetHeight,
+          document.documentElement.clientHeight,
+          document.documentElement.scrollHeight,
+          document.documentElement.offsetHeight
+        );
 
-      const scrollDepth = Math.round((scrollTop + windowHeight) / documentHeight * 100);
-      if (scrollDepth > maxScrollDepth) {
-        maxScrollDepth = scrollDepth;
-        this.trackScrollDepth(scrollDepth);
-      }
+        const scrollDepth = Math.round((scrollTop + windowHeight) / documentHeight * 100);
+        
+        // Only track if depth increased by at least 5% or reached milestones (25%, 50%, 75%, 100%)
+        const milestones = [25, 50, 75, 100];
+        const isMilestone = milestones.includes(scrollDepth);
+        const significantChange = scrollDepth > maxScrollDepth && (scrollDepth - lastScrollDepth >= 5);
+        
+        if (isMilestone || significantChange) {
+          maxScrollDepth = Math.max(maxScrollDepth, scrollDepth);
+          lastScrollDepth = scrollDepth;
+          this.trackScrollDepth(scrollDepth);
+        }
+        
+        scrollThrottleTimer = null;
+      }, 500); // Throttle to max once per 500ms
     });
 
     // Track beforeunload

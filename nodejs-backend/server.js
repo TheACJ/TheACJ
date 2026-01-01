@@ -57,19 +57,53 @@ app.use(helmet({
   }
 }));
 
-// Rate limiting
+// Rate limiting - exclude analytics endpoints from strict rate limiting
 const limiter = rateLimit({
   windowMs: parseInt(process.env.RATE_LIMIT_WINDOW) * 60 * 1000 || 15 * 60 * 1000, // 15 minutes
   max: parseInt(process.env.RATE_LIMIT_MAX) || 100, // limit each IP to 100 requests per windowMs
-  message: 'Too many requests from this IP, please try again later.'
+  message: 'Too many requests from this IP, please try again later.',
+  skip: (req) => {
+    // Skip rate limiting for analytics endpoints (they have their own limits)
+    return req.path.startsWith('/api/analytics/');
+  }
 });
-app.use(limiter);
+
+// Special rate limiter for analytics endpoints (more lenient)
+const analyticsLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: 200, // Allow more requests for analytics
+  message: 'Too many analytics requests, please slow down.',
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+app.use((req, res, next) => {
+  if (req.path.startsWith('/api/analytics/')) {
+    return analyticsLimiter(req, res, next);
+  }
+  return limiter(req, res, next);
+});
 
 // CORS configuration
 const corsOptions = {
-  origin: process.env.CORS_ORIGIN ? [process.env.CORS_ORIGIN] : ['http://localhost:3000', 'http://localhost:5175'],
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    const allowedOrigins = process.env.CORS_ORIGIN 
+      ? process.env.CORS_ORIGIN.split(',')
+      : ['http://localhost:3000', 'http://localhost:5175', 'http://localhost:5173'];
+    
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(null, true); // Allow all origins for development (change in production)
+    }
+  },
   credentials: true,
-  optionsSuccessStatus: 200
+  optionsSuccessStatus: 200,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin']
 };
 app.use(cors(corsOptions));
 
@@ -135,6 +169,10 @@ app.get('/admin/users', (req, res) => {
 
 app.get('/admin/settings', (req, res) => {
   res.sendFile(path.join(__dirname, 'views/admin/settings.html'));
+});
+
+app.get('/admin/analytics', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views/admin/analytics.html'));
 });
 
 // API routes

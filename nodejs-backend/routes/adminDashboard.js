@@ -100,6 +100,7 @@ router.get('/analytics/traffic', authenticateAdmin, adminDashboardController.get
 router.get('/analytics/content-distribution', authenticateAdmin, adminDashboardController.getContentDistribution);
 router.get('/analytics/referrers', authenticateAdmin, adminDashboardController.getReferrerAnalytics);
 router.get('/traffic-overview', authenticateAdmin, adminDashboardController.getTrafficOverview);
+router.get('/visitors', authenticateAdmin, adminDashboardController.getVisitorsByIP);
 
 // System routes (accessible to all authenticated admins)
 router.get('/system/performance', authenticateAdmin, adminDashboardController.getSystemPerformance);

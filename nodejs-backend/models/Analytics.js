@@ -206,6 +206,10 @@ const sessionSchema = new mongoose.Schema({
     type: String,
     index: true
   },
+  referrerDomain: {
+    type: String,
+    index: true
+  },
   country: {
     type: String,
     index: true
@@ -365,6 +369,7 @@ sessionSchema.index({ startTime: -1, isActive: 1 });
 sessionSchema.index({ ipAddress: 1, startTime: -1 });
 sessionSchema.index({ deviceType: 1, startTime: -1 });
 sessionSchema.index({ referrer: 1, startTime: -1 });
+sessionSchema.index({ referrerDomain: 1, startTime: -1 });
 eventSchema.index({ timestamp: -1, event: 1 });
 conversionSchema.index({ timestamp: -1, type: 1 });
 scrollDepthSchema.index({ timestamp: -1, page: 1 });

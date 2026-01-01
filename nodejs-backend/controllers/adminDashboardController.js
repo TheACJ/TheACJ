@@ -817,6 +817,12 @@ const getSystemPerformance = async (req, res) => {
 const getReferrerAnalytics = async (req, res) => {
    try {
       const { PageView, Session } = require('../models/Analytics');
+      
+      // Validate models exist
+      if (!PageView || !Session) {
+         throw new Error('Analytics models not found');
+      }
+      
       const { period = '30d' } = req.query;
 
       // Calculate date range
@@ -837,75 +843,108 @@ const getReferrerAnalytics = async (req, res) => {
       }
 
       // Get top referrers from page views using referrerDomain
-      const referrerStats = await PageView.aggregate([
-         {
-            $match: {
-               timestamp: { $gte: startDate },
-               referrerDomain: { $ne: null, $ne: '', $exists: true }
+      let referrerStats = [];
+      try {
+         referrerStats = await PageView.aggregate([
+            {
+               $match: {
+                  timestamp: { $gte: startDate },
+                  referrerDomain: { $ne: null, $ne: '', $exists: true }
+               }
+            },
+            {
+               $group: {
+                  _id: '$referrerDomain',
+                  visitors: { $sum: 1 },
+                  uniqueSessions: { $addToSet: '$sessionId' },
+                  uniqueIPs: { $addToSet: '$ipAddress' }
+               }
+            },
+            {
+               $project: {
+                  source: '$_id',
+                  visitors: 1,
+                  uniqueSessions: { $size: '$uniqueSessions' },
+                  uniqueIPs: { $size: '$uniqueIPs' }
+               }
+            },
+            {
+               $sort: { visitors: -1 }
+            },
+            {
+               $limit: 20
             }
-         },
-         {
-            $group: {
-               _id: '$referrerDomain',
-               visitors: { $sum: 1 },
-               uniqueSessions: { $addToSet: '$sessionId' },
-               uniqueIPs: { $addToSet: '$ipAddress' }
-            }
-         },
-         {
-            $project: {
-               source: '$_id',
-               visitors: 1,
-               uniqueSessions: { $size: '$uniqueSessions' },
-               uniqueIPs: { $size: '$uniqueIPs' }
-            }
-         },
-         {
-            $sort: { visitors: -1 }
-         },
-         {
-            $limit: 20
-         }
-      ]);
+         ]);
+      } catch (aggError) {
+         console.error('Error in referrer stats aggregation:', aggError);
+         referrerStats = [];
+      }
 
-         // Calculate bounce rates for each referrer
-         const referrersWithBounce = await Promise.all(
-            referrerStats.map(async (ref) => {
-               // Get sessions that came from this referrer and only viewed one page
-               const singlePageSessions = await Session.aggregate([
-                  {
-                     $match: {
-                        startTime: { $gte: startDate },
-                        referrerDomain: ref.source
-                     }
-                  },
-                  {
-                     $project: {
-                        sessionId: 1,
-                        pageCount: { $size: { $ifNull: ['$pages', []] } }
-                     }
-                  },
-                  {
-                     $match: {
-                        pageCount: { $lte: 1 }
-                     }
-                  }
-               ]);
+      // Calculate bounce rates for each referrer using page views
+      // Use the uniqueSessions count from the aggregation instead of recalculating
+      const referrersWithBounce = await Promise.all(
+         (referrerStats || []).map(async (ref) => {
+            try {
+               if (!ref || !ref.source) {
+                  return null;
+               }
 
-               const totalSessions = ref.uniqueSessions;
+               // Count sessions with only one page view (bounced) for this referrer
+               let bouncedCount = 0;
+               try {
+                  const singlePageSessions = await PageView.aggregate([
+                     {
+                        $match: {
+                           timestamp: { $gte: startDate },
+                           referrerDomain: ref.source
+                        }
+                     },
+                     {
+                        $group: {
+                           _id: '$sessionId',
+                           pageCount: { $sum: 1 }
+                        }
+                     },
+                     {
+                        $match: {
+                           pageCount: 1
+                        }
+                     },
+                     {
+                        $count: 'bounced'
+                     }
+                  ]);
+
+                  bouncedCount = singlePageSessions[0]?.bounced || 0;
+               } catch (bounceError) {
+                  console.error(`Error calculating bounce for ${ref.source}:`, bounceError.message);
+                  bouncedCount = 0;
+               }
+
+               const totalSessions = ref.uniqueSessions || 0;
                const bounceRate = totalSessions > 0 
-                  ? Math.round((singlePageSessions.length / totalSessions) * 100)
+                  ? Math.round((bouncedCount / totalSessions) * 100)
                   : 0;
 
                return {
                   ...ref,
                   bounceRate
                };
-            })
-         );
+            } catch (error) {
+               console.error(`Error processing referrer ${ref?.source || 'unknown'}:`, error.message);
+               return {
+                  ...ref,
+                  bounceRate: 0
+               };
+            }
+         })
+      );
+
+      // Filter out null values
+      const validReferrers = referrersWithBounce.filter(ref => ref !== null);
 
       // Process referrer data and add icons
-      const referrers = referrersWithBounce.map(ref => {
+      const referrers = validReferrers.map(ref => {
          const source = ref.source.toLowerCase();
          let icon = 'fas fa-globe';
          let displayName = ref.source;
@@ -951,40 +990,12 @@ const getReferrerAnalytics = async (req, res) => {
       });
 
       // Get direct traffic
-      const directStats = await PageView.aggregate([
-         {
-            $match: {
-               timestamp: { $gte: startDate },
-               $or: [
-                  { referrer: { $in: [null, '', undefined] } },
-                  { referrerDomain: { $in: [null, '', undefined] } }
-               ]
-            }
-         },
-         {
-            $group: {
-               _id: null,
-               visitors: { $sum: 1 },
-               uniqueSessions: { $addToSet: '$sessionId' },
-               uniqueIPs: { $addToSet: '$ipAddress' }
-            }
-         }
-      ]);
-
-      if (directStats.length > 0 && directStats[0].visitors > 0) {
-         const direct = directStats[0];
-         const directSessions = await Session.countDocuments({
-            startTime: { $gte: startDate },
-            $or: [
-               { referrer: { $in: [null, '', undefined] } },
-               { referrerDomain: { $in: [null, '', undefined] } }
-            ]
-         });
-
-         const singlePageDirect = await Session.aggregate([
+      let directStats = [];
+      try {
+         directStats = await PageView.aggregate([
             {
                $match: {
-                  startTime: { $gte: startDate },
+                  timestamp: { $gte: startDate },
                   $or: [
                      { referrer: { $in: [null, '', undefined] } },
                      { referrerDomain: { $in: [null, '', undefined] } }
@@ -992,51 +1003,99 @@ const getReferrerAnalytics = async (req, res) => {
                }
             },
             {
-               $project: {
-                  sessionId: 1,
-                  pageCount: { $size: { $ifNull: ['$pages', []] } }
-               }
-            },
-            {
-               $match: {
-                  pageCount: { $lte: 1 }
+               $group: {
+                  _id: null,
+                  visitors: { $sum: 1 },
+                  uniqueSessions: { $addToSet: '$sessionId' },
+                  uniqueIPs: { $addToSet: '$ipAddress' }
                }
             }
          ]);
+      } catch (directError) {
+         console.error('Error getting direct traffic:', directError.message);
+         directStats = [];
+      }
 
-         const bounceRate = directSessions > 0
-            ? Math.round((singlePageDirect.length / directSessions) * 100)
-            : 0;
+      if (directStats.length > 0 && directStats[0] && directStats[0].visitors > 0) {
+         const direct = directStats[0];
+         
+         // Calculate direct traffic bounce rate using page views
+         try {
+            const directSessions = direct.uniqueSessions || 0;
+            let bouncedCount = 0;
+            
+            try {
+               const singlePageDirect = await PageView.aggregate([
+                  {
+                     $match: {
+                        timestamp: { $gte: startDate },
+                        $or: [
+                           { referrer: { $in: [null, '', undefined] } },
+                           { referrerDomain: { $in: [null, '', undefined] } }
+                        ]
+                     }
+                  },
+                  {
+                     $group: {
+                        _id: '$sessionId',
+                        pageCount: { $sum: 1 }
+                     }
+                  },
+                  {
+                     $match: {
+                        pageCount: 1
+                     }
+                  },
+                  {
+                     $count: 'bounced'
+                  }
+               ]);
 
-         referrers.push({
-            source: 'Direct',
-            domain: 'direct',
-            icon: 'fas fa-link',
-            visitors: direct.visitors,
-            uniqueVisitors: direct.uniqueIPs,
-            sessions: direct.uniqueSessions,
-            bounceRate
-         });
+               bouncedCount = singlePageDirect[0]?.bounced || 0;
+            } catch (bounceError) {
+               console.error('Error calculating direct bounce rate:', bounceError.message);
+            }
+
+            const bounceRate = directSessions > 0
+               ? Math.round((bouncedCount / directSessions) * 100)
+               : 0;
+
+            referrers.push({
+               source: 'Direct',
+               domain: 'direct',
+               icon: 'fas fa-link',
+               visitors: direct.visitors || 0,
+               uniqueVisitors: direct.uniqueIPs || 0,
+               sessions: directSessions,
+               bounceRate
+            });
+         } catch (directBounceError) {
+            console.error('Error processing direct traffic:', directBounceError.message);
+         }
       }
 
       // Sort by visitors and take top 10
-      referrers.sort((a, b) => b.visitors - a.visitors);
+      referrers.sort((a, b) => (b.visitors || 0) - (a.visitors || 0));
       const topReferrers = referrers.slice(0, 10);
 
       res.status(200).json({
          success: true,
          data: {
-            referrers: topReferrers,
-            totalVisitors: topReferrers.reduce((sum, ref) => sum + ref.visitors, 0),
+            referrers: topReferrers || [],
+            totalVisitors: topReferrers.length > 0 
+               ? topReferrers.reduce((sum, ref) => sum + (ref.visitors || 0), 0)
+               : 0,
             period
          }
       });
    } catch (error) {
-      console.error('Get referrer analytics error:', error.message);
+      console.error('Get referrer analytics error:', error);
+      console.error('Error stack:', error.stack);
 
       res.status(500).json({
          success: false,
          error: 'Failed to get referrer analytics',
+         message: error.message,
          code: 'REFERRER_ANALYTICS_ERROR'
       });
    }
@@ -1265,6 +1324,153 @@ const getTrafficOverview = async (req, res) => {
    }
 };
 
+// @desc    Get visitors by IP addresses
+// @route   GET /api/admin/dashboard/visitors
+// @access  Private
+const getVisitorsByIP = async (req, res) => {
+   try {
+      const { PageView, Session } = require('../models/Analytics');
+      const { page = 1, limit = 50, period = '30d', search } = req.query;
+
+      // Calculate date range
+      const now = new Date();
+      let startDate;
+      switch (period) {
+         case '7d':
+            startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+            break;
+         case '30d':
+            startDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+            break;
+         case '90d':
+            startDate = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
+            break;
+         case '24h':
+            startDate = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+            break;
+         default:
+            startDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+      }
+
+      // Build match query
+      const matchQuery = {
+         timestamp: { $gte: startDate },
+         ipAddress: { $ne: null, $ne: 'unknown', $exists: true }
+      };
+
+      if (search) {
+         matchQuery.ipAddress = { 
+            $regex: search, 
+            $options: 'i',
+            $ne: null,
+            $ne: 'unknown',
+            $exists: true
+         };
+      }
+
+      // Get visitors aggregated by IP
+      const visitors = await PageView.aggregate([
+         { $match: matchQuery },
+         {
+            $group: {
+               _id: '$ipAddress',
+               totalPageViews: { $sum: 1 },
+               uniqueSessions: { $addToSet: '$sessionId' },
+               firstVisit: { $min: '$timestamp' },
+               lastVisit: { $max: '$timestamp' },
+               pages: { $addToSet: '$page' },
+               devices: { $addToSet: '$deviceType' },
+               browsers: { $addToSet: '$browser' },
+               os: { $addToSet: '$os' },
+               referrers: { $addToSet: '$referrerDomain' }
+            }
+         },
+         {
+            $project: {
+               ipAddress: '$_id',
+               totalPageViews: 1,
+               uniqueSessions: { $size: '$uniqueSessions' },
+               firstVisit: 1,
+               lastVisit: 1,
+               pagesViewed: { $size: '$pages' },
+               pages: { $slice: ['$pages', 10] },
+               devices: 1,
+               browsers: 1,
+               os: 1,
+               referrers: { $filter: { input: '$referrers', as: 'ref', cond: { $ne: ['$$ref', null] } } }
+            }
+         },
+         { $sort: { totalPageViews: -1 } },
+         { $skip: (parseInt(page) - 1) * parseInt(limit) },
+         { $limit: parseInt(limit) }
+      ]);
+
+      // Get total count for pagination
+      const totalVisitors = await PageView.aggregate([
+         { $match: matchQuery },
+         { $group: { _id: '$ipAddress' } },
+         { $count: 'total' }
+      ]);
+
+      const total = totalVisitors[0]?.total || 0;
+
+      // Get additional stats for each visitor
+      const visitorsWithStats = await Promise.all(
+         visitors.map(async (visitor) => {
+            // Get session duration stats
+            const sessionStats = await Session.aggregate([
+               {
+                  $match: {
+                     ipAddress: visitor.ipAddress,
+                     startTime: { $gte: startDate }
+                  }
+               },
+               {
+                  $group: {
+                     _id: null,
+                     avgDuration: { $avg: '$duration' },
+                     totalDuration: { $sum: '$duration' },
+                     sessionCount: { $sum: 1 }
+                  }
+               }
+            ]);
+
+            const stats = sessionStats[0] || {};
+            const avgDuration = stats.avgDuration ? Math.round(stats.avgDuration / 1000) : 0; // Convert to seconds
+
+            return {
+               ...visitor,
+               averageSessionDuration: avgDuration,
+               totalSessionDuration: stats.totalDuration ? Math.round(stats.totalDuration / 1000) : 0,
+               sessionCount: stats.sessionCount || 0
+            };
+         })
+      );
+
+      res.status(200).json({
+         success: true,
+         data: {
+            visitors: visitorsWithStats,
+            pagination: {
+               current: parseInt(page),
+               pages: Math.ceil(total / parseInt(limit)),
+               total,
+               limit: parseInt(limit)
+            },
+            period
+         }
+      });
+   } catch (error) {
+      console.error('Get visitors by IP error:', error.message);
+
+      res.status(500).json({
+         success: false,
+         error: 'Failed to get visitors by IP',
+         code: 'VISITORS_BY_IP_ERROR'
+      });
+   }
+};
+
 module.exports = {
    getDashboardStats,
    getUsers,
@@ -1278,5 +1484,6 @@ module.exports = {
    getContentDistribution,
    getSystemPerformance,
    getReferrerAnalytics,
-   getTrafficOverview
+   getTrafficOverview,
+   getVisitorsByIP
 };
