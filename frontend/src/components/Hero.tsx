@@ -28,7 +28,7 @@ const Hero = () => {
     return (
       <section id="home" className="relative h-screen overflow-hidden dark:bg-gray-900 dark:text-[#b9b8b8] flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
-        <span className="ml-4 text-white">Loading hero content from MongoDB...</span>
+        <span className="ml-4 text-white">Loading hero ......</span>
       </section>
     );
   }
@@ -39,7 +39,7 @@ const Hero = () => {
       <section id="home" className="relative h-screen overflow-hidden dark:bg-gray-900 dark:text-[#b9b8b8] flex items-center justify-center">
         <div className="text-center text-white">
           <h2 className="text-2xl mb-4">No Hero Slides Available</h2>
-          <p className="text-lg">Please check your MongoDB content sections.</p>
+          <p className="text-lg">Something went wrong.</p>
         </div>
       </section>
     );

@@ -42,7 +42,7 @@ const Counter = () => {
         <div className="absolute inset-0 bg-black/60" />
         <div className="relative h-full flex items-center justify-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
-          <span className="ml-4 text-white">Loading counter content from MongoDB...</span>
+          <span className="ml-4 text-white">Loading counter ......</span>
         </div>
       </section>
     );
@@ -56,7 +56,7 @@ const Counter = () => {
         <div className="relative h-full flex items-center justify-center">
           <div className="text-center text-white">
             <h2 className="text-2xl mb-4">No Counter Data Available</h2>
-            <p>Please check your MongoDB content sections.</p>
+            <p>Something went wrong.</p>
           </div>
         </div>
       </section>

@@ -9,7 +9,7 @@ const Services = () => {
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-            <span className="ml-4 dark:text-[#b9b8b8]">Loading services content from MongoDB...</span>
+            <span className="ml-4 dark:text-[#b9b8b8]">Loading services ......</span>
           </div>
         </div>
       </section>
@@ -22,7 +22,7 @@ const Services = () => {
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center text-gray-500 dark:text-[#b9b8b8]">
             <h2 className="text-2xl mb-4">No Services Available</h2>
-            <p>Please check your MongoDB content sections.</p>
+            <p>Something went wrong.</p>
           </div>
         </div>
       </section>
