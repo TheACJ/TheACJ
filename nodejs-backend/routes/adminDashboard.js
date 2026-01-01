@@ -99,6 +99,7 @@ router.put('/settings', requireSuperAdmin, settingsValidation, adminDashboardCon
 router.get('/analytics/traffic', authenticateAdmin, adminDashboardController.getTrafficAnalytics);
 router.get('/analytics/content-distribution', authenticateAdmin, adminDashboardController.getContentDistribution);
 router.get('/analytics/referrers', authenticateAdmin, adminDashboardController.getReferrerAnalytics);
+router.get('/traffic-overview', authenticateAdmin, adminDashboardController.getTrafficOverview);
 
 // System routes (accessible to all authenticated admins)
 router.get('/system/performance', authenticateAdmin, adminDashboardController.getSystemPerformance);

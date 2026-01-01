@@ -10,6 +10,10 @@ const pageViewSchema = new mongoose.Schema({
     type: String,
     index: true
   },
+  referrerDomain: {
+    type: String,
+    index: true
+  },
   userAgent: {
     type: String,
     required: true
@@ -17,6 +21,10 @@ const pageViewSchema = new mongoose.Schema({
   screenResolution: {
     type: String,
     required: true
+  },
+  viewportSize: {
+    width: Number,
+    height: Number
   },
   timezone: {
     type: String,
@@ -26,12 +34,45 @@ const pageViewSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  deviceType: {
+    type: String,
+    enum: ['desktop', 'mobile', 'tablet'],
+    index: true
+  },
+  browser: {
+    type: String,
+    index: true
+  },
+  browserVersion: {
+    type: String,
+    index: true
+  },
+  os: {
+    type: String,
+    index: true
+  },
+  osVersion: {
+    type: String,
+    index: true
+  },
+  connectionType: {
+    type: String,
+    index: true
+  },
   sessionId: {
     type: String,
     required: true,
     index: true
   },
   ipAddress: {
+    type: String,
+    index: true
+  },
+  country: {
+    type: String,
+    index: true
+  },
+  city: {
     type: String,
     index: true
   },
@@ -124,9 +165,53 @@ const sessionSchema = new mongoose.Schema({
     required: true,
     index: true
   },
+  browserVersion: {
+    type: String,
+    index: true
+  },
   os: {
     type: String,
     required: true,
+    index: true
+  },
+  osVersion: {
+    type: String,
+    index: true
+  },
+  deviceModel: {
+    type: String,
+    index: true
+  },
+  screenResolution: {
+    type: String,
+    index: true
+  },
+  viewportSize: {
+    width: Number,
+    height: Number
+  },
+  connectionType: {
+    type: String,
+    index: true
+  },
+  language: {
+    type: String,
+    index: true
+  },
+  timezone: {
+    type: String,
+    index: true
+  },
+  referrer: {
+    type: String,
+    index: true
+  },
+  country: {
+    type: String,
+    index: true
+  },
+  city: {
+    type: String,
     index: true
   },
   ipAddress: {
@@ -271,9 +356,15 @@ const scrollDepthSchema = new mongoose.Schema({
 // Create indexes for better query performance
 pageViewSchema.index({ timestamp: -1, page: 1 });
 pageViewSchema.index({ sessionId: 1, timestamp: -1 });
+pageViewSchema.index({ referrerDomain: 1, timestamp: -1 });
+pageViewSchema.index({ ipAddress: 1, timestamp: -1 });
+pageViewSchema.index({ deviceType: 1, timestamp: -1 });
 clickSchema.index({ timestamp: -1, page: 1 });
 clickSchema.index({ sessionId: 1, timestamp: -1 });
 sessionSchema.index({ startTime: -1, isActive: 1 });
+sessionSchema.index({ ipAddress: 1, startTime: -1 });
+sessionSchema.index({ deviceType: 1, startTime: -1 });
+sessionSchema.index({ referrer: 1, startTime: -1 });
 eventSchema.index({ timestamp: -1, event: 1 });
 conversionSchema.index({ timestamp: -1, type: 1 });
 scrollDepthSchema.index({ timestamp: -1, page: 1 });

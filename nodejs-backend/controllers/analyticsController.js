@@ -7,6 +7,7 @@ const {
   Conversion,
   ScrollDepth
 } = require('../models/Analytics');
+const { parseUserAgent, extractReferrerDomain, parseConnectionType } = require('../utils/deviceParser');
 
 // Helper function to get client IP address
 const getClientIP = (req) => {
@@ -31,9 +32,11 @@ const trackPageView = async (req, res) => {
       referrer,
       userAgent,
       screenResolution,
+      viewportSize,
       timezone,
       language,
       sessionId,
+      connectionType,
       timestamp
     } = req.body;
 
@@ -47,15 +50,29 @@ const trackPageView = async (req, res) => {
     }
 
     const ipAddress = getClientIP(req);
+    
+    // Parse user agent for device information
+    const deviceInfo = parseUserAgent(userAgent);
+    
+    // Extract referrer domain
+    const referrerDomain = referrer ? extractReferrerDomain(referrer) : null;
 
     // Create page view record
     const pageView = new PageView({
       page,
-      referrer,
+      referrer: referrer || null,
+      referrerDomain,
       userAgent,
       screenResolution,
+      viewportSize: viewportSize || null,
       timezone,
       language,
+      deviceType: deviceInfo.deviceType,
+      browser: deviceInfo.browser,
+      browserVersion: deviceInfo.browserVersion,
+      os: deviceInfo.os,
+      osVersion: deviceInfo.osVersion,
+      connectionType: connectionType ? parseConnectionType(connectionType) : null,
       sessionId,
       ipAddress,
       timestamp: timestamp ? new Date(timestamp) : new Date()
@@ -191,11 +208,20 @@ const trackSession = async (req, res) => {
       pages,
       deviceType,
       browser,
-      os
+      browserVersion,
+      os,
+      osVersion,
+      deviceModel,
+      screenResolution,
+      viewportSize,
+      connectionType,
+      language,
+      timezone,
+      referrer
     } = req.body;
 
     // Validate required fields
-    if (!sessionId || !startTime || !deviceType || !browser || !os) {
+    if (!sessionId || !startTime) {
       return res.status(400).json({
         success: false,
         error: 'Missing required fields',
@@ -204,6 +230,23 @@ const trackSession = async (req, res) => {
     }
 
     const ipAddress = getClientIP(req);
+    
+    // If device info not provided, try to extract from user agent if available
+    let parsedDeviceInfo = {};
+    if (req.body.userAgent) {
+      parsedDeviceInfo = parseUserAgent(req.body.userAgent);
+    }
+    
+    // Use provided values or fall back to parsed values
+    const finalDeviceType = deviceType || parsedDeviceInfo.deviceType || 'desktop';
+    const finalBrowser = browser || parsedDeviceInfo.browser || 'Unknown';
+    const finalBrowserVersion = browserVersion || parsedDeviceInfo.browserVersion || 'Unknown';
+    const finalOs = os || parsedDeviceInfo.os || 'Unknown';
+    const finalOsVersion = osVersion || parsedDeviceInfo.osVersion || 'Unknown';
+    const finalDeviceModel = deviceModel || parsedDeviceInfo.deviceModel || 'Unknown';
+    
+    // Extract referrer domain
+    const referrerDomain = referrer ? extractReferrerDomain(referrer) : null;
 
     // Check if session already exists
     let session = await Session.findOne({ sessionId });
@@ -213,8 +256,24 @@ const trackSession = async (req, res) => {
       session.endTime = endTime ? new Date(endTime) : new Date();
       session.duration = duration || (session.endTime - session.startTime);
       session.pages = pages || session.pages;
-      session.isActive = false;
+      session.isActive = !endTime;
       session.updatedAt = new Date();
+      
+      // Update device info if provided
+      if (browser) session.browser = finalBrowser;
+      if (browserVersion) session.browserVersion = finalBrowserVersion;
+      if (os) session.os = finalOs;
+      if (osVersion) session.osVersion = finalOsVersion;
+      if (deviceModel) session.deviceModel = finalDeviceModel;
+      if (screenResolution) session.screenResolution = screenResolution;
+      if (viewportSize) session.viewportSize = viewportSize;
+      if (connectionType) session.connectionType = parseConnectionType(connectionType);
+      if (language) session.language = language;
+      if (timezone) session.timezone = timezone;
+      if (referrer) {
+        session.referrer = referrer;
+        session.referrerDomain = referrerDomain;
+      }
     } else {
       // Create new session
       session = new Session({
@@ -223,9 +282,19 @@ const trackSession = async (req, res) => {
         endTime: endTime ? new Date(endTime) : undefined,
         duration,
         pages: pages || [],
-        deviceType,
-        browser,
-        os,
+        deviceType: finalDeviceType,
+        browser: finalBrowser,
+        browserVersion: finalBrowserVersion,
+        os: finalOs,
+        osVersion: finalOsVersion,
+        deviceModel: finalDeviceModel,
+        screenResolution: screenResolution || null,
+        viewportSize: viewportSize || null,
+        connectionType: connectionType ? parseConnectionType(connectionType) : null,
+        language: language || null,
+        timezone: timezone || null,
+        referrer: referrer || null,
+        referrerDomain,
         ipAddress,
         isActive: !endTime
       });

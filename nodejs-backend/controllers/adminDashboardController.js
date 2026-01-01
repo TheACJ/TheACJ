@@ -667,35 +667,132 @@ const getContentDistribution = async (req, res) => {
 // @access  Private
 const getSystemPerformance = async (req, res) => {
    try {
-      // In a real application, you would get these from system monitoring tools
-      // For now, we'll return mock data
+      const os = require('os');
+      const process = require('process');
+
+      // Get CPU information
+      const cpus = os.cpus();
+      const cpuCount = cpus.length;
+      
+      // Calculate CPU usage (average over 1 second)
+      const cpuUsage = await new Promise((resolve) => {
+         const startMeasure = cpuAverage();
+         setTimeout(() => {
+            const endMeasure = cpuAverage();
+            const idleDifference = endMeasure.idle - startMeasure.idle;
+            const totalDifference = endMeasure.total - startMeasure.total;
+            const percentageCPU = 100 - ~~(100 * idleDifference / totalDifference);
+            resolve(percentageCPU);
+         }, 1000);
+      });
+
+      function cpuAverage() {
+         let totalIdle = 0;
+         let totalTick = 0;
+         cpus.forEach(cpu => {
+            for (let type in cpu.times) {
+               totalTick += cpu.times[type];
+            }
+            totalIdle += cpu.times.idle;
+         });
+         return {
+            idle: totalIdle / cpus.length,
+            total: totalTick / cpus.length
+         };
+      }
+
+      // Get memory information
+      const totalMemory = os.totalmem();
+      const freeMemory = os.freemem();
+      const usedMemory = totalMemory - freeMemory;
+      const memoryUsagePercent = Math.round((usedMemory / totalMemory) * 100);
+
+      // Format memory
+      const formatBytes = (bytes) => {
+         const gb = bytes / (1024 * 1024 * 1024);
+         return {
+            value: Math.round(gb * 100) / 100,
+            unit: 'GB',
+            formatted: `${Math.round(gb * 100) / 100} GB`
+         };
+      };
+
+      // Get load average (Unix-like systems)
+      const loadAvg = os.loadavg();
+      const loadAverage = loadAvg.map(load => Math.round(load * 100) / 100);
+
+      // Get uptime
+      const uptimeSeconds = os.uptime();
+      const uptimeDays = Math.floor(uptimeSeconds / 86400);
+      const uptimeHours = Math.floor((uptimeSeconds % 86400) / 3600);
+      const uptimeMinutes = Math.floor((uptimeSeconds % 3600) / 60);
+
+      // Get process memory
+      const processMemory = process.memoryUsage();
+      const processMemoryFormatted = formatBytes(processMemory.heapUsed);
+
+      // Get network interfaces (basic info)
+      const networkInterfaces = os.networkInterfaces();
+      let networkInfo = {
+         interfaces: Object.keys(networkInterfaces).length,
+         addresses: []
+      };
+
+      Object.keys(networkInterfaces).forEach(interfaceName => {
+         networkInterfaces[interfaceName].forEach(iface => {
+            if (iface.family === 'IPv4' && !iface.internal) {
+               networkInfo.addresses.push({
+                  interface: interfaceName,
+                  address: iface.address
+               });
+            }
+         });
+      });
+
+      // Get platform info
+      const platform = os.platform();
+      const arch = os.arch();
+      const hostname = os.hostname();
+      const nodeVersion = process.version;
+
       const performance = {
          cpu: {
-            usage: Math.floor(Math.random() * 30) + 20, // 20-50%
-            cores: 4,
-            load: [0.2, 0.3, 0.1, 0.4]
+            usage: cpuUsage,
+            cores: cpuCount,
+            model: cpus[0]?.model || 'Unknown',
+            loadAverage: loadAverage,
+            load: loadAverage // For compatibility
          },
          memory: {
-            used: Math.floor(Math.random() * 30) + 40, // 40-70%
-            total: '8 GB',
-            usedGB: '4.2 GB',
-            freeGB: '3.8 GB'
+            used: memoryUsagePercent,
+            total: formatBytes(totalMemory).formatted,
+            usedGB: formatBytes(usedMemory).formatted,
+            freeGB: formatBytes(freeMemory).formatted,
+            totalBytes: totalMemory,
+            usedBytes: usedMemory,
+            freeBytes: freeMemory
          },
-         disk: {
-            used: Math.floor(Math.random() * 20) + 50, // 50-70%
-            total: '100 GB',
-            usedGB: '62 GB',
-            freeGB: '38 GB'
+         process: {
+            memory: processMemoryFormatted.formatted,
+            memoryBytes: processMemory.heapUsed,
+            uptime: Math.floor(process.uptime()),
+            pid: process.pid
          },
          network: {
-            upload: Math.floor(Math.random() * 10) + 5, // 5-15 MB/s
-            download: Math.floor(Math.random() * 20) + 10, // 10-30 MB/s
-            connections: Math.floor(Math.random() * 50) + 20 // 20-70 connections
+            interfaces: networkInfo.interfaces,
+            addresses: networkInfo.addresses,
+            hostname: hostname
          },
-         uptime: {
-            days: Math.floor(Math.random() * 30) + 1,
-            hours: Math.floor(Math.random() * 24),
-            minutes: Math.floor(Math.random() * 60)
+         system: {
+            platform: platform,
+            arch: arch,
+            nodeVersion: nodeVersion,
+            uptime: {
+               days: uptimeDays,
+               hours: uptimeHours,
+               minutes: uptimeMinutes,
+               seconds: Math.floor(uptimeSeconds)
+            }
          }
       };
 
@@ -720,95 +817,218 @@ const getSystemPerformance = async (req, res) => {
 const getReferrerAnalytics = async (req, res) => {
    try {
       const { PageView, Session } = require('../models/Analytics');
+      const { period = '30d' } = req.query;
 
-      // Get top referrers from page views
+      // Calculate date range
+      const now = new Date();
+      let startDate;
+      switch (period) {
+         case '7d':
+            startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+            break;
+         case '30d':
+            startDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+            break;
+         case '90d':
+            startDate = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
+            break;
+         default:
+            startDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+      }
+
+      // Get top referrers from page views using referrerDomain
       const referrerStats = await PageView.aggregate([
          {
             $match: {
-               referrer: { $ne: null, $ne: '', $not: { $regex: '^https?://[^/]*localhost' } }
+               timestamp: { $gte: startDate },
+               referrerDomain: { $ne: null, $ne: '', $exists: true }
             }
          },
          {
             $group: {
-               _id: '$referrer',
+               _id: '$referrerDomain',
                visitors: { $sum: 1 },
-               uniqueSessions: { $addToSet: '$sessionId' }
+               uniqueSessions: { $addToSet: '$sessionId' },
+               uniqueIPs: { $addToSet: '$ipAddress' }
             }
          },
          {
             $project: {
                source: '$_id',
                visitors: 1,
-               uniqueSessions: { $size: '$uniqueSessions' }
+               uniqueSessions: { $size: '$uniqueSessions' },
+               uniqueIPs: { $size: '$uniqueIPs' }
             }
          },
          {
             $sort: { visitors: -1 }
          },
          {
-            $limit: 10
+            $limit: 20
          }
       ]);
 
+         // Calculate bounce rates for each referrer
+         const referrersWithBounce = await Promise.all(
+            referrerStats.map(async (ref) => {
+               // Get sessions that came from this referrer and only viewed one page
+               const singlePageSessions = await Session.aggregate([
+                  {
+                     $match: {
+                        startTime: { $gte: startDate },
+                        referrerDomain: ref.source
+                     }
+                  },
+                  {
+                     $project: {
+                        sessionId: 1,
+                        pageCount: { $size: { $ifNull: ['$pages', []] } }
+                     }
+                  },
+                  {
+                     $match: {
+                        pageCount: { $lte: 1 }
+                     }
+                  }
+               ]);
+
+               const totalSessions = ref.uniqueSessions;
+               const bounceRate = totalSessions > 0 
+                  ? Math.round((singlePageSessions.length / totalSessions) * 100)
+                  : 0;
+
+               return {
+                  ...ref,
+                  bounceRate
+               };
+            })
+         );
+
       // Process referrer data and add icons
-      const referrers = referrerStats.map(ref => {
+      const referrers = referrersWithBounce.map(ref => {
          const source = ref.source.toLowerCase();
          let icon = 'fas fa-globe';
          let displayName = ref.source;
 
-         // Extract domain and set appropriate icon
-         try {
-            const url = new URL(ref.source);
-            displayName = url.hostname.replace('www.', '');
-
-            if (displayName.includes('google')) {
-               icon = 'fab fa-google';
-            } else if (displayName.includes('github')) {
-               icon = 'fab fa-github';
-            } else if (displayName.includes('linkedin')) {
-               icon = 'fab fa-linkedin';
-            } else if (displayName.includes('twitter') || displayName.includes('x.com')) {
-               icon = 'fab fa-twitter';
-            } else if (displayName.includes('facebook')) {
-               icon = 'fab fa-facebook';
-            } else if (displayName.includes('youtube')) {
-               icon = 'fab fa-youtube';
-            }
-         } catch (e) {
-            // If URL parsing fails, use the original referrer
+         // Set appropriate icon based on domain
+         if (source.includes('google')) {
+            icon = 'fab fa-google';
+            displayName = 'Google';
+         } else if (source.includes('github')) {
+            icon = 'fab fa-github';
+            displayName = 'GitHub';
+         } else if (source.includes('linkedin')) {
+            icon = 'fab fa-linkedin';
+            displayName = 'LinkedIn';
+         } else if (source.includes('twitter') || source.includes('x.com')) {
+            icon = 'fab fa-twitter';
+            displayName = 'Twitter/X';
+         } else if (source.includes('facebook')) {
+            icon = 'fab fa-facebook';
+            displayName = 'Facebook';
+         } else if (source.includes('youtube')) {
+            icon = 'fab fa-youtube';
+            displayName = 'YouTube';
+         } else if (source.includes('reddit')) {
+            icon = 'fab fa-reddit';
+            displayName = 'Reddit';
+         } else if (source.includes('instagram')) {
+            icon = 'fab fa-instagram';
+            displayName = 'Instagram';
+         } else {
+            displayName = ref.source.replace('www.', '');
          }
 
          return {
             source: displayName,
+            domain: ref.source,
             icon,
             visitors: ref.visitors,
-            bounceRate: Math.floor(Math.random() * 40) + 20 // Mock bounce rate for now
+            uniqueVisitors: ref.uniqueIPs,
+            sessions: ref.uniqueSessions,
+            bounceRate: ref.bounceRate
          };
       });
 
-      // Add "Direct" traffic if we have sessions without referrers
-      const directSessions = await PageView.countDocuments({
-         referrer: { $in: [null, '', undefined] }
-      });
+      // Get direct traffic
+      const directStats = await PageView.aggregate([
+         {
+            $match: {
+               timestamp: { $gte: startDate },
+               $or: [
+                  { referrer: { $in: [null, '', undefined] } },
+                  { referrerDomain: { $in: [null, '', undefined] } }
+               ]
+            }
+         },
+         {
+            $group: {
+               _id: null,
+               visitors: { $sum: 1 },
+               uniqueSessions: { $addToSet: '$sessionId' },
+               uniqueIPs: { $addToSet: '$ipAddress' }
+            }
+         }
+      ]);
 
-      if (directSessions > 0) {
+      if (directStats.length > 0 && directStats[0].visitors > 0) {
+         const direct = directStats[0];
+         const directSessions = await Session.countDocuments({
+            startTime: { $gte: startDate },
+            $or: [
+               { referrer: { $in: [null, '', undefined] } },
+               { referrerDomain: { $in: [null, '', undefined] } }
+            ]
+         });
+
+         const singlePageDirect = await Session.aggregate([
+            {
+               $match: {
+                  startTime: { $gte: startDate },
+                  $or: [
+                     { referrer: { $in: [null, '', undefined] } },
+                     { referrerDomain: { $in: [null, '', undefined] } }
+                  ]
+               }
+            },
+            {
+               $project: {
+                  sessionId: 1,
+                  pageCount: { $size: { $ifNull: ['$pages', []] } }
+               }
+            },
+            {
+               $match: {
+                  pageCount: { $lte: 1 }
+               }
+            }
+         ]);
+
+         const bounceRate = directSessions > 0
+            ? Math.round((singlePageDirect.length / directSessions) * 100)
+            : 0;
+
          referrers.push({
             source: 'Direct',
+            domain: 'direct',
             icon: 'fas fa-link',
-            visitors: directSessions,
-            bounceRate: Math.floor(Math.random() * 30) + 40
+            visitors: direct.visitors,
+            uniqueVisitors: direct.uniqueIPs,
+            sessions: direct.uniqueSessions,
+            bounceRate
          });
       }
 
-      // Sort by visitors and take top 5
+      // Sort by visitors and take top 10
       referrers.sort((a, b) => b.visitors - a.visitors);
-      const topReferrers = referrers.slice(0, 5);
+      const topReferrers = referrers.slice(0, 10);
 
       res.status(200).json({
          success: true,
          data: {
             referrers: topReferrers,
-            totalVisitors: topReferrers.reduce((sum, ref) => sum + ref.visitors, 0)
+            totalVisitors: topReferrers.reduce((sum, ref) => sum + ref.visitors, 0),
+            period
          }
       });
    } catch (error) {
@@ -818,6 +1038,229 @@ const getReferrerAnalytics = async (req, res) => {
          success: false,
          error: 'Failed to get referrer analytics',
          code: 'REFERRER_ANALYTICS_ERROR'
+      });
+   }
+};
+
+// @desc    Get comprehensive traffic overview
+// @route   GET /api/admin/dashboard/traffic-overview
+// @access  Private
+const getTrafficOverview = async (req, res) => {
+   try {
+      const { PageView, Session } = require('../models/Analytics');
+      const { period = '30d' } = req.query;
+
+      // Calculate date range
+      const now = new Date();
+      let startDate;
+      switch (period) {
+         case '7d':
+            startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+            break;
+         case '30d':
+            startDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+            break;
+         case '90d':
+            startDate = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
+            break;
+         case '24h':
+            startDate = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+            break;
+         default:
+            startDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+      }
+
+      // Get all metrics in parallel
+      const [
+         totalPageViews,
+         uniqueVisitors,
+         uniqueSessions,
+         deviceBreakdown,
+         browserBreakdown,
+         osBreakdown,
+         topPages,
+         topIPs,
+         hourlyDistribution,
+         referrerStats,
+         countryStats,
+         connectionTypeStats
+      ] = await Promise.all([
+         // Total page views
+         PageView.countDocuments({ timestamp: { $gte: startDate } }),
+
+         // Unique visitors (by IP)
+         PageView.distinct('ipAddress', { timestamp: { $gte: startDate } }),
+
+         // Unique sessions
+         Session.countDocuments({ startTime: { $gte: startDate } }),
+
+         // Device breakdown
+         PageView.aggregate([
+            { $match: { timestamp: { $gte: startDate }, deviceType: { $exists: true } } },
+            { $group: { _id: '$deviceType', count: { $sum: 1 } } },
+            { $sort: { count: -1 } }
+         ]),
+
+         // Browser breakdown
+         PageView.aggregate([
+            { $match: { timestamp: { $gte: startDate }, browser: { $exists: true } } },
+            { $group: { _id: '$browser', count: { $sum: 1 } } },
+            { $sort: { count: -1 } },
+            { $limit: 10 }
+         ]),
+
+         // OS breakdown
+         PageView.aggregate([
+            { $match: { timestamp: { $gte: startDate }, os: { $exists: true } } },
+            { $group: { _id: '$os', count: { $sum: 1 } } },
+            { $sort: { count: -1 } },
+            { $limit: 10 }
+         ]),
+
+         // Top pages
+         PageView.aggregate([
+            { $match: { timestamp: { $gte: startDate } } },
+            { $group: { _id: '$page', views: { $sum: 1 }, uniqueVisitors: { $addToSet: '$ipAddress' } } },
+            { $project: { page: '$_id', views: 1, uniqueVisitors: { $size: '$uniqueVisitors' } } },
+            { $sort: { views: -1 } },
+            { $limit: 10 }
+         ]),
+
+         // Top IPs
+         PageView.aggregate([
+            { $match: { timestamp: { $gte: startDate }, ipAddress: { $ne: null, $ne: 'unknown' } } },
+            { $group: { _id: '$ipAddress', views: { $sum: 1 }, sessions: { $addToSet: '$sessionId' } } },
+            { $project: { ip: '$_id', views: 1, sessions: { $size: '$sessions' } } },
+            { $sort: { views: -1 } },
+            { $limit: 20 }
+         ]),
+
+         // Hourly distribution
+         PageView.aggregate([
+            { $match: { timestamp: { $gte: startDate } } },
+            {
+               $group: {
+                  _id: { $hour: '$timestamp' },
+                  count: { $sum: 1 }
+               }
+            },
+            { $sort: { '_id': 1 } }
+         ]),
+
+         // Referrer stats
+         PageView.aggregate([
+            { $match: { timestamp: { $gte: startDate }, referrerDomain: { $ne: null, $exists: true } } },
+            { $group: { _id: '$referrerDomain', count: { $sum: 1 }, uniqueIPs: { $addToSet: '$ipAddress' } } },
+            { $project: { domain: '$_id', count: 1, uniqueVisitors: { $size: '$uniqueIPs' } } },
+            { $sort: { count: -1 } },
+            { $limit: 10 }
+         ]),
+
+         // Country stats (if available)
+         PageView.aggregate([
+            { $match: { timestamp: { $gte: startDate }, country: { $ne: null, $exists: true } } },
+            { $group: { _id: '$country', count: { $sum: 1 } } },
+            { $sort: { count: -1 } },
+            { $limit: 10 }
+         ]),
+
+         // Connection type stats
+         PageView.aggregate([
+            { $match: { timestamp: { $gte: startDate }, connectionType: { $ne: null, $exists: true } } },
+            { $group: { _id: '$connectionType', count: { $sum: 1 } } },
+            { $sort: { count: -1 } }
+         ])
+      ]);
+
+      // Calculate average session duration
+      const sessionDurationStats = await Session.aggregate([
+         { $match: { startTime: { $gte: startDate }, duration: { $exists: true, $ne: null } } },
+         {
+            $group: {
+               _id: null,
+               avgDuration: { $avg: '$duration' },
+               minDuration: { $min: '$duration' },
+               maxDuration: { $max: '$duration' }
+            }
+         }
+      ]);
+
+      // Calculate bounce rate
+      const singlePageSessions = await Session.countDocuments({
+         startTime: { $gte: startDate },
+         $expr: { $eq: [{ $size: '$pages' }, 1] }
+      });
+
+      const bounceRate = uniqueSessions > 0
+         ? Math.round((singlePageSessions / uniqueSessions) * 100)
+         : 0;
+
+      // Format hourly distribution
+      const hourlyData = Array.from({ length: 24 }, (_, i) => {
+         const hourData = hourlyDistribution.find(h => h._id === i);
+         return {
+            hour: i,
+            count: hourData ? hourData.count : 0
+         };
+      });
+
+      // Get recent traffic (last 24 hours)
+      const last24Hours = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+      const recentPageViews = await PageView.countDocuments({ timestamp: { $gte: last24Hours } });
+      const recentUniqueVisitors = (await PageView.distinct('ipAddress', { timestamp: { $gte: last24Hours } })).length;
+
+      const overview = {
+         period,
+         summary: {
+            totalPageViews,
+            uniqueVisitors: uniqueVisitors.length,
+            uniqueSessions,
+            recentPageViews24h: recentPageViews,
+            recentUniqueVisitors24h: recentUniqueVisitors,
+            averageSessionDuration: sessionDurationStats[0]?.avgDuration 
+               ? Math.round(sessionDurationStats[0].avgDuration / 1000) // Convert to seconds
+               : 0,
+            bounceRate
+         },
+         breakdowns: {
+            devices: deviceBreakdown.map(d => ({ type: d._id, count: d.count })),
+            browsers: browserBreakdown.map(b => ({ browser: b._id, count: b.count })),
+            operatingSystems: osBreakdown.map(o => ({ os: o._id, count: o.count })),
+            connectionTypes: connectionTypeStats.map(c => ({ type: c._id, count: c.count }))
+         },
+         topPages: topPages.map(p => ({
+            page: p.page,
+            views: p.views,
+            uniqueVisitors: p.uniqueVisitors
+         })),
+         topIPs: topIPs.map(ip => ({
+            ip: ip.ip,
+            views: ip.views,
+            sessions: ip.sessions
+         })),
+         hourlyDistribution: hourlyData,
+         topReferrers: referrerStats.map(r => ({
+            domain: r.domain,
+            visits: r.count || 0,
+            uniqueVisitors: r.uniqueVisitors || 0
+         })),
+         topCountries: countryStats.map(c => ({
+            country: c._id,
+            count: c.count
+         }))
+      };
+
+      res.status(200).json({
+         success: true,
+         data: overview
+      });
+   } catch (error) {
+      console.error('Get traffic overview error:', error.message);
+
+      res.status(500).json({
+         success: false,
+         error: 'Failed to get traffic overview',
+         code: 'TRAFFIC_OVERVIEW_ERROR'
       });
    }
 };
@@ -834,5 +1277,6 @@ module.exports = {
    getTrafficAnalytics,
    getContentDistribution,
    getSystemPerformance,
-   getReferrerAnalytics
+   getReferrerAnalytics,
+   getTrafficOverview
 };
