@@ -138,7 +138,8 @@ const Skills = () => {
     }
   };
 
-  if (loading) {
+  // Only show loading if we have no content at all
+  if (loading && (!content.skills || content.skills.length === 0)) {
     return (
       <section id="skills" ref={ref} className="py-20 bg-gray-50 dark:bg-gray-900 dark:text-[#b9b8b8]">
         <div className="max-w-6xl mx-auto px-4">

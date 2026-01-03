@@ -12,14 +12,14 @@ const AnimatedDivider = () => (
 const About = () => {
   const { content, loading } = useContent();
 
-  // Show loading state while content is being fetched
-  if (loading) {
+  // Show loading state only if we have no content at all (not just loading)
+  if (loading && !content.about.title && !content.about.description) {
     return (
       <section id="about" className="py-20 bg-white dark:bg-gray-900 dark:text-[#b9b8b8]">
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-            <span className="ml-4 dark:text-[#b9b8b8]">Loading about ......</span>
+            <span className="ml-4 dark:text-[#b9b8b8]">Loading about...</span>
           </div>
         </div>
       </section>

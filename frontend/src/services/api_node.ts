@@ -464,8 +464,28 @@ class ApiClient {
    * Get public content sections (fallback to defaults)
    */
   async getPublicContent(): Promise<ApiResponse<ContentSections>> {
-    const response = await fetch(`${this.baseURL}/content/public`);
-    return this.handleResponse<ApiResponse<ContentSections>>(response);
+    // Use cache: 'default' to allow browser caching, and add timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+    
+    try {
+      const response = await fetch(`${this.baseURL}/content/public`, {
+        signal: controller.signal,
+        cache: 'default', // Allow browser caching
+        headers: {
+          'Accept': 'application/json',
+          'Accept-Encoding': 'gzip, deflate, br'
+        }
+      });
+      clearTimeout(timeoutId);
+      return this.handleResponse<ApiResponse<ContentSections>>(response);
+    } catch (error) {
+      clearTimeout(timeoutId);
+      if (error instanceof Error && error.name === 'AbortError') {
+        throw new Error('Request timeout - content loading took too long');
+      }
+      throw error;
+    }
   }
 
   /**

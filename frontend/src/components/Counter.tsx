@@ -35,7 +35,8 @@ const Counter = () => {
     }
   }, [inView, content.counter]);
 
-  if (loading) {
+  // Only show loading if we have no content at all
+  if (loading && (!content.counter || content.counter.length === 0)) {
     return (
       <section ref={ref} className="relative h-[400px] overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary" />

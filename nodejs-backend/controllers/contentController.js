@@ -227,7 +227,11 @@ exports.updateContentSection = async (req, res) => {
 // Get public content (for frontend)
 exports.getPublicContent = async (req, res) => {
   try {
-    const contentSections = await ContentSection.find({ isActive: true }).sort({ sectionType: 1 });
+    // Optimize query - only select needed fields, exclude metadata
+    const contentSections = await ContentSection.find({ isActive: true })
+      .select('sectionType hero about services counter skills -_id -__v -isActive -createdAt -updatedAt -createdBy -updatedBy')
+      .lean() // Use lean() for faster queries (returns plain JS objects)
+      .sort({ sectionType: 1 });
     
     // Transform to match frontend expectations
     const transformedContent = {};
@@ -242,6 +246,9 @@ exports.getPublicContent = async (req, res) => {
       }
     });
 
+    // Set cache headers for browser caching
+    res.set('Cache-Control', 'public, max-age=300'); // Cache for 5 minutes
+    
     res.status(200).json({
       success: true,
       data: transformedContent

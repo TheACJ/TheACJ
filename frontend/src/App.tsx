@@ -11,26 +11,36 @@ import AllPosts from './components/AllPosts';
 import BlogForm from './components/AddBlog';
 // import ParticlesBackground from 'interactive-backgrounds';
 import { ConstellationFieldBackground  } from 'interactive-backgrounds';
-import { ContentProvider } from './hooks/useContent';
+import { ContentProvider, useContent } from './hooks/useContent';
 import analytics from './services/analytics'; // Import analytics service
 
-
-
-function App() {
+// Inner component that has access to content context
+function AppContent() {
+  const { isReady, loading: contentLoading } = useContent();
   const [isDarkMode, setIsDarkMode] = useState(false);
-  
-  // Ensure cookies are included with every request.
+  const [appLoading, setAppLoading] = useState(true);
+  const [minLoadTimeElapsed, setMinLoadTimeElapsed] = useState(false);
 
-  const [loading, setLoading] = useState(true);
-
+  // Minimum loading time for smooth UX (500ms)
   useEffect(() => {
-    // Simulate loading time
     const timer = setTimeout(() => {
-      setLoading(false);
-    }, 2000);
-
+      setMinLoadTimeElapsed(true);
+    }, 500);
     return () => clearTimeout(timer);
   }, []);
+
+  // Wait for content to be ready AND minimum load time
+  useEffect(() => {
+    if (isReady && minLoadTimeElapsed && !contentLoading) {
+      // Small delay to ensure smooth transition
+      const timer = setTimeout(() => {
+        setAppLoading(false);
+        // Add 'loaded' class to body for loader animation
+        document.body.classList.add('loaded');
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [isReady, minLoadTimeElapsed, contentLoading]);
 
   // Initialize analytics
   useEffect(() => {
@@ -65,44 +75,39 @@ function App() {
   const connectionColor = isDarkMode
     ? 'rgba(255, 255, 255, 0.1)'
     : 'rgba(0, 0, 0, 0.05)';
-
-  const rippleColor = isDarkMode
-    ? 'rgba(255, 255, 255, 0.8)'
-    : 'rgba(0, 0, 0, 0.4)';
     
   const colorsword = isDarkMode
     ? 'white'
-    : 'black'
+    : 'black';
 
   return (
+    <div className="min-h-screen bg-gray-50  dark:bg-gray-900 dark:text-[#b9b8b8]">
+      <ConstellationFieldBackground
+        particleColor={particleColor}
+        connectionColor={connectionColor}
+        constfill={colorsword}
+      />
+      <AnimatePresence>
+        {appLoading && <Loader />}
+      </AnimatePresence>
+
+      <Sidebar />
+      <DarkModeToggle />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/works/add" element={<WorkForm />} />
+        <Route path="/blogs/add" element={<BlogForm />} />
+        <Route path="/works/:id/edit" element={<WorkForm />} />
+        <Route path="/all-posts" element={<AllPosts />} />
+      </Routes>
+    </div>
+  );
+}
+
+function App() {
+  return (
     <ContentProvider>
-      <div className="min-h-screen bg-gray-50  dark:bg-gray-900 dark:text-[#b9b8b8]">
-
-        <ConstellationFieldBackground
-          particleColor={particleColor}
-          connectionColor={connectionColor}
-          rippleColor={rippleColor}
-          color={particleColor}
-          constfill={colorsword}
-          // lineWidth ={10}
-          text="THE ACJ"
-        />
-        <AnimatePresence>
-          {loading && <Loader />}
-        </AnimatePresence>
-
-        <Sidebar />
-        <DarkModeToggle />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/works/add" element={<WorkForm />} />
-          <Route path="/blogs/add" element={<BlogForm />} />
-          <Route path="/works/:id/edit" element={<WorkForm />} />
-          <Route path="/all-posts" element={<AllPosts />} />
-
-        </Routes>
-
-      </div>
+      <AppContent />
     </ContentProvider>
   );
 }

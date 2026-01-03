@@ -3,13 +3,14 @@ import { useContent } from '../hooks/useContent';
 const Services = () => {
   const { content, loading } = useContent();
 
-  if (loading) {
+  // Only show loading if we have no content at all
+  if (loading && (!content.services || content.services.length === 0)) {
     return (
       <section id="services" className="py-20 bg-white dark:bg-gray-900 dark:text-[#b9b8b8]">
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-            <span className="ml-4 dark:text-[#b9b8b8]">Loading services ......</span>
+            <span className="ml-4 dark:text-[#b9b8b8]">Loading services...</span>
           </div>
         </div>
       </section>

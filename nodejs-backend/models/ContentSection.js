@@ -67,6 +67,8 @@ const contentSectionSchema = new mongoose.Schema({
   }
 });
 
+// Create indexes for better query performance
 contentSectionSchema.index({ sectionType: 1 });
+contentSectionSchema.index({ isActive: 1, sectionType: 1 }); // Compound index for common query
 
 module.exports = mongoose.model('ContentSection', contentSectionSchema);

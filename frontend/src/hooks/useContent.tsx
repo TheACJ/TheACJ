@@ -15,6 +15,7 @@ interface ContentContextType {
   loading: boolean;
   error: string | null;
   refreshContent: () => Promise<void>;
+  isReady: boolean; // True when content is loaded and has essential data
 }
 
 const ContentContext = createContext<ContentContextType | undefined>(undefined);
@@ -24,68 +25,109 @@ interface ContentProviderProps {
 }
 
 export const ContentProvider: React.FC<ContentProviderProps> = ({ children }) => {
-  const [content, setContent] = useState<ContentSections>(EMPTY_CONTENT);
-  const [loading, setLoading] = useState(true);
+  // Try to load cached content immediately for instant display
+  const getCachedContent = (): ContentSections | null => {
+    try {
+      const cached = localStorage.getItem('content_cache');
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        const cacheTime = localStorage.getItem('content_cache_time');
+        // Use cache if less than 5 minutes old
+        if (cacheTime && Date.now() - parseInt(cacheTime) < 5 * 60 * 1000) {
+          return parsed;
+        }
+      }
+    } catch (e) {
+      // Ignore cache errors
+    }
+    return null;
+  };
+
+  const cachedContent = getCachedContent();
+  const [content, setContent] = useState<ContentSections>(cachedContent || EMPTY_CONTENT);
+  const [loading, setLoading] = useState(!cachedContent); // Start with true if no cache
   const [error, setError] = useState<string | null>(null);
+  const [isReady, setIsReady] = useState(false); // Track if content is ready
+  const loadingRef = React.useRef(false); // Prevent multiple simultaneous loads
 
   const loadContent = async () => {
+    // Prevent multiple simultaneous loads
+    if (loadingRef.current) {
+      return;
+    }
+
     try {
+      loadingRef.current = true;
       setLoading(true);
       setError(null);
 
-      console.log('🔍 [useContent] Loading content from MongoDB API...');
-      console.log('🔍 [useContent] API URL:', import.meta.env.VITE_API_URL || 'http://localhost:5000/api');
+      // Only log in development
+      if (import.meta.env.DEV) {
+        console.log('🔍 [useContent] Loading content...');
+      }
       
       const response = await contentService.getPublicContent();
-      
-      console.log('📡 [useContent] API Response received:', response);
 
       if (response.success && response.data) {
-        console.log('✅ [useContent] Content loaded successfully from MongoDB!');
-        
-        // Log the content structure
-        console.log('🎯 [useContent] MongoDB Content structure:');
-        console.log('  - Hero slides:', response.data.hero?.slides?.length || 0);
-        console.log('  - About section:', response.data.about?.title ? '✅' : '❌');
-        console.log('  - Services:', response.data.services?.length || 0);
-        console.log('  - Skills:', response.data.skills?.length || 0);
-        console.log('  - Counter items:', response.data.counter?.length || 0);
-        
-        // Validate that we have essential content sections
-        if (!response.data.hero?.slides || response.data.hero.slides.length === 0) {
-          throw new Error('No hero slides found in MongoDB');
-        }
-        
-        if (!response.data.skills || response.data.skills.length === 0) {
-          throw new Error('No skills found in MongoDB');
-        }
+        // Merge with defaults for any missing sections (non-blocking)
+        const mergedContent: ContentSections = {
+          hero: response.data.hero || EMPTY_CONTENT.hero,
+          about: response.data.about || EMPTY_CONTENT.about,
+          services: response.data.services || EMPTY_CONTENT.services,
+          counter: response.data.counter || EMPTY_CONTENT.counter,
+          skills: response.data.skills || EMPTY_CONTENT.skills
+        };
 
-        console.log('📦 [useContent] Using MongoDB content exclusively');
-        setContent(response.data);
+        // Update content immediately (optimistic update)
+        setContent(mergedContent);
         
-        // Log successful load
-        console.log('🎉 [useContent] MongoDB content state updated successfully!');
+        // Content is ready once loaded
+        setIsReady(true);
         
+        // Cache the content for faster subsequent loads
+        try {
+          localStorage.setItem('content_cache', JSON.stringify(mergedContent));
+          localStorage.setItem('content_cache_time', Date.now().toString());
+        } catch (e) {
+          // Ignore cache errors
+        }
+        
+        if (import.meta.env.DEV) {
+          console.log('✅ [useContent] Content loaded successfully');
+        }
       } else {
-        const errorMsg = response.error || 'API response missing data';
-        console.error('❌ [useContent] Invalid API response:', errorMsg);
-        throw new Error(errorMsg);
+        // Use cached content if available, otherwise use empty
+        const cached = getCachedContent();
+        if (cached) {
+          setContent(cached);
+        } else {
+          setContent(EMPTY_CONTENT);
+        }
+        setError(response.error || 'Failed to load content');
+        // Still mark as ready so app can render (with empty/error state)
+        setIsReady(true);
       }
     } catch (err) {
-      console.error('❌ [useContent] Failed to load content from MongoDB:', err);
-      console.error('❌ [useContent] Error details:', {
-        message: err instanceof Error ? err.message : 'Unknown error',
-        stack: err instanceof Error ? err.stack : undefined
-      });
-      setError(err instanceof Error ? err.message : 'Failed to load content from MongoDB');
+      // Use cached content on error if available
+      const cached = getCachedContent();
+      if (cached) {
+        setContent(cached);
+        if (import.meta.env.DEV) {
+          console.warn('⚠️ [useContent] Using cached content due to error');
+        }
+      } else {
+        setContent(EMPTY_CONTENT);
+      }
+      setError(err instanceof Error ? err.message : 'Failed to load content');
       
-      // Set empty content instead of fallback defaults
-      setContent(EMPTY_CONTENT);
-      
-      console.warn('⚠️ [useContent] Using empty content - MongoDB data required for frontend to display properly');
+      if (import.meta.env.DEV) {
+        console.error('❌ [useContent] Error:', err);
+      }
     } finally {
       setLoading(false);
-      console.log('🏁 [useContent] Content loading finished');
+      loadingRef.current = false;
+      // Mark as ready once loading completes (even if there was an error)
+      setIsReady(true);
     }
   };
 
@@ -94,14 +136,29 @@ export const ContentProvider: React.FC<ContentProviderProps> = ({ children }) =>
   };
 
   useEffect(() => {
-    loadContent();
+    // If we have cached content, mark as ready immediately
+    if (cachedContent) {
+      setIsReady(true);
+    }
+    
+    // Load content - if cached, show immediately and refresh in background
+    const cached = getCachedContent();
+    if (cached) {
+      // We already set content from cache in useState, just refresh in background
+      loadContent();
+    } else {
+      // No cache, load immediately
+      loadContent();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const value: ContentContextType = {
     content,
     loading,
     error,
-    refreshContent
+    refreshContent,
+    isReady
   };
 
   return (

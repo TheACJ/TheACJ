@@ -23,12 +23,12 @@ const Hero = () => {
     }
   }, [slides.length]);
 
-  // Show loading state while content is being fetched
-  if (loading) {
+  // Show loading state only if we have no slides at all (optimistic rendering)
+  if (loading && slides.length === 0) {
     return (
       <section id="home" className="relative h-screen overflow-hidden dark:bg-gray-900 dark:text-[#b9b8b8] flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
-        <span className="ml-4 text-white">Loading hero ......</span>
+        <span className="ml-4 text-white">Loading hero...</span>
       </section>
     );
   }

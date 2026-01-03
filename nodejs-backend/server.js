@@ -6,6 +6,7 @@ const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
 const path = require('path');
 const cookieParser = require('cookie-parser');
+const compression = require('compression');
 require('dotenv').config();
 
 // Import database connection
@@ -35,6 +36,9 @@ const app = express();
 
 // Trust proxy for accurate IP detection behind reverse proxies (trust 1 proxy hop)
 app.set('trust proxy', 1);
+
+// Compression middleware (should be early in the middleware stack)
+app.use(compression());
 
 // Security middleware
 app.use(helmet({
