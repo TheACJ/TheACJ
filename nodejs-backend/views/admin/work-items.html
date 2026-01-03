@@ -595,16 +595,32 @@
                     const result = await response.json();
 
                     if (result.success) {
-                        this.workItems = result.data.workItems;
+                        this.workItems = result.data.workItems || [];
                         this.filteredItems = [...this.workItems];
                         this.renderWorkItems();
                         this.renderPagination();
                     } else {
-                        AdminUtils.showAlert('Failed to load work items', 'danger');
+                        this.workItems = [];
+                        this.filteredItems = [];
+                        this.hideLoading();
+                        AdminUtils.showAlert(result.error || 'Failed to load work items', 'danger');
+                        this.renderWorkItems(); // Render empty state
                     }
                 } catch (error) {
                     console.error('Error loading work items:', error);
-                    AdminUtils.showAlert('Error loading work items', 'danger');
+                    this.workItems = [];
+                    this.filteredItems = [];
+                    this.hideLoading();
+                    AdminUtils.showAlert('Error loading work items: ' + (error.message || 'Unknown error'), 'danger');
+                    this.renderWorkItems(); // Render empty state
+                }
+            }
+
+            hideLoading() {
+                const tbody = document.getElementById('workItemsTableBody');
+                // Clear any loading state - renderWorkItems will handle empty state if needed
+                if (tbody && tbody.children.length === 1 && tbody.children[0].querySelector('.spinner-border')) {
+                    tbody.innerHTML = '';
                 }
             }
 
@@ -1041,11 +1057,15 @@
             }
 
             async saveDraft() {
-                await this.saveWorkInternal('draft');
+                // Use the status from the form, default to 'planning' if not set
+                const status = document.getElementById('workStatus').value || 'planning';
+                await this.saveWorkInternal(status);
             }
 
             async saveWork() {
-                await this.saveWorkInternal('published');
+                // Use the status from the form, default to 'in-progress' if not set
+                const status = document.getElementById('workStatus').value || 'in-progress';
+                await this.saveWorkInternal(status);
             }
 
             async saveWorkInternal(status) {
@@ -1055,67 +1075,54 @@
                 const client = document.getElementById('workClient').value;
                 const url = document.getElementById('workUrl').value;
                 const github = document.getElementById('workGithub').value;
-                const technologies = document.getElementById('workTechnologies').value.split(',').map(tech => tech.trim()).filter(tech => tech);
+                const technologies = document.getElementById('workTechnologies').value;
                 const completionDate = document.getElementById('workCompletionDate').value;
+                // Get status from form if not provided
+                const workStatus = status || document.getElementById('workStatus').value || 'planning';
                 
                 if (!title || !description || !category) {
                     AdminUtils.showAlert('Please fill in all required fields', 'warning');
                     return;
                 }
 
-                const workData = {
-                    title,
-                    description,
-                    category,
-                    status,
-                    client,
-                    url,
-                    github,
-                    technologies,
-                    completionDate
-                };
-
                 try {
                     const token = localStorage.getItem('adminToken');
-                    const url = this.isEditMode 
+                    const apiUrl = this.isEditMode 
                         ? `/api/admin/content/work-items/${this.currentItemId}`
                         : '/api/admin/content/work-items';
                     const method = this.isEditMode ? 'PUT' : 'POST';
 
+                    // Use FormData to send both files and data
+                    const formData = new FormData();
+                    formData.append('title', title);
+                    formData.append('description', description);
+                    formData.append('category', category);
+                    formData.append('status', workStatus);
+                    formData.append('client', client || '');
+                    formData.append('url', url || '');
+                    formData.append('github', github || '');
+                    formData.append('technologies', technologies || '');
+                    formData.append('completionDate', completionDate || '');
+
                     // Handle main image upload if selected
                     const imageFile = document.getElementById('workImage').files[0];
                     if (imageFile) {
-                        const imageFormData = new FormData();
-                        imageFormData.append('image', imageFile);
-                        
-                        const imageResponse = await fetch('/api/admin/upload/image', {
-                            method: 'POST',
-                            headers: {
-                                'Authorization': `Bearer ${token}`
-                            },
-                            body: imageFormData
-                        });
-
-                        const imageResult = await imageResponse.json();
-                        if (imageResult.success) {
-                            workData.image = imageResult.data.url;
-                        }
+                        formData.append('image', imageFile);
                     }
 
                     // Handle gallery images if any
                     const galleryFiles = document.getElementById('workGallery').files;
-                    if (galleryFiles.length > 0) {
-                        // This would require a separate gallery upload endpoint
-                        // For now, we'll skip gallery uploads in this implementation
+                    for (let i = 0; i < galleryFiles.length; i++) {
+                        formData.append('gallery', galleryFiles[i]);
                     }
 
-                    const response = await fetch(url, {
+                    const response = await fetch(apiUrl, {
                         method,
                         headers: {
-                            'Content-Type': 'application/json',
                             'Authorization': `Bearer ${token}`
+                            // Don't set Content-Type - let browser set it with boundary for FormData
                         },
-                        body: JSON.stringify(workData)
+                        body: formData
                     });
 
                     const result = await response.json();
@@ -1127,9 +1134,13 @@
                         await this.loadWorkItems();
                     } else {
                         AdminUtils.showAlert(result.error || `Failed to ${this.isEditMode ? 'update' : 'create'} work item`, 'danger');
+                        if (result.details) {
+                            console.error('Validation errors:', result.details);
+                        }
                     }
                 } catch (error) {
-                    AdminUtils.showAlert(`Error ${this.isEditMode ? 'updating' : 'creating'} work item`, 'danger');
+                    console.error('Error:', error);
+                    AdminUtils.showAlert(`Error ${this.isEditMode ? 'updating' : 'creating'} work item: ${error.message}`, 'danger');
                 }
             }
 

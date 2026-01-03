@@ -4,28 +4,51 @@ const workItemSchema = new mongoose.Schema({
   title: {
     type: String,
     required: [true, 'Title is required'],
-    trim: true,
-    maxlength: [20, 'Title cannot be more than 20 characters']
+    trim: true
   },
   category: {
-    type: String,
-    trim: true,
-    maxlength: [20, 'Category cannot be more than 20 characters']
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Category',
+    required: [true, 'Category is required']
   },
   image: {
     type: String, // File path for uploaded image
     trim: true
   },
+  gallery: [{
+    type: String // Array of file paths for gallery images
+  }],
   description: {
     type: String,
     required: [true, 'Description is required'],
-    trim: true,
-    maxlength: [1024, 'Description cannot be more than 1024 characters']
+    trim: true
+  },
+  status: {
+    type: String,
+    enum: ['planning', 'in-progress', 'completed'],
+    default: 'planning'
+  },
+  client: {
+    type: String,
+    trim: true
+  },
+  url: {
+    type: String,
+    trim: true
+  },
+  github: {
+    type: String,
+    trim: true
+  },
+  technologies: [{
+    type: String
+  }],
+  completionDate: {
+    type: Date
   },
   link: {
     type: String,
-    trim: true,
-    maxlength: [1024, 'Link cannot be more than 1024 characters']
+    trim: true
   }
 }, {
   timestamps: true,

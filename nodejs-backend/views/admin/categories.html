@@ -390,15 +390,30 @@
                     const result = await response.json();
 
                     if (result.success) {
-                        this.categories = result.data.categories;
+                        this.categories = result.data.categories || [];
                         this.filteredCategories = [...this.categories];
                         this.renderCategories();
                     } else {
-                        AdminUtils.showAlert('Failed to load categories', 'danger');
+                        this.categories = [];
+                        this.filteredCategories = [];
+                        this.hideLoading();
+                        AdminUtils.showAlert(result.error || 'Failed to load categories', 'danger');
+                        this.renderCategories(); // Render empty state
                     }
                 } catch (error) {
                     console.error('Error loading categories:', error);
-                    AdminUtils.showAlert('Error loading categories', 'danger');
+                    this.categories = [];
+                    this.filteredCategories = [];
+                    this.hideLoading();
+                    AdminUtils.showAlert('Error loading categories: ' + (error.message || 'Unknown error'), 'danger');
+                    this.renderCategories(); // Render empty state
+                }
+            }
+
+            hideLoading() {
+                const tbody = document.getElementById('categoriesTableBody');
+                if (tbody && tbody.children.length === 1 && tbody.children[0].querySelector('.spinner-border')) {
+                    tbody.innerHTML = '';
                 }
             }
 

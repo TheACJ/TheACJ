@@ -401,17 +401,32 @@
                     const result = await response.json();
 
                     if (result.success) {
-                        this.contacts = result.data.contacts;
+                        this.contacts = result.data.contacts || [];
                         this.filteredContacts = [...this.contacts];
                         this.renderContacts();
                         this.renderPagination();
                         this.updateUnreadCount();
                     } else {
-                        AdminUtils.showAlert('Failed to load contacts', 'danger');
+                        this.contacts = [];
+                        this.filteredContacts = [];
+                        this.hideLoading();
+                        AdminUtils.showAlert(result.error || 'Failed to load contacts', 'danger');
+                        this.renderContacts(); // Render empty state
                     }
                 } catch (error) {
                     console.error('Error loading contacts:', error);
-                    AdminUtils.showAlert('Error loading contacts', 'danger');
+                    this.contacts = [];
+                    this.filteredContacts = [];
+                    this.hideLoading();
+                    AdminUtils.showAlert('Error loading contacts: ' + (error.message || 'Unknown error'), 'danger');
+                    this.renderContacts(); // Render empty state
+                }
+            }
+
+            hideLoading() {
+                const tbody = document.getElementById('contactsTableBody');
+                if (tbody && tbody.children.length === 1 && tbody.children[0].querySelector('.spinner-border')) {
+                    tbody.innerHTML = '';
                 }
             }
 

@@ -560,16 +560,32 @@
                     const result = await response.json();
 
                     if (result.success) {
-                        this.posts = result.data.posts;
+                        this.posts = result.data.posts || [];
                         this.filteredPosts = [...this.posts];
                         this.renderPosts();
                         this.renderPagination();
                     } else {
-                        AdminUtils.showAlert('Failed to load blog posts', 'danger');
+                        this.posts = [];
+                        this.filteredPosts = [];
+                        this.hideLoading();
+                        AdminUtils.showAlert(result.error || 'Failed to load blog posts', 'danger');
+                        this.renderPosts(); // Render empty state
                     }
                 } catch (error) {
                     console.error('Error loading posts:', error);
-                    AdminUtils.showAlert('Error loading blog posts', 'danger');
+                    this.posts = [];
+                    this.filteredPosts = [];
+                    this.hideLoading();
+                    AdminUtils.showAlert('Error loading blog posts: ' + (error.message || 'Unknown error'), 'danger');
+                    this.renderPosts(); // Render empty state
+                }
+            }
+
+            hideLoading() {
+                const tbody = document.getElementById('postsTableBody');
+                // Clear any loading state - renderPosts will handle empty state if needed
+                if (tbody && tbody.children.length === 1 && tbody.children[0].querySelector('.spinner-border')) {
+                    tbody.innerHTML = '';
                 }
             }
 
@@ -964,23 +980,12 @@
                 const category = document.getElementById('postCategory').value;
                 const excerpt = document.getElementById('postExcerpt').value;
                 const metaDescription = document.getElementById('postMetaDescription').value;
-                const tags = document.getElementById('postTags').value.split(',').map(tag => tag.trim()).filter(tag => tag);
+                const tags = document.getElementById('postTags').value;
                 
                 if (!title || !content || !category) {
                     AdminUtils.showAlert('Please fill in all required fields', 'warning');
                     return;
                 }
-
-                const postData = {
-                    title,
-                    content,
-                    category,
-                    status,
-                    excerpt,
-                    metaDescription,
-                    tags,
-                    author: this.admin.fullName || this.admin.username
-                };
 
                 try {
                     const token = localStorage.getItem('adminToken');
@@ -989,33 +994,30 @@
                         : '/api/admin/content/blog-posts';
                     const method = this.isEditMode ? 'PUT' : 'POST';
 
-                    // Handle image upload if selected
+                    // Use FormData to send both file and data
+                    const formData = new FormData();
+                    formData.append('title', title);
+                    formData.append('content', content);
+                    formData.append('category', category);
+                    formData.append('status', status);
+                    formData.append('excerpt', excerpt || '');
+                    formData.append('metaDescription', metaDescription || '');
+                    formData.append('tags', tags || '');
+                    formData.append('author', this.admin.fullName || this.admin.username);
+
+                    // Handle featured image upload if selected
                     const imageFile = document.getElementById('featuredImage').files[0];
                     if (imageFile) {
-                        const imageFormData = new FormData();
-                        imageFormData.append('image', imageFile);
-                        
-                        const imageResponse = await fetch('/api/admin/upload/image', {
-                            method: 'POST',
-                            headers: {
-                                'Authorization': `Bearer ${token}`
-                            },
-                            body: imageFormData
-                        });
-
-                        const imageResult = await imageResponse.json();
-                        if (imageResult.success) {
-                            postData.featuredImage = imageResult.data.url;
-                        }
+                        formData.append('featuredImage', imageFile);
                     }
 
                     const response = await fetch(url, {
                         method,
                         headers: {
-                            'Content-Type': 'application/json',
                             'Authorization': `Bearer ${token}`
+                            // Don't set Content-Type - let browser set it with boundary for FormData
                         },
-                        body: JSON.stringify(postData)
+                        body: formData
                     });
 
                     const result = await response.json();
@@ -1027,9 +1029,13 @@
                         await this.loadPosts();
                     } else {
                         AdminUtils.showAlert(result.error || `Failed to ${this.isEditMode ? 'update' : 'create'} post`, 'danger');
+                        if (result.details) {
+                            console.error('Validation errors:', result.details);
+                        }
                     }
                 } catch (error) {
-                    AdminUtils.showAlert(`Error ${this.isEditMode ? 'updating' : 'creating'} post`, 'danger');
+                    console.error('Error:', error);
+                    AdminUtils.showAlert(`Error ${this.isEditMode ? 'updating' : 'creating'} post: ${error.message}`, 'danger');
                 }
             }
 
