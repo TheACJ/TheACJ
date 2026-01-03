@@ -186,8 +186,17 @@ class AdminSystem {
     toggleTheme() {
         this.config.theme = this.config.theme === 'light' ? 'dark' : 'light';
         localStorage.setItem('theme', this.config.theme);
+        
+        // CRITICAL for the new CSS variables to work:
+        document.documentElement.setAttribute('data-theme', this.config.theme);
+        
         this.setupTheme();
         this.showToast(`Switched to ${this.config.theme} mode`, 'success');
+        
+        // Trigger chart update if using the dashboard manager
+        if(window.updateChartTheme) {
+            window.updateChartTheme();
+        }
     }
 
     updateThemeToggle() {
