@@ -78,7 +78,7 @@ export const ContentProvider: React.FC<ContentProviderProps> = ({ children }) =>
           skills: response.data.skills || EMPTY_CONTENT.skills
         };
 
-        // Update content immediately (optimistic update)
+        // Always update content - components handle empty states themselves
         setContent(mergedContent);
         
         // Content is ready once loaded
@@ -93,7 +93,7 @@ export const ContentProvider: React.FC<ContentProviderProps> = ({ children }) =>
         }
         
         if (import.meta.env.DEV) {
-          console.log('✅ [useContent] Content loaded successfully');
+          console.log('✅ [useContent] Content loaded successfully', mergedContent);
         }
       } else {
         // Use cached content if available, otherwise use empty

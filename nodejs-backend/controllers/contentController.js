@@ -227,19 +227,21 @@ exports.updateContentSection = async (req, res) => {
 // Get public content (for frontend)
 exports.getPublicContent = async (req, res) => {
   try {
-    // Optimize query - only select needed fields, exclude metadata
+    // Optimize query - only select needed fields (inclusion only)
     const contentSections = await ContentSection.find({ isActive: true })
-      .select('sectionType hero about services counter skills -_id -__v -isActive -createdAt -updatedAt -createdBy -updatedBy')
+      .select('sectionType hero about services counter skills')
       .lean() // Use lean() for faster queries (returns plain JS objects)
       .sort({ sectionType: 1 });
     
     // Transform to match frontend expectations
     const transformedContent = {};
     contentSections.forEach(section => {
-      transformedContent[section.sectionType] = section[section.sectionType];
+      const sectionData = section[section.sectionType];
+      transformedContent[section.sectionType] = sectionData;
     });
 
-    // Merge with defaults where content is missing
+    // Only use defaults where content section doesn't exist (missing section type)
+    // Don't replace existing data even if it's empty - let frontend handle empty states
     Object.keys(DEFAULT_CONTENT).forEach(key => {
       if (!transformedContent[key]) {
         transformedContent[key] = DEFAULT_CONTENT[key];
