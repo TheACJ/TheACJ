@@ -10,7 +10,7 @@ const getWorkItems = async (req, res, next) => {
     const skip = (page - 1) * limit;
 
     const workItems = await WorkItem.find()
-      .sort({ createdAt: -1 })
+      .sort({ created_at: -1 })
       .skip(skip)
       .limit(limit);
 
@@ -62,20 +62,44 @@ const getWorkItem = async (req, res, next) => {
 // @access  Private/Admin
 const createWorkItem = async (req, res, next) => {
   try {
-    const { title, category, description, link } = req.body;
+    const {
+      title,
+      description,
+      category,
+      technologies,
+      project_url,
+      github_url,
+      status,
+      featured_image,
+      gallery_images,
+      start_date,
+      end_date
+    } = req.body;
 
-    // Handle file upload
-    let image = null;
+    // Handle file upload for featured image
+    let image = featured_image;
     if (req.file) {
       image = req.file.filename;
     }
 
+    // Handle gallery images upload
+    let gallery = gallery_images;
+    if (req.files && req.files.length > 0) {
+      gallery = req.files.map(file => file.filename);
+    }
+
     const workItem = await WorkItem.create({
       title,
-      category,
       description,
-      link,
-      image
+      category,
+      technologies: technologies || [],
+      project_url,
+      github_url,
+      status: status || 'planning',
+      featured_image: image,
+      gallery_images: gallery || [],
+      start_date,
+      end_date
     });
 
     res.status(201).json({
@@ -92,18 +116,44 @@ const createWorkItem = async (req, res, next) => {
 // @access  Private/Admin
 const updateWorkItem = async (req, res, next) => {
   try {
-    const { title, category, description, link } = req.body;
+    const {
+      title,
+      description,
+      category,
+      technologies,
+      project_url,
+      github_url,
+      status,
+      featured_image,
+      gallery_images,
+      start_date,
+      end_date
+    } = req.body;
 
     let updateData = {
       title,
-      category,
       description,
-      link
+      category,
+      technologies,
+      project_url,
+      github_url,
+      status,
+      start_date,
+      end_date
     };
 
-    // Handle file upload
+    // Handle file upload for featured image
     if (req.file) {
-      updateData.image = req.file.filename;
+      updateData.featured_image = req.file.filename;
+    } else if (featured_image) {
+      updateData.featured_image = featured_image;
+    }
+
+    // Handle gallery images
+    if (req.files && req.files.length > 0) {
+      updateData.gallery_images = req.files.map(file => file.filename);
+    } else if (gallery_images) {
+      updateData.gallery_images = gallery_images;
     }
 
     const workItem = await WorkItem.findByIdAndUpdate(

@@ -4,23 +4,19 @@ import logo from '../assets/img/logo.png';
 const Loader = () => {
   return (
     <motion.div 
-      className="fixed inset-0 z-[2000]"
+      className="fixed inset-0 z-[9999]" // Increased Z-index to be top-most
       initial={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.5 }}
     >
       <div id="loader-wrapper">
-        {/* Logo positioned absolutely */}
         <img
           src={logo}
           alt="ACJ Logo"
           className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 nospin"
         />
         
-        <div id="loader">
-          {/* The rotating part of the loader */}
-        </div>
-
+        <div id="loader"></div>
         <div className="loader-section section-left"></div>
         <div className="loader-section section-right"></div>
       </div>
@@ -32,7 +28,7 @@ const Loader = () => {
           left: 0;
           width: 100%;
           height: 100%;
-          z-index: 2000;
+          z-index: 9999;
         }
 
         #loader {
@@ -116,8 +112,8 @@ const Loader = () => {
         }
 
         .nospin {
-          animation: none !important; /* Forcefully stop animation */
-          z-index: 10002; /* Ensure logo stays above loader */
+          animation: none !important;
+          z-index: 10002;
         }
       `}</style>
     </motion.div>

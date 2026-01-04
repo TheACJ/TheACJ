@@ -460,3 +460,45 @@ transition: 0.3s ease all;
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
 }
+
+/* ABOUT SECTION */
+
+@keyframes gradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.animate-gradient {
+  animation: gradient 6s ease infinite;
+}
+
+@keyframes bounce-x {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(4px); }
+}
+
+.animate-bounce-x {
+  animation: bounce-x 1s infinite;
+}
+
+/* SERVICES SECTION */
+
+/* Smooth hover transitions for all cards */
+.group:hover .group-hover\:scale-110 {
+  transform: scale(1.1);
+}
+
+/* COUNTER SECTUON */
+/* Screen reader only utility */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
