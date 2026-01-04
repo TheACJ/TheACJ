@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { 
   Code2, Layout, Server, Database, Cloud, Link2, Users, Sparkles,
-  Zap, BarChart3, Terminal
+  Zap, BarChart3
 } from 'lucide-react';
 import { useContent } from '../hooks/useContent';
 import '../assets/style.css';
@@ -146,16 +146,121 @@ interface SkillCardProps {
 }
 
 const SkillCard = ({ skill, index, isVisible }: SkillCardProps) => {
-  const { color, bgColor, text } = getSkillLevelInfo(skill.level);
+  const { color, text } = getSkillLevelInfo(skill.level);
   
-  // Handle both Image URLs and FontAwesome classes for backward compatibility
-  const renderIcon = () => {
-    if (!skill.icon) return <Terminal size={20} />;
+  // Convert skill name to sentence case for Supabase file naming
+  // Examples: "node" -> "Node", "react native" -> "Reactnative", "node.js" -> "Node.js"
+  const toSentenceCaseFileName = (str: string): string => {
+    if (!str) return '';
     
-    if (skill.icon.includes('fa-') || skill.icon.includes('icon-')) {
-      return <i className={`${skill.icon} text-2xl`} aria-hidden="true" />;
+    // Handle special cases with dots (like "node.js", "c++")
+    // Split by spaces first, then handle dots within each word
+    const spaceWords = str.split(/\s+/);
+    const processedWords = spaceWords.map(word => {
+      // If word contains dots (like "node.js"), preserve the dot structure
+      if (word.includes('.')) {
+        const parts = word.split('.');
+        return parts
+          .map(part => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
+          .join('.');
+      }
+      // Handle dashes and underscores
+      if (word.includes('-') || word.includes('_')) {
+        const parts = word.split(/[-_]+/);
+        return parts
+          .map(part => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
+          .join('');
+      }
+      // Simple word - just capitalize first letter
+      return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+    });
+    
+    // Join all words without spaces
+    return processedWords.join('');
+  };
+  
+  // Construct Supabase SVG icon URL
+  const getSupabaseIconUrl = (skillName: string): string => {
+    const baseUrl = 'https://qnzltqrqkwwvadyezsjg.supabase.co/storage/v1/object/public/svg_icons/';
+    // Convert skill name to sentence case filename (e.g., "node" -> "Node.svg")
+    const fileName = toSentenceCaseFileName(skillName) + '.svg';
+    const fullUrl = baseUrl + fileName;
+    // Debug: Log the URL being generated (remove in production if needed)
+    console.log(`[Skills] Generating icon URL for "${skillName}": ${fullUrl}`);
+    return fullUrl;
+  };
+  
+  // Handle Supabase SVG icons with fallback to custom URLs or FontAwesome
+  const renderIcon = () => {
+    // Priority 1: If icon is a full URL (custom image), use it directly
+    if (skill.icon && (skill.icon.startsWith('http://') || skill.icon.startsWith('https://'))) {
+      return (
+        <img 
+          src={skill.icon} 
+          alt={skill.name} 
+          className="w-7 h-7 object-contain flex-shrink-0"
+          loading="lazy"
+          width="28"
+          height="28"
+          onError={(e) => {
+            // Fallback to Supabase if custom URL fails
+            const target = e.target as HTMLImageElement;
+            target.src = getSupabaseIconUrl(skill.name);
+          }} 
+        />
+      );
     }
-    return <img src={skill.icon} alt={skill.name} className="w-7 h-7 object-contain" />;
+    
+    // Priority 2: Use Supabase SVG icon based on skill name (default behavior)
+    const iconUrl = getSupabaseIconUrl(skill.name);
+    return (
+      <img 
+        src={iconUrl} 
+        alt={skill.name} 
+        className="w-7 h-7 object-contain flex-shrink-0"
+        loading="lazy"
+        width="28"
+        height="28"
+        onError={(e) => {
+          // Log the error for debugging
+          console.error(`[Skills] Failed to load icon for "${skill.name}" from URL: ${iconUrl}`);
+          
+          // Fallback 1: If Supabase icon fails and we have a FontAwesome class, use that
+          const target = e.target as HTMLImageElement;
+          if (skill.icon && (skill.icon.includes('fa-') || skill.icon.includes('icon-'))) {
+            console.log(`[Skills] Falling back to FontAwesome icon: ${skill.icon}`);
+            target.style.display = 'none';
+            const parent = target.parentElement;
+            if (parent && !parent.querySelector('.fallback-icon')) {
+              const fallback = document.createElement('i');
+              fallback.className = `${skill.icon} text-2xl`;
+              fallback.setAttribute('aria-hidden', 'true');
+              parent.appendChild(fallback);
+            }
+            return;
+          }
+          
+          // Fallback 2: Show a simple placeholder if no other option
+          console.log(`[Skills] Using placeholder icon for "${skill.name}"`);
+          target.style.display = 'none';
+          const parent = target.parentElement;
+          if (parent && !parent.querySelector('.fallback-icon')) {
+            const fallback = document.createElement('div');
+            fallback.className = 'fallback-icon flex items-center justify-center text-gray-400 dark:text-gray-500';
+            fallback.innerHTML = '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="9" x2="15" y2="9"/><line x1="9" y1="15" x2="15" y2="15"/></svg>';
+            parent.appendChild(fallback);
+          }
+        }}
+        onLoad={(e) => {
+          // Log successful load
+          console.log(`[Skills] Successfully loaded icon for "${skill.name}" from: ${iconUrl}`);
+          // Ensure image is visible on successful load
+          const target = e.target as HTMLImageElement;
+          target.style.display = '';
+          target.style.opacity = '1';
+        }}
+      />
+    );
   };
 
   return (
@@ -170,8 +275,8 @@ const SkillCard = ({ skill, index, isVisible }: SkillCardProps) => {
       {/* Header: Icon & Name */}
       <div className="flex items-center justify-between mb-5 relative z-10">
         <div className="flex items-center gap-4">
-          <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${color} p-0.5 shadow-lg group-hover:scale-110 transition-transform duration-300`}>
-            <div className="w-full h-full bg-white dark:bg-gray-900 rounded-[10px] flex items-center justify-center text-gray-700 dark:text-gray-200">
+          <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${color} p-0.5 shadow-lg group-hover:scale-110 transition-transform duration-300 flex-shrink-0`}>
+            <div className="w-full h-full bg-white dark:bg-gray-900 rounded-[10px] flex items-center justify-center text-gray-700 dark:text-gray-200 relative overflow-hidden">
               {renderIcon()}
             </div>
           </div>
