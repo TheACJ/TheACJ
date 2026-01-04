@@ -126,7 +126,7 @@ const BlogCard = ({ post, index }: BlogCardProps) => {
   const readingTime = calculateReadingTime(post.content || post.excerpt);
   const displayDate = formatDate(post.publishedAt || post.createdAt);
   const categoryName = post.category?.friendlyName || post.category?.name || 'Tech';
-  const imageUrl = post.image || post.imageUrl;
+  const imageUrl = post.featured_image || post.image_url || post.image || post.imageUrl;
 
   return (
     <motion.article
@@ -173,7 +173,7 @@ const BlogCard = ({ post, index }: BlogCardProps) => {
 
         {/* Title */}
         <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3 line-clamp-2 group-hover:text-primary transition-colors">
-          <a href={`/blog/${post.slug}`}>
+          <a href={post.postUrl || `/blog/${post.slug}`} target="_blank" rel="noopener noreferrer">
             {post.title}
           </a>
         </h3>
@@ -186,14 +186,16 @@ const BlogCard = ({ post, index }: BlogCardProps) => {
         {/* Footer Link */}
         <div className="pt-4 border-t border-gray-100 dark:border-gray-700">
           <a
-            href={`/blog/${post.slug}`}
+            href={post.postUrl || `/blog/${post.slug}`}
+            target="_blank"
+            rel="noopener noreferrer"
             className="inline-flex items-center gap-2 text-sm font-bold text-primary group/link"
           >
             <BookOpen size={16} />
             <span>Read Article</span>
-            <ArrowRight 
-              size={16} 
-              className="transition-transform duration-300 group-hover/link:translate-x-1" 
+            <ArrowRight
+              size={16}
+              className="transition-transform duration-300 group-hover/link:translate-x-1"
             />
           </a>
         </div>

@@ -18,9 +18,18 @@ const getBlogPosts = async (req, res, next) => {
 
     const total = await BlogPost.countDocuments();
 
+    // Ensure image URLs are full URLs for frontend compatibility
+    const processedPosts = blogPosts.map(post => {
+      const postObj = post.toObject();
+      if (postObj.image && !postObj.imageUrl) {
+        postObj.imageUrl = `${process.env.BASE_URL || 'http://localhost:5000'}/uploads/${postObj.image}`;
+      }
+      return postObj;
+    });
+
     res.status(200).json({
       success: true,
-      count: blogPosts.length,
+      count: processedPosts.length,
       total,
       pagination: {
         page,
@@ -29,7 +38,7 @@ const getBlogPosts = async (req, res, next) => {
         hasNext: page * limit < total,
         hasPrev: page > 1
       },
-      data: blogPosts
+      data: processedPosts
     });
   } catch (error) {
     next(error);
@@ -40,24 +49,30 @@ const getBlogPosts = async (req, res, next) => {
 // @route   GET /api/blog-posts/:id
 // @access  Public
 const getBlogPost = async (req, res, next) => {
-  try {
-    const blogPost = await BlogPost.findById(req.params.id)
-      .populate('category', 'name friendlyName');
+ try {
+   const blogPost = await BlogPost.findById(req.params.id)
+     .populate('category', 'name friendlyName');
 
-    if (!blogPost) {
-      return res.status(404).json({
-        success: false,
-        error: 'Blog post not found'
-      });
-    }
+   if (!blogPost) {
+     return res.status(404).json({
+       success: false,
+       error: 'Blog post not found'
+     });
+   }
 
-    res.status(200).json({
-      success: true,
-      data: blogPost
-    });
-  } catch (error) {
-    next(error);
-  }
+   // Ensure image URL is full URL for frontend compatibility
+   const postObj = blogPost.toObject();
+   if (postObj.image && !postObj.imageUrl) {
+     postObj.imageUrl = `${process.env.BASE_URL || 'http://localhost:5000'}/uploads/${postObj.image}`;
+   }
+
+   res.status(200).json({
+     success: true,
+     data: postObj
+   });
+ } catch (error) {
+   next(error);
+ }
 };
 
 // @desc    Create new blog post
@@ -65,7 +80,7 @@ const getBlogPost = async (req, res, next) => {
 // @access  Private/Admin
 const createBlogPost = async (req, res, next) => {
   try {
-    const { title, content, category, imageUrl, link } = req.body;
+    const { title, content, category, imageUrl, link, postUrl } = req.body;
 
     // Handle file upload
     let image = null;
@@ -79,7 +94,8 @@ const createBlogPost = async (req, res, next) => {
       category: category || null,
       imageUrl,
       image,
-      link
+      link,
+      postUrl
     });
 
     const populatedPost = await BlogPost.findById(blogPost._id)
@@ -99,14 +115,15 @@ const createBlogPost = async (req, res, next) => {
 // @access  Private/Admin
 const updateBlogPost = async (req, res, next) => {
   try {
-    const { title, content, category, imageUrl, link } = req.body;
+    const { title, content, category, imageUrl, link, postUrl } = req.body;
 
     let updateData = {
       title,
       content,
       category: category || null,
       imageUrl,
-      link
+      link,
+      postUrl
     };
 
     // Handle file upload

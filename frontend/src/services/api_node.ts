@@ -158,8 +158,11 @@ export interface BlogPost {
   title: string;
   content: string;
   excerpt?: string;
-  image: string;
+  image?: string;
   imageUrl?: string;
+  featured_image?: string;
+  image_url?: string;
+  postUrl?: string;
   category: Category;
   author: string;
   slug: string;
@@ -168,9 +171,9 @@ export interface BlogPost {
   tags: string[];
   seoTitle?: string;
   seoDescription?: string;
-  createdAt: Date;
-  updatedAt: Date;
-  publishedAt?: Date;
+  createdAt: string;
+  updatedAt: string;
+  publishedAt?: string;
 }
 
 // Work Item
@@ -240,6 +243,7 @@ export interface BlogPostForm {
   seoTitle?: string;
   seoDescription?: string;
   image?: File;
+  postUrl?: string;
 }
 
 // Work Item Form Data
