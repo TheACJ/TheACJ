@@ -888,7 +888,7 @@
                 // Populate form fields
                 document.getElementById('postTitle').value = post.title;
                 document.getElementById('postExcerpt').value = post.excerpt || '';
-                document.getElementById('postUrl').value = post.postUrl || '';
+                document.getElementById('postUrl').value = post.post_url || post.postUrl || '';
                 document.getElementById('postMetaDescription').value = post.metaDescription || '';
                 document.getElementById('postTags').value = post.tags ? post.tags.join(', ') : '';
                 document.getElementById('postCategory').value = post.category?._id || '';
@@ -1008,6 +1008,7 @@
                     formData.append('category', category);
                     formData.append('status', status);
                     formData.append('excerpt', excerpt || '');
+                    formData.append('post_url', postUrl || '');
                     formData.append('metaDescription', metaDescription || '');
                     formData.append('tags', tags || '');
                     formData.append('author', this.admin.fullName || this.admin.username);

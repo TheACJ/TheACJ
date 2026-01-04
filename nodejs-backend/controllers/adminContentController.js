@@ -686,7 +686,7 @@ const createBlogPost = async (req, res) => {
       });
     }
 
-    const { title, content, category, status, excerpt, metaDescription, tags } = req.body;
+    const { title, content, category, status, excerpt, metaDescription, tags, post_url } = req.body;
     const author = req.admin.fullName || req.admin.username;
 
     const postData = {
@@ -697,6 +697,7 @@ const createBlogPost = async (req, res) => {
       excerpt,
       metaDescription,
       tags: tags ? tags.split(',').map(tag => tag.trim()).filter(tag => tag) : [],
+      post_url,
       author
     };
 
@@ -742,7 +743,7 @@ const updateBlogPost = async (req, res) => {
     }
 
     const { id } = req.params;
-    const { title, content, category, status, excerpt, metaDescription, tags } = req.body;
+    const { title, content, category, status, excerpt, metaDescription, tags, post_url } = req.body;
 
     const updateData = {};
 
@@ -755,6 +756,7 @@ const updateBlogPost = async (req, res) => {
     if (tags !== undefined) {
       updateData.tags = tags.split(',').map(tag => tag.trim()).filter(tag => tag);
     }
+    if (post_url !== undefined) updateData.post_url = post_url;
 
     // Handle featured image upload
     if (req.file) {

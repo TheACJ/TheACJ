@@ -173,7 +173,7 @@ const BlogCard = ({ post, index }: BlogCardProps) => {
 
         {/* Title */}
         <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3 line-clamp-2 group-hover:text-primary transition-colors">
-          <a href={post.postUrl || `/blog/${post.slug}`} target="_blank" rel="noopener noreferrer">
+          <a href={post.post_url || post.postUrl || `/blog/${post.slug}`} target="_blank" rel="noopener noreferrer">
             {post.title}
           </a>
         </h3>
@@ -186,7 +186,7 @@ const BlogCard = ({ post, index }: BlogCardProps) => {
         {/* Footer Link */}
         <div className="pt-4 border-t border-gray-100 dark:border-gray-700">
           <a
-            href={post.postUrl || `/blog/${post.slug}`}
+            href={post.post_url || post.postUrl || `/blog/${post.slug}`}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 text-sm font-bold text-primary group/link"

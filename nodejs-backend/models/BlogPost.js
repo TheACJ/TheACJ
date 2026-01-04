@@ -36,7 +36,7 @@ const blogPostSchema = new mongoose.Schema({
     trim: true,
     maxlength: [1024, 'Link cannot be more than 1024 characters']
   },
-  postUrl: {
+  post_url: {
     type: String,
     trim: true,
     maxlength: [1024, 'Post URL cannot be more than 1024 characters']

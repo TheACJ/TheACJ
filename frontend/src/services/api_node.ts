@@ -163,6 +163,7 @@ export interface BlogPost {
   featured_image?: string;
   image_url?: string;
   postUrl?: string;
+  post_url?: string;
   category: Category;
   author: string;
   slug: string;
@@ -244,6 +245,7 @@ export interface BlogPostForm {
   seoDescription?: string;
   image?: File;
   postUrl?: string;
+  post_url?: string;
 }
 
 // Work Item Form Data
