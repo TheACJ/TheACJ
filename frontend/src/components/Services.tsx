@@ -74,7 +74,7 @@ const Services = () => {
   if (services.length === 0) return <EmptyState />;
 
   return (
-    <section id="services" className="py-24 bg-gray-50 dark:bg-gray-900 overflow-hidden relative">
+    <section id="services" className="py-24 overflow-hidden relative">
       {/* Optional Background Pattern */}
       <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05] pointer-events-none" 
            style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, gray 1px, transparent 0)', backgroundSize: '32px 32px' }}>

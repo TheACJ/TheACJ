@@ -241,7 +241,7 @@ const Skills = () => {
   }
 
   return (
-    <section id="skills" ref={ref} className="py-24 bg-gray-50 dark:bg-gray-900 overflow-hidden relative">
+    <section id="skills" ref={ref} className="py-24 overflow-hidden relative">
       {/* Decorative background dots */}
       <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(#6366f1 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
 

@@ -421,9 +421,9 @@ const Hero = () => {
               animate={{ scale: isHovering ? 1.05 : 1 }}
               transition={{ duration: 8, ease: 'easeOut' }}
             >
-              {/* Enhanced gradient overlays */}
-              <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-transparent" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/20" />
+              {/* Enhanced gradient overlays - reduced opacity to show interactive background */}
+              <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-black/20 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-black/10" />
             </motion.div>
           </motion.div>
         </AnimatePresence>

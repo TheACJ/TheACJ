@@ -93,7 +93,7 @@ const Contact = () => {
   );
 
   return (
-    <section id="contact" className="py-24 bg-gray-50 dark:bg-gray-900 overflow-hidden relative">
+    <section id="contact" className="py-24 overflow-hidden relative">
       {/* Decorative Background Elements (Similar to Counter/About) */}
       <div className="absolute top-0 left-0 w-1/3 h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
       <div className="absolute -left-20 top-20 w-72 h-72 bg-primary/5 rounded-full blur-3xl pointer-events-none" />

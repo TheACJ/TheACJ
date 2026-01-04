@@ -283,7 +283,7 @@ const Work = () => {
   const currentWork = filteredWorks[currentSlide];
 
   return (
-    <section ref={sectionRef} id="work" className="py-24 bg-gray-50 dark:bg-gray-900 overflow-hidden">
+    <section ref={sectionRef} id="work" className="py-24 overflow-hidden">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         {/* Header */}
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-16">

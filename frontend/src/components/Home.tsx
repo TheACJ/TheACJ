@@ -26,7 +26,7 @@ const Footer = () => {
 ];
 
   return (
-    <footer className="relative py-12 bg-gray-900 dark:bg-black text-white overflow-hidden">
+    <footer className="relative py-12 text-white overflow-hidden">
       {/* Decorative top border */}
       <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary via-secondary to-primary" />
       <div className="max-w-6xl mx-auto px-4 sm:px-6">

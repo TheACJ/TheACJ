@@ -110,7 +110,7 @@ const Gallery = () => {
   }, []);
 
   return (
-    <section id="gallery" className="py-24 bg-gray-50 dark:bg-gray-900 overflow-hidden">
+    <section id="gallery" className="py-24 overflow-hidden">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         
         {/* Header */}

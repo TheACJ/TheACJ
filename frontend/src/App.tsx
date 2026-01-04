@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
-import { ConstellationFieldBackground } from 'interactive-backgrounds';
+import { ConstellationFieldBackground, ParticlesBackground } from 'interactive-backgrounds';
 
 import Sidebar from './components/Sidebar';
 import Home from './components/Home';
@@ -68,6 +68,12 @@ function AppContent() {
           connectionColor={isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)'}
           constfill={isDarkMode ? 'white' : 'black'}
         />
+        <ParticlesBackground 
+          particleCount={40} 
+          connectionDistance={80}
+          particleColor={isDarkMode ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.2)'}
+           />
+        
       </div>
 
       <AnimatePresence>
