@@ -1,14 +1,10 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { contentService, type ContentSections } from '../services/api_node';
+import { contentService } from '../services/api_node';
+import { type ContentSections } from '../services/contentFallbackService';
+import contentFallback from '../data/content-fallback.json';
 
-// Empty content structure for when MongoDB is unavailable
-const EMPTY_CONTENT: ContentSections = {
-  hero: { slides: [], socialLinks: [] },
-  about: { title: '', description: '', image: '', achievements: [] },
-  services: [],
-  counter: [],
-  skills: []
-};
+// Fallback content structure for when API is unavailable
+const FALLBACK_CONTENT: ContentSections = contentFallback.data as ContentSections;
 
 interface ContentContextType {
   content: ContentSections;
@@ -44,7 +40,7 @@ export const ContentProvider: React.FC<ContentProviderProps> = ({ children }) =>
   };
 
   const cachedContent = getCachedContent();
-  const [content, setContent] = useState<ContentSections>(cachedContent || EMPTY_CONTENT);
+  const [content, setContent] = useState<ContentSections>(cachedContent || FALLBACK_CONTENT);
   const [loading, setLoading] = useState(!cachedContent); // Start with true if no cache
   const [error, setError] = useState<string | null>(null);
   const [isReady, setIsReady] = useState(false); // Track if content is ready
@@ -71,11 +67,11 @@ export const ContentProvider: React.FC<ContentProviderProps> = ({ children }) =>
       if (response.success && response.data) {
         // Merge with defaults for any missing sections (non-blocking)
         const mergedContent: ContentSections = {
-          hero: response.data.hero || EMPTY_CONTENT.hero,
-          about: response.data.about || EMPTY_CONTENT.about,
-          services: response.data.services || EMPTY_CONTENT.services,
-          counter: response.data.counter || EMPTY_CONTENT.counter,
-          skills: response.data.skills || EMPTY_CONTENT.skills
+          hero: response.data.hero || FALLBACK_CONTENT.hero,
+          about: response.data.about || FALLBACK_CONTENT.about,
+          services: response.data.services || FALLBACK_CONTENT.services,
+          counter: response.data.counter || FALLBACK_CONTENT.counter,
+          skills: response.data.skills || FALLBACK_CONTENT.skills
         };
 
         // Always update content - components handle empty states themselves
@@ -96,15 +92,15 @@ export const ContentProvider: React.FC<ContentProviderProps> = ({ children }) =>
           console.log('✅ [useContent] Content loaded successfully', mergedContent);
         }
       } else {
-        // Use cached content if available, otherwise use empty
+        // Use cached content if available, otherwise use fallback
         const cached = getCachedContent();
         if (cached) {
           setContent(cached);
         } else {
-          setContent(EMPTY_CONTENT);
+          setContent(FALLBACK_CONTENT);
         }
-        setError(response.error || 'Failed to load content');
-        // Still mark as ready so app can render (with empty/error state)
+        setError(null); // No error since we provide fallback content
+        // Still mark as ready so app can render
         setIsReady(true);
       }
     } catch (err) {
@@ -116,9 +112,9 @@ export const ContentProvider: React.FC<ContentProviderProps> = ({ children }) =>
           console.warn('⚠️ [useContent] Using cached content due to error');
         }
       } else {
-        setContent(EMPTY_CONTENT);
+        setContent(FALLBACK_CONTENT);
       }
-      setError(err instanceof Error ? err.message : 'Failed to load content');
+      setError(null); // No error since we provide content
       
       if (import.meta.env.DEV) {
         console.error('❌ [useContent] Error:', err);
