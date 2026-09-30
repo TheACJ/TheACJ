@@ -35,7 +35,7 @@ Social commerce platform focused on youth empowerment and marketplace features f
 ### **FX_Bot | Personal** 
 Algorithmic FX trading system using SMC (Smart Money Concepts) strategy in Python.
 
-### **Blarkince | Personal**
+### **BlarkiFi | Personal**
 An Ecosystem that intends to bridge the cap and make transactions between the leading 20 crypto blockchains seamless.
 
 ---
